@@ -1,6 +1,8 @@
 # conftest.py
 # 모든 테스트에서 공유하는 pytest fixture 정의
 
+import os
+
 import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -9,6 +11,15 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.firefox import GeckoDriverManager
+
+_CACHED_GECKO = r"C:\Users\Admin\.wdm\drivers\geckodriver\win64\v0.36.0\geckodriver.exe"
+
+
+def _gecko_driver_path() -> str:
+    """캐시된 geckodriver가 있으면 바로 반환, 없으면 GeckoDriverManager로 설치"""
+    if os.path.exists(_CACHED_GECKO):
+        return _CACHED_GECKO
+    return GeckoDriverManager().install()
 
 
 BASE_URL      = "https://qaproject.elice.io/ai-helpy-chat"
@@ -60,7 +71,7 @@ def _make_tools_driver(browser: str):
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
         _driver = webdriver.Firefox(
-            service=FirefoxService(GeckoDriverManager().install()),
+            service=FirefoxService(_gecko_driver_path()),
             options=opts,
         )
 
