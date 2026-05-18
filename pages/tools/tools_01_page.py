@@ -27,7 +27,7 @@ class SpecialtyPage(BaseToolPage):
     STUDY_ATTITUDE_ACCORDION = (
         By.XPATH,
         "//*[@role='dialog']//div[contains(@class,'MuiAccordionSummary-root')"
-        " and normalize-space(.)='학습 태도']",
+        " and contains(normalize-space(.), '학습 태도')]",
     )
     # 수업 집중도 높음 칩
     CONCENTRATION_CHIP = (
