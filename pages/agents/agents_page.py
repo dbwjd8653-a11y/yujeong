@@ -20,8 +20,7 @@ class AgentsPage(BasePage):
     # LNB의 '에이전트 탐색' 메뉴 링크
     LNB_AGENTS_LINK = (
         By.XPATH,
-        "//a[contains(@href,'ai-helpy-chat/agents')]"
-        " | //span[normalize-space(text())='에이전트 탐색'"
+        "//span[normalize-space(text())='에이전트 탐색'"
         " or normalize-space(text())='Explore Agents'"
         " or normalize-space(text())='Agents']/ancestor::a",
     )
@@ -49,9 +48,9 @@ class AgentsPage(BasePage):
 
     def click_agents_tab_from_lnb(self):
         """LNB의 '에이전트 탐색' 메뉴를 클릭해 페이지 이동"""
-        link = self.wait.until(EC.element_to_be_clickable(self.LNB_AGENTS_LINK))
+        link = WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable(self.LNB_AGENTS_LINK))
         self.js_click(link)
-        self.wait.until(EC.url_contains("/agents"))
+        WebDriverWait(self.driver, 20).until(EC.url_contains("/agents"))
         print("LNB '에이전트 탐색' 탭 클릭 완료")
 
     # ========== 목록 확인 ==========
@@ -70,7 +69,7 @@ class AgentsPage(BasePage):
 
     def click_random_agent(self) -> str:
         """목록에서 랜덤 에이전트 카드 클릭, 클릭한 에이전트 이름 반환"""
-        cards = WebDriverWait(self.driver, 20).until(
+        cards = WebDriverWait(self.driver, 30).until(
             EC.presence_of_all_elements_located(self.AGENT_CARDS)
         )
         card = random.choice(cards)
@@ -90,7 +89,7 @@ class AgentsPage(BasePage):
 
     def click_first_agent(self) -> str:
         """목록의 첫 번째 에이전트 카드 클릭 (재현성 필요한 경우 사용)"""
-        cards = WebDriverWait(self.driver, 20).until(
+        cards = WebDriverWait(self.driver, 30).until(
             EC.presence_of_all_elements_located(self.AGENT_CARDS)
         )
         card = cards[0]
