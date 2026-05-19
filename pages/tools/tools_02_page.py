@@ -34,11 +34,11 @@ class BehaviorPage(BaseToolPage):
         """인성·태도(품성·책임감) 아코디언 → 예의 바르고 배려심 있음 칩 선택"""
         accordion = self.wait.until(EC.element_to_be_clickable(self.CHARACTER_ACCORDION))
         self.js_click(accordion)
-        print("인성·태도(품성·책임감) 아코디언 펼치기 완료")
+        self.logger.info("인성·태도(품성·책임감) 아코디언 펼치기 완료")
 
         chip = self.wait.until(EC.element_to_be_clickable(self.COURTESY_CHIP))
         self.js_click(chip)
-        print("예의 바르고 배려심 있음 선택 완료")
+        self.logger.info("예의 바르고 배려심 있음 선택 완료")
 
     # ========== 전체 흐름 한 번에 실행 ==========
 

@@ -100,7 +100,7 @@ class TokenPage(BasePage):
     def is_lnb_token_displayed(self) -> bool:
         """LNB에 토큰 사용량이 표시되는지 확인"""
         text = self.get_lnb_token_text()
-        print(f"LNB 토큰 사용량: '{text}'")
+        self.logger.info(f"LNB 토큰 사용량: '{text}'")
         return bool(text) and "tokens" in text
 
     # ========== 채팅 메시지 전송 (FHC-017) ==========
@@ -112,7 +112,7 @@ class TokenPage(BasePage):
         self.js_input(chat_input, message)
         time.sleep(0.3)
         chat_input.send_keys(Keys.RETURN)
-        print(f"채팅 메시지 전송: '{message}'")
+        self.logger.info(f"채팅 메시지 전송: '{message}'")
 
     def wait_for_ai_response(self, timeout: int = 60) -> bool:
         """AI 응답이 완료될 때까지 대기"""
@@ -123,10 +123,10 @@ class TokenPage(BasePage):
             WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_element_located(self.RESPONSE_CONTENT)
             )
-            print("AI 응답 완료 확인")
+            self.logger.info("AI 응답 완료 확인")
             return True
         except Exception:
-            print("AI 응답 대기 타임아웃")
+            self.logger.warning("AI 응답 대기 타임아웃")
             return False
 
     # ========== LNB 토큰 클릭 ==========
@@ -136,7 +136,7 @@ class TokenPage(BasePage):
         try:
             link = self.wait.until(EC.element_to_be_clickable(self.LNB_TOKEN_LINK))
             self.js_click(link)
-            print("LNB 토큰 사용량 링크 클릭 완료")
+            self.logger.info("LNB 토큰 사용량 링크 클릭 완료")
             return
         except Exception:
             pass
@@ -152,13 +152,13 @@ class TokenPage(BasePage):
         """)
         if result == 'not-found':
             raise Exception("LNB 토큰 링크를 찾을 수 없습니다")
-        print(f"LNB 토큰 링크 클릭 완료 (JS): {result}")
+        self.logger.info(f"LNB 토큰 링크 클릭 완료 (JS): {result}")
 
     def is_on_settings_general_page(self) -> bool:
         """설정 > 일반 페이지 이동 확인"""
         try:
             self.wait.until(EC.url_contains("/admin/general"))
-            print("설정 > 일반 페이지 이동 확인")
+            self.logger.info("설정 > 일반 페이지 이동 확인")
             return True
         except Exception:
             return False
@@ -167,7 +167,7 @@ class TokenPage(BasePage):
         """기능별 토큰 사용량 테이블 표시 확인"""
         try:
             self.wait.until(EC.presence_of_element_located(self.TOKEN_TABLE))
-            print("토큰 사용량 테이블 확인")
+            self.logger.info("토큰 사용량 테이블 확인")
             return True
         except Exception:
             return False
@@ -178,13 +178,13 @@ class TokenPage(BasePage):
         """'전체 이용 내역' 버튼 클릭"""
         btn = self.wait.until(EC.element_to_be_clickable(self.ALL_HISTORY_BUTTON))
         self.js_click(btn)
-        print("전체 이용 내역 버튼 클릭 완료")
+        self.logger.info("전체 이용 내역 버튼 클릭 완료")
 
     def is_on_history_page(self) -> bool:
         """전체 이용 내역 페이지 이동 확인"""
         try:
             self.wait.until(EC.url_contains("/admin/history"))
-            print("전체 이용 내역 페이지 이동 확인")
+            self.logger.info("전체 이용 내역 페이지 이동 확인")
             return True
         except Exception:
             return False

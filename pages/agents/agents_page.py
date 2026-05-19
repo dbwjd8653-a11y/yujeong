@@ -51,7 +51,7 @@ class AgentsPage(BasePage):
         link = WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable(self.LNB_AGENTS_LINK))
         self.js_click(link)
         WebDriverWait(self.driver, 20).until(EC.url_contains("/agents"))
-        print("LNB '에이전트 탐색' 탭 클릭 완료")
+        self.logger.info("LNB '에이전트 탐색' 탭 클릭 완료")
 
     # ========== 목록 확인 ==========
 
@@ -60,7 +60,7 @@ class AgentsPage(BasePage):
         try:
             self.wait.until(EC.presence_of_element_located(self.AGENT_GRID))
             cards = self.driver.find_elements(*self.AGENT_CARDS)
-            print(f"에이전트 목록 표시 확인 (카드 {len(cards)}개)")
+            self.logger.info(f"에이전트 목록 표시 확인 (카드 {len(cards)}개)")
             return len(cards) > 0
         except Exception:
             return False
@@ -84,7 +84,7 @@ class AgentsPage(BasePage):
 
         self.js_click(card)
         self.wait.until(EC.url_contains("/agents/"))
-        print(f"에이전트 '{name}' 클릭 완료")
+        self.logger.info(f"에이전트 '{name}' 클릭 완료")
         return name
 
     def click_first_agent(self) -> str:
@@ -102,5 +102,5 @@ class AgentsPage(BasePage):
 
         self.js_click(card)
         self.wait.until(EC.url_contains("/agents/"))
-        print(f"첫 번째 에이전트 '{name}' 클릭 완료")
+        self.logger.info(f"첫 번째 에이전트 '{name}' 클릭 완료")
         return name

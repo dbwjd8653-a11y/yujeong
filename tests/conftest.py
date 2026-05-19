@@ -1,7 +1,9 @@
 # tests/conftest.py
 # tests/ 폴더 전용 pytest fixture 정의
 
+import logging
 import os
+from datetime import datetime
 
 import pytest
 from selenium import webdriver
@@ -13,6 +15,25 @@ from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.firefox import GeckoDriverManager
 
 _CACHED_GECKO = r"C:\Users\Admin\.wdm\drivers\geckodriver\win64\v0.36.0\geckodriver.exe"
+
+logger = logging.getLogger(__name__)
+
+
+def pytest_configure(config):
+    os.makedirs("logs", exist_ok=True)
+    log_file = f"logs/test_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)-8s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        handlers=[
+            logging.FileHandler(log_file, encoding="utf-8"),
+            logging.StreamHandler(),
+        ],
+        force=True,
+    )
+    logging.getLogger("selenium").setLevel(logging.WARNING)
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
 def _gecko_driver_path() -> str:
@@ -71,7 +92,7 @@ def _make_tools_driver(browser: str):
         )
 
     _driver.implicitly_wait(10)
-    print(f"브라우저: {browser.upper()} 실행 완료")
+    logger.info(f"브라우저: {browser.upper()} 실행 완료")
     return _driver
 
 

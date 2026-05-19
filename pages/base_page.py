@@ -2,6 +2,7 @@
 # 모든 Page 클래스가 공통으로 상속받는 베이스 클래스
 # js_click, js_input, wait 유틸리티 메서드를 한 곳에서 관리
 
+import logging
 import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -13,6 +14,7 @@ class BasePage:
     def __init__(self, driver, timeout=10):
         self.driver = driver
         self.wait = WebDriverWait(driver, timeout)
+        self.logger = logging.getLogger(self.__class__.__name__)
 
     # ========== JS 유틸리티 ==========
 

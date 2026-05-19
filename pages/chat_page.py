@@ -109,7 +109,7 @@ class ChatPage(BasePage):
         """메인 채팅 페이지로 이동"""
         self.driver.get(self.BASE_URL)
         self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        print("메인 채팅 페이지 이동 완료")
+        self.logger.info("메인 채팅 페이지 이동 완료")
 
     # ========== LNB 탭 클릭 ==========
 
@@ -117,13 +117,13 @@ class ChatPage(BasePage):
         """LNB '새 대화' 탭 클릭"""
         link = self.wait.until(EC.element_to_be_clickable(self.LNB_NEW_CHAT))
         self.js_click(link)
-        print("LNB '새 대화' 탭 클릭 완료")
+        self.logger.info("LNB '새 대화' 탭 클릭 완료")
 
     def click_search_from_lnb(self):
         """LNB '검색' 탭 클릭"""
         btn = self.wait.until(EC.element_to_be_clickable(self.LNB_SEARCH))
         self.js_click(btn)
-        print("LNB '검색' 탭 클릭 완료")
+        self.logger.info("LNB '검색' 탭 클릭 완료")
 
     # ========== 채팅 창 상태 확인 ==========
 
@@ -131,7 +131,7 @@ class ChatPage(BasePage):
         """AI 대화창이 열렸는지 확인 (채팅 입력 필드 존재 여부)"""
         try:
             self.wait.until(EC.visibility_of_element_located(self.CHAT_INPUT))
-            print("채팅 입력 필드 표시 확인")
+            self.logger.info("채팅 입력 필드 표시 확인")
             return True
         except Exception:
             return False
@@ -140,7 +140,7 @@ class ChatPage(BasePage):
         """기본 에이전트가 Helpy Pro Agent인지 확인"""
         try:
             self.wait.until(EC.presence_of_element_located(self.AGENT_HEADER))
-            print("Helpy Pro Agent 헤더 확인")
+            self.logger.info("Helpy Pro Agent 헤더 확인")
             return True
         except Exception:
             return False
@@ -157,13 +157,13 @@ class ChatPage(BasePage):
             send_btn = self.driver.find_element(*self.SEND_BUTTON)
             if send_btn.is_enabled():
                 self.js_click(send_btn)
-                print(f"전송 버튼 클릭 (메시지: '{text}')")
+                self.logger.info(f"전송 버튼 클릭 (메시지: '{text}')")
                 return
         except Exception:
             pass
 
         chat_input.send_keys(Keys.RETURN)
-        print(f"Enter 키로 전송 (메시지: '{text}')")
+        self.logger.info(f"Enter 키로 전송 (메시지: '{text}')")
 
     # ========== AI 응답 대기 ==========
 
@@ -176,15 +176,15 @@ class ChatPage(BasePage):
             WebDriverWait(self.driver, timeout).until(
                 EC.url_contains("/ai-helpy-chat/chats/")
             )
-            print("대화방 URL 전환 확인")
+            self.logger.info("대화방 URL 전환 확인")
 
             WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_element_located(self.RESPONSE_CONTENT)
             )
-            print("AI 응답 생성 확인")
+            self.logger.info("AI 응답 생성 확인")
             return True
         except Exception:
-            print("AI 응답 대기 타임아웃")
+            self.logger.warning("AI 응답 대기 타임아웃")
             return False
 
     # ========== LNB 대화 목록 ==========
@@ -196,10 +196,10 @@ class ChatPage(BasePage):
                 EC.presence_of_element_located(self.LNB_CHAT_ITEMS)
             )
             count = len(self.driver.find_elements(*self.LNB_CHAT_ITEMS))
-            print(f"LNB 대화 목록 확인 ({count}개)")
+            self.logger.info(f"LNB 대화 목록 확인 ({count}개)")
             return count > 0
         except Exception:
-            print("LNB 대화 목록 미표시")
+            self.logger.warning("LNB 대화 목록 미표시")
             return False
 
     def click_random_lnb_chat(self) -> str:
@@ -217,7 +217,7 @@ class ChatPage(BasePage):
         if not items:
             raise Exception("LNB 채팅 목록을 찾을 수 없습니다")
         self.js_click(items[idx % len(items)])
-        print(f"LNB 대화 '{title}' 클릭 완료")
+        self.logger.info(f"LNB 대화 '{title}' 클릭 완료")
         return title
 
     # ========== 검색 모달 ==========
@@ -226,7 +226,7 @@ class ChatPage(BasePage):
         """검색 모달/다이얼로그가 열렸는지 확인"""
         try:
             self.wait.until(EC.presence_of_element_located(self.SEARCH_MODAL))
-            print("검색 모달 열림 확인")
+            self.logger.info("검색 모달 열림 확인")
             return True
         except Exception:
             return False
@@ -245,7 +245,7 @@ class ChatPage(BasePage):
             modal.click()
             modal.send_keys(keyword)
         time.sleep(0.5)  # 검색 결과 필터링 반영 대기
-        print(f"검색 키워드 입력: '{keyword}'")
+        self.logger.info(f"검색 키워드 입력: '{keyword}'")
 
     def is_search_results_displayed(self) -> bool:
         """검색 결과 목록이 표시되는지 확인"""
@@ -253,7 +253,7 @@ class ChatPage(BasePage):
             items = self.wait.until(
                 EC.presence_of_all_elements_located(self.SEARCH_RESULT_ITEMS)
             )
-            print(f"검색 결과 확인 ({len(items)}개)")
+            self.logger.info(f"검색 결과 확인 ({len(items)}개)")
             return len(items) > 0
         except Exception:
             return False
@@ -271,7 +271,7 @@ class ChatPage(BasePage):
         except Exception:
             title = "(제목 파악 불가)"
         self.js_click(item)
-        print(f"검색 결과 '{title}' 클릭 완료")
+        self.logger.info(f"검색 결과 '{title}' 클릭 완료")
         return title
 
     # ========== 대화 상세 화면 확인 ==========
@@ -282,7 +282,7 @@ class ChatPage(BasePage):
             WebDriverWait(self.driver, timeout).until(
                 EC.url_contains("/ai-helpy-chat/chats/")
             )
-            print("대화 상세 화면 이동 확인")
+            self.logger.info("대화 상세 화면 이동 확인")
             return True
         except Exception:
             return False

@@ -48,7 +48,7 @@ class SpecialtyPage(BaseToolPage):
             )
         ).click()
         self.wait_backdrop_gone()
-        print(f"학년 '{grade}' 선택 완료")
+        self.logger.info(f"학년 '{grade}' 선택 완료")
 
     def enter_subject(self, subject: str):
         subject_input = self.wait.until(EC.element_to_be_clickable(self.SUBJECT_INPUT))
@@ -62,10 +62,10 @@ class SpecialtyPage(BaseToolPage):
                     (By.XPATH, f"//li[@role='option' and normalize-space(text())='{subject}']")
                 )
             ).click()
-            print(f"과목 '{subject}' 목록에서 선택 완료")
+            self.logger.info(f"과목 '{subject}' 목록에서 선택 완료")
         except Exception:
             subject_input.send_keys(Keys.ESCAPE)
-            print(f"과목 '{subject}' 직접 입력 완료")
+            self.logger.info(f"과목 '{subject}' 직접 입력 완료")
 
     def enter_unit(self, unit: str):
         unit_input = self.wait.until(EC.element_to_be_clickable(self.UNIT_INPUT))
@@ -73,7 +73,7 @@ class SpecialtyPage(BaseToolPage):
         unit_input.send_keys(Keys.CONTROL + "a")
         unit_input.send_keys(Keys.DELETE)
         unit_input.send_keys(unit)
-        print(f"단원 '{unit}' 입력 완료")
+        self.logger.info(f"단원 '{unit}' 입력 완료")
 
     # ========== 키워드 선택 — 학습 태도 ==========
 
@@ -82,12 +82,12 @@ class SpecialtyPage(BaseToolPage):
         self.js_click(
             self.wait.until(EC.presence_of_element_located(self.STUDY_ATTITUDE_ACCORDION))
         )
-        print("학습 태도 아코디언 펼치기 완료")
+        self.logger.info("학습 태도 아코디언 펼치기 완료")
 
         self.js_click(
             self.wait.until(EC.presence_of_element_located(self.CONCENTRATION_CHIP))
         )
-        print("수업 집중도 높음 선택 완료")
+        self.logger.info("수업 집중도 높음 선택 완료")
 
     # ========== 전체 흐름 한 번에 실행 ==========
 

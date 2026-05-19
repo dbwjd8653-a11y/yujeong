@@ -62,7 +62,7 @@ class AgentDetailPage(BasePage):
         try:
             buttons = self.get_quick_reply_buttons()
             names = [b.text.strip() for b in buttons if b.text.strip()]
-            print(f"주요 기능 버튼 확인: {names}")
+            self.logger.info(f"주요 기능 버튼 확인: {names}")
             return len(names) > 0
         except Exception:
             return False
@@ -77,7 +77,7 @@ class AgentDetailPage(BasePage):
         btn = buttons[index]
         btn_text = btn.text.strip()
         self.js_click(btn)
-        print(f"퀵 리플라이 버튼 클릭: '{btn_text}'")
+        self.logger.info(f"퀵 리플라이 버튼 클릭: '{btn_text}'")
         return btn_text
 
     # ========== 대화 — 직접 입력 방식 (FHC-060) ==========
@@ -94,10 +94,10 @@ class AgentDetailPage(BasePage):
         try:
             send_btn = self.driver.find_element(*self.SEND_BUTTON)
             self.js_click(send_btn)
-            print(f"전송 버튼 클릭 (메시지: '{message}')")
+            self.logger.info(f"전송 버튼 클릭 (메시지: '{message}')")
         except Exception:
             chat_input.send_keys(Keys.RETURN)
-            print(f"Enter 키로 전송 (메시지: '{message}')")
+            self.logger.info(f"Enter 키로 전송 (메시지: '{message}')")
 
     # ========== AI 응답 대기 (FHC-060) ==========
 
@@ -111,16 +111,16 @@ class AgentDetailPage(BasePage):
             WebDriverWait(self.driver, timeout).until(
                 EC.url_contains("chatrooms")
             )
-            print("대화방 URL 전환 확인")
+            self.logger.info("대화방 URL 전환 확인")
 
             # 응답 컨텐츠 등장 대기
             WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_element_located(self.RESPONSE_CONTENT)
             )
-            print("AI 응답 생성 확인")
+            self.logger.info("AI 응답 생성 확인")
             return True
         except Exception:
-            print("AI 응답 대기 타임아웃")
+            self.logger.warning("AI 응답 대기 타임아웃")
             return False
 
     # ========== LNB 대화 목록 확인 (FHC-060) ==========
@@ -132,8 +132,8 @@ class AgentDetailPage(BasePage):
                 EC.presence_of_element_located(self.LNB_CHATROOM_LINK)
             )
             count = len(self.driver.find_elements(*self.LNB_CHATROOM_LINK))
-            print(f"LNB 대화 목록 확인 ({count}개)")
+            self.logger.info(f"LNB 대화 목록 확인 ({count}개)")
             return True
         except Exception:
-            print("LNB 대화 목록 미표시")
+            self.logger.warning("LNB 대화 목록 미표시")
             return False

@@ -119,7 +119,7 @@ class BaseToolPage(BasePage):
                 (By.XPATH, "//a[contains(@href,'ai-helpy-chat')]")
             )
         )
-        print("로그인 성공")
+        self.logger.info("로그인 성공")
 
     # ========== LNB 탭 이동 ==========
 
@@ -128,7 +128,7 @@ class BaseToolPage(BasePage):
         link = self.wait.until(EC.element_to_be_clickable(self.LNB_TOOLS_LINK))
         self.js_click(link)
         self.wait.until(EC.url_contains("ai-helpy-chat/tools"))
-        print("LNB '도구' 탭 클릭 완료")
+        self.logger.info("LNB '도구' 탭 클릭 완료")
 
     # ========== 도구 선택 ==========
 
@@ -149,7 +149,7 @@ class BaseToolPage(BasePage):
         )
         self.js_click(tool_btn)
         self.wait.until(EC.url_contains("ai-helpy-chat/tools/"))
-        print(f"'{tool_name}' 클릭 완료")
+        self.logger.info(f"'{tool_name}' 클릭 완료")
 
     # ========== 입력 내역 초기화 ==========
 
@@ -157,21 +157,21 @@ class BaseToolPage(BasePage):
         reset_btn = self.wait.until(EC.presence_of_element_located(self.RESET_BUTTON))
         if reset_btn.is_enabled():
             self.js_click(reset_btn)
-            print("입력 내역 초기화 버튼 클릭 완료")
+            self.logger.info("입력 내역 초기화 버튼 클릭 완료")
             confirm_btn = self.wait.until(EC.element_to_be_clickable(self.CONFIRM_RESET))
             self.js_click(confirm_btn)
-            print("초기화 하기 버튼 클릭 완료")
+            self.logger.info("초기화 하기 버튼 클릭 완료")
             self.wait_dialog_gone()
-            print("초기화 모달 닫힘 확인")
+            self.logger.info("초기화 모달 닫힘 확인")
         else:
-            print("입력 내역 초기화 버튼 비활성화 → 초기화 건너뜀")
+            self.logger.info("입력 내역 초기화 버튼 비활성화 → 초기화 건너뜀")
 
     # ========== 수업 정보 입력 탭 ==========
 
     def click_class_info_tab(self):
         tab_btn = self.wait.until(EC.element_to_be_clickable(self.CLASS_INFO_TAB))
         self.js_click(tab_btn)
-        print("수업 정보 입력 탭 클릭 완료")
+        self.logger.info("수업 정보 입력 탭 클릭 완료")
         self.wait.until(EC.presence_of_element_located(self.SCHOOL_COMBOBOX))
 
     def select_school_level(self, school_level: str):
@@ -182,12 +182,12 @@ class BaseToolPage(BasePage):
             )
         ).click()
         self.wait_backdrop_gone()
-        print(f"학교급 '{school_level}' 선택 완료")
+        self.logger.info(f"학교급 '{school_level}' 선택 완료")
 
     def click_next(self):
         next_btn = self.wait.until(EC.element_to_be_clickable(self.NEXT_BUTTON))
         self.js_click(next_btn)
-        print("다음으로 버튼 클릭 완료")
+        self.logger.info("다음으로 버튼 클릭 완료")
 
     def handle_modify_modal(self):
         """'수정하기' 모달이 뜰 경우에만 처리 (없으면 조용히 넘어감)"""
@@ -197,9 +197,9 @@ class BaseToolPage(BasePage):
             )
             self.js_click(modify_btn)
             self.wait_dialog_gone()
-            print("수정하기 모달 처리 완료")
+            self.logger.info("수정하기 모달 처리 완료")
         except Exception:
-            print("수정 확인 모달 없음 → 바로 진행")
+            self.logger.info("수정 확인 모달 없음 → 바로 진행")
 
     # ========== 학생 정보 입력 ==========
 
@@ -211,38 +211,38 @@ class BaseToolPage(BasePage):
                 self.wait.until(EC.element_to_be_clickable(self.ADD_STUDENT_BUTTON))
             )
             self.wait.until(EC.visibility_of_element_located(self.STUDENT_NAME_PLACEHOLDER))
-            print("+ 학생 추가 버튼 클릭 완료")
+            self.logger.info("+ 학생 추가 버튼 클릭 완료")
         else:
-            print("이름 입력 필드 이미 존재")
+            self.logger.info("이름 입력 필드 이미 존재")
 
     def enter_student_name(self, name: str):
         self.js_click(
             self.wait.until(EC.presence_of_element_located(self.FOOTER_NAME_PLACEHOLDER))
         )
-        print("이름 필드 클릭 완료")
+        self.logger.info("이름 필드 클릭 완료")
         name_input = self.wait.until(EC.visibility_of_element_located(self.FOOTER_NAME_INPUT))
         name_input.clear()
         name_input.send_keys(name)
-        print(f"학생 이름 '{name}' 입력 완료")
+        self.logger.info(f"학생 이름 '{name}' 입력 완료")
         time.sleep(0.3)  # React 키 입력 상태 반영 최소 대기
 
     def open_keyword_modal(self):
         self.js_click(
             self.wait.until(EC.presence_of_element_located(self.KEYWORD_BUTTON))
         )
-        print("키워드 모달 열기 완료")
+        self.logger.info("키워드 모달 열기 완료")
 
     def save_keyword_modal(self):
         self.js_click(
             self.wait.until(EC.presence_of_element_located(self.KEYWORD_SAVE))
         )
         self.wait_dialog_gone()
-        print("키워드 저장 완료")
+        self.logger.info("키워드 저장 완료")
 
     def enter_request_text(self, request_text: str):
         """요청사항이 있을 경우에만 입력 및 저장"""
         if not request_text:
-            print("요청사항 없음 → 입력 건너뜀")
+            self.logger.info("요청사항 없음 → 입력 건너뜀")
             return
 
         request_placeholder_xpath = (
@@ -267,17 +267,17 @@ class BaseToolPage(BasePage):
             EC.visibility_of_element_located((By.XPATH, request_input_xpath))
         )
         self.js_input(request_input, request_text)
-        print(f"추가 요청사항 입력 완료: {request_text}")
+        self.logger.info(f"추가 요청사항 입력 완료: {request_text}")
 
         try:
             save_btns = self.driver.find_elements(By.XPATH, save_xpath)
             if save_btns and save_btns[0].is_enabled():
                 self.js_click(save_btns[0])
-                print("요청사항 저장 버튼 클릭 완료")
+                self.logger.info("요청사항 저장 버튼 클릭 완료")
             else:
-                print("요청사항 저장 버튼 비활성화 → 건너뜀")
+                self.logger.info("요청사항 저장 버튼 비활성화 → 건너뜀")
         except Exception:
-            print("요청사항 저장 버튼 확인 중 오류 → 건너뜀")
+            self.logger.info("요청사항 저장 버튼 확인 중 오류 → 건너뜀")
 
     # ========== 상태 확인 (assertion helpers) ==========
 
@@ -289,7 +289,7 @@ class BaseToolPage(BasePage):
                     (By.XPATH, "//a[contains(@href,'ai-helpy-chat/tools/')]")
                 )
             )
-            print(f"도구 목록 표시 확인 ({len(cards)}개)")
+            self.logger.info(f"도구 목록 표시 확인 ({len(cards)}개)")
             return len(cards) > 0
         except Exception:
             return False
@@ -364,22 +364,22 @@ class BaseToolPage(BasePage):
         TC 기준 '1분 이내 생성' 검증용"""
         deadline = time.time() + timeout
         self.wait.until(EC.presence_of_element_located(self.RESULT_BUTTON))
+        self.logger.info(f"AI 생성 결과 버튼 활성화 대기 중 (최대 {timeout}초)...")
         while time.time() < deadline:
             time.sleep(2)
             try:
                 if self.driver.find_element(*self.RESULT_BUTTON).is_enabled():
-                    print("AI 생성 완료 — 생성 결과 받기 버튼 활성화 확인")
+                    self.logger.info("AI 생성 완료 — 생성 결과 받기 버튼 활성화 확인")
                     return True
             except Exception:
                 pass
-            print(".", end="", flush=True)
-        print(f"\nAI 생성 타임아웃 ({timeout}초 초과)")
+        self.logger.warning(f"AI 생성 타임아웃 ({timeout}초 초과)")
         return False
 
     def get_student_row_count(self) -> int:
         """현재 학생 데이터 행 수 반환"""
         rows = self.driver.find_elements(*self.STUDENT_DATA_ROWS)
-        print(f"현재 학생 행 수: {len(rows)}")
+        self.logger.info(f"현재 학생 행 수: {len(rows)}")
         return len(rows)
 
     # ========== 생성 트리거 및 결과 다운로드 ==========
@@ -389,16 +389,16 @@ class BaseToolPage(BasePage):
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.ADD_STUDENT_BUTTON))
         )
-        print("학생 추가 버튼 클릭 완료 (생성 트리거)")
+        self.logger.info("학생 추가 버튼 클릭 완료 (생성 트리거)")
 
     def search_student(self, name: str):
         search_input = self.wait.until(EC.visibility_of_element_located(self.SEARCH_INPUT))
         search_input.send_keys(name)
-        print(f"학생 이름 검색 입력 완료: {name}")
+        self.logger.info(f"학생 이름 검색 입력 완료: {name}")
 
     def download_result(self, download_dir: str, browser: str = "firefox"):
         """생성 결과 받기 버튼 클릭 후 xlsx 다운로드 완료 대기"""
-        print(f"생성 결과 받기 버튼 활성화 대기 중 (최대 120초)...")
+        self.logger.info(f"생성 결과 받기 버튼 활성화 대기 중 (최대 120초)...")
         self.wait.until(EC.presence_of_element_located(self.RESULT_BUTTON))
         deadline_btn = time.time() + 120
         result_btn = None
@@ -407,16 +407,15 @@ class BaseToolPage(BasePage):
             btn = self.driver.find_element(*self.RESULT_BUTTON)
             if btn.is_enabled():
                 result_btn = btn
-                print("생성 결과 받기 버튼 활성화 확인")
+                self.logger.info("생성 결과 받기 버튼 활성화 확인")
                 break
-            print(".", end="", flush=True)
         else:
-            print("\n생성 결과 받기 버튼 활성화 타임아웃 (120초 초과)")
+            self.logger.warning("생성 결과 받기 버튼 활성화 타임아웃 (120초 초과)")
             return False
 
         existing_xlsx = set(glob.glob(os.path.join(download_dir, "*.xlsx")))
         self.js_click(result_btn)
-        print("생성 결과 받기 버튼 클릭 완료")
+        self.logger.info("생성 결과 받기 버튼 클릭 완료")
 
         # 확인 모달 → '다운받기' 버튼 클릭
         try:
@@ -424,12 +423,12 @@ class BaseToolPage(BasePage):
                 EC.element_to_be_clickable(self.DOWNLOAD_CONFIRM_BUTTON)
             )
             self.js_click(confirm_btn)
-            print("'다운받기' 확인 버튼 클릭 완료")
+            self.logger.info("'다운받기' 확인 버튼 클릭 완료")
         except Exception:
-            print("확인 모달 없음 → 바로 다운로드 진행")
+            self.logger.info("확인 모달 없음 → 바로 다운로드 진행")
 
         # 다운로드 완료 대기 (최대 90초)
-        print("파일 다운로드 대기 중...")
+        self.logger.info("파일 다운로드 대기 중...")
         temp_ext = "*.part" if browser.lower() == "firefox" else "*.crdownload"
         deadline = time.time() + 90
         while time.time() < deadline:
@@ -438,7 +437,7 @@ class BaseToolPage(BasePage):
             new_files = current_xlsx - existing_xlsx
             temp_files = glob.glob(os.path.join(download_dir, temp_ext))
             if new_files and not temp_files:
-                print(f"다운로드 완료: {list(new_files)[0]}")
+                self.logger.info(f"다운로드 완료: {list(new_files)[0]}")
                 return True
-        print("다운로드 타임아웃 (90초 초과)")
+        self.logger.warning("다운로드 타임아웃 (90초 초과)")
         return False
