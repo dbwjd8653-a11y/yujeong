@@ -1,4 +1,4 @@
-# pages/tools/tools_behavior_page.py
+# pages/tools/tools_02_page.py
 # '행동특성 및 종합의견' 도구 전용 Page 클래스
 # BaseToolPage에 없는 인성·태도 키워드 선택 로직을 담당
 

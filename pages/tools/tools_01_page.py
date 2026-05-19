@@ -1,4 +1,4 @@
-# pages/tools/tools_specialty_page.py
+# pages/tools/tools_01_page.py
 # '세부 특기사항' 도구 전용 Page 클래스
 # BaseToolPage에 없는 학년/과목/단원 입력 + 학습 태도 키워드 선택 로직을 담당
 
