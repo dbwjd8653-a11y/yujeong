@@ -108,6 +108,12 @@ class BaseToolPage(BasePage):
         WebDriverWait(self.driver, 20).until(
             EC.url_contains("qaproject.elice.io")
         )
+        # LNB 링크가 렌더링될 때까지 대기 — 세션 쿠키 완전히 설정된 후에만 나타남
+        WebDriverWait(self.driver, 15).until(
+            EC.presence_of_element_located(
+                (By.XPATH, "//a[contains(@href,'ai-helpy-chat')]")
+            )
+        )
         print("로그인 성공")
 
     # ========== LNB 탭 이동 ==========
