@@ -6,6 +6,7 @@ import random
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from pages.base_page import BasePage
 
@@ -66,7 +67,7 @@ class AgentsPage(BasePage):
 
     def click_random_agent(self) -> str:
         """목록에서 랜덤 에이전트 카드 클릭, 클릭한 에이전트 이름 반환"""
-        cards = self.wait.until(
+        cards = WebDriverWait(self.driver, 20).until(
             EC.presence_of_all_elements_located(self.AGENT_CARDS)
         )
         card = random.choice(cards)
@@ -86,7 +87,7 @@ class AgentsPage(BasePage):
 
     def click_first_agent(self) -> str:
         """목록의 첫 번째 에이전트 카드 클릭 (재현성 필요한 경우 사용)"""
-        cards = self.wait.until(
+        cards = WebDriverWait(self.driver, 20).until(
             EC.presence_of_all_elements_located(self.AGENT_CARDS)
         )
         card = cards[0]
