@@ -73,7 +73,7 @@ class MyPage(BasePage):
                 )
             )
         except Exception:
-            print("로그인 폼 없음 → 이미 로그인된 상태")
+            self.logger.info("로그인 폼 없음 → 이미 로그인된 상태")
             return
 
         email_inputs = self.driver.find_elements(*self.EMAIL_INPUT)
@@ -91,7 +91,7 @@ class MyPage(BasePage):
                 self.wait.until(EC.visibility_of_element_located(self.PASSWORD_INPUT))
         else:
             # 히스토리 로그인 폼 (signin/history — 이메일 미표시, 비밀번호만 요구)
-            print("히스토리 로그인 페이지 감지 -> 비밀번호만 입력")
+            self.logger.info("히스토리 로그인 페이지 감지 -> 비밀번호만 입력")
 
         pwd_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_INPUT))
         pwd_input.clear()
@@ -101,7 +101,7 @@ class MyPage(BasePage):
         WebDriverWait(self.driver, 10).until(
             EC.invisibility_of_element_located(self.PASSWORD_INPUT)
         )
-        print(f"로그인 성공: {email}")
+        self.logger.info(f"로그인 성공: {email}")
 
     # ========== 페이지 이동 ==========
 
@@ -111,17 +111,17 @@ class MyPage(BasePage):
         self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, "button.MuiIconButton-root")
         ))
-        print("계정 관리 페이지 이동 완료")
+        self.logger.info("계정 관리 페이지 이동 완료")
 
     def navigate_to_org(self):
         self.driver.get(self.ORG_URL)
         self.wait.until(EC.url_contains("members/organization"))
-        print("내 기관 페이지 이동 완료")
+        self.logger.info("내 기관 페이지 이동 완료")
 
     def navigate_to_language(self):
         self.driver.get(self.LANGUAGE_URL)
         self.wait.until(EC.url_contains("members"))
-        print("언어 설정 페이지 이동 완료")
+        self.logger.info("언어 설정 페이지 이동 완료")
 
     def navigate_to_support(self):
         """고객 센터: 계정 페이지 이동 후 JS로 ChannelTalk 위젯 열기 (언어 무관)"""
@@ -147,9 +147,9 @@ class MyPage(BasePage):
             if (launcher) { launcher.click(); return 'launcher'; }
             return 'not-found';
         """)
-        print(f"고객 센터 열기 결과: {result}")
+        self.logger.info(f"고객 센터 열기 결과: {result}")
         time.sleep(3)
-        print("고객 센터 페이지 이동 완료")
+        self.logger.info("고객 센터 페이지 이동 완료")
 
     # ========== 공통 유틸 ==========
 
@@ -158,7 +158,7 @@ class MyPage(BasePage):
         option = (By.CSS_SELECTOR, f"li[data-value='{lang_code}']")
         self.wait.until(EC.element_to_be_clickable(option)).click()
         time.sleep(0.3)
-        print(f"언어 변경 완료: {lang_code}")
+        self.logger.info(f"언어 변경 완료: {lang_code}")
 
     def is_saved_successfully_displayed(self) -> bool:
         try:
@@ -194,4 +194,4 @@ class MyPage(BasePage):
                 self.driver.switch_to.window(h)
                 self.driver.close()
         self.driver.switch_to.window(original_handle)
-        print("새 탭 닫고 원래 탭으로 복귀 완료")
+        self.logger.info("새 탭 닫고 원래 탭으로 복귀 완료")
