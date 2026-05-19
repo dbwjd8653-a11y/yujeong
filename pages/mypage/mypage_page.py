@@ -98,7 +98,7 @@ class MyPage(BasePage):
         pwd_input.send_keys(password)
         self.driver.find_element(*self.SUBMIT_BUTTON).click()
 
-        WebDriverWait(self.driver, 20).until(
+        WebDriverWait(self.driver, 10).until(
             EC.invisibility_of_element_located(self.PASSWORD_INPUT)
         )
         print(f"로그인 성공: {email}")

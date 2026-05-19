@@ -10,7 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class BasePage:
 
-    def __init__(self, driver, timeout=20):
+    def __init__(self, driver, timeout=10):
         self.driver = driver
         self.wait = WebDriverWait(driver, timeout)
 
@@ -59,7 +59,7 @@ class BasePage:
         except Exception:
             pass
 
-    def wait_dialog_gone(self, timeout=15):
+    def wait_dialog_gone(self, timeout=10):
         """MUI Dialog가 완전히 닫힐 때까지 대기"""
         try:
             WebDriverWait(self.driver, timeout).until(
