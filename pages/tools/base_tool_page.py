@@ -17,6 +17,11 @@ class BaseToolPage(BasePage):
 
     BASE_URL   = "https://qaproject.elice.io/ai-helpy-chat"
     TOOLS_URL  = "https://qaproject.elice.io/ai-helpy-chat/tools"
+    LOGIN_URL  = (
+        "https://accounts.elice.io/accounts/signin/me"
+        "?continue_to=https%3A%2F%2Fqaproject.elice.io%2Fai-helpy-chat"
+        "&lang=ko-KR&org=qaproject"
+    )
     LOGIN_EMAIL    = "qa5team3-02@elicer.com"
     LOGIN_PASSWORD = "Mdk@02169630"
 
@@ -97,7 +102,7 @@ class BaseToolPage(BasePage):
     # ========== 로그인 ==========
 
     def login(self):
-        self.driver.get(self.BASE_URL)
+        self.driver.get(self.LOGIN_URL)
         self.wait.until(EC.presence_of_element_located(self.EMAIL_INPUT))
         self.driver.find_element(*self.EMAIL_INPUT).send_keys(self.LOGIN_EMAIL)
         self.driver.find_element(*self.PASSWORD_INPUT).send_keys(self.LOGIN_PASSWORD)

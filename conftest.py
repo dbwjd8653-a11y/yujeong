@@ -23,6 +23,11 @@ def _gecko_driver_path() -> str:
 
 
 BASE_URL      = "https://qaproject.elice.io/ai-helpy-chat"
+LOGIN_URL     = (
+    "https://accounts.elice.io/accounts/signin/me"
+    "?continue_to=https%3A%2F%2Fqaproject.elice.io%2Fai-helpy-chat"
+    "&lang=ko-KR&org=qaproject"
+)
 DOWNLOAD_DIR  = r"C:\Users\Admin\Downloads"
 
 
@@ -104,19 +109,19 @@ def wait(driver):
 @pytest.fixture
 def login(driver, wait):
     """회원가입 페이지용 로그인 완료 fixture"""
-    driver.get(BASE_URL)
+    driver.get(LOGIN_URL)
 
     email_input = wait.until(
-        EC.presence_of_element_located((By.NAME, "loginId"))
+        EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='email']"))
     )
     email_input.clear()
     email_input.send_keys("qa5team3-01@elicer.com")
 
-    password_input = driver.find_element(By.NAME, "password")
+    password_input = driver.find_element(By.CSS_SELECTOR, "input[type='password']")
     password_input.clear()
     password_input.send_keys("qwer1234!")
 
-    driver.find_element(By.XPATH, "//button[text()='Login']").click()
+    driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
 
     return driver, wait
 

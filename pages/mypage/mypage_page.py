@@ -56,37 +56,51 @@ class MyPage(BasePage):
     # ========== 로그인 ==========
 
     def login(self, email: str = None, password: str = None):
-        """qaproject SSO 로그인 (기본: MAIN_EMAIL/MAIN_PASSWORD)"""
+        """qaproject SSO 로그인 (기본: MAIN_EMAIL/MAIN_PASSWORD)
+        로그아웃 후 signin/history 페이지(비밀번호만 요구)도 처리
+        """
         email    = email    or self.MAIN_EMAIL
         password = password or self.MAIN_PASSWORD
 
         self.driver.get(self.CHAT_URL)
 
+        # 이메일 입력란 또는 비밀번호 입력란이 나타날 때까지 대기
         try:
-            email_input = WebDriverWait(self.driver, 5).until(
-                EC.visibility_of_element_located(self.EMAIL_INPUT)
+            WebDriverWait(self.driver, 10).until(
+                lambda d: (
+                    d.find_elements(*self.EMAIL_INPUT)
+                    or d.find_elements(*self.PASSWORD_INPUT)
+                )
             )
         except Exception:
             print("로그인 폼 없음 → 이미 로그인된 상태")
             return
 
-        email_input.clear()
-        email_input.send_keys(email)
+        email_inputs = self.driver.find_elements(*self.EMAIL_INPUT)
 
-        try:
-            WebDriverWait(self.driver, 2).until(
-                EC.visibility_of_element_located(self.PASSWORD_INPUT)
-            )
-        except Exception:
-            self.driver.find_element(*self.SUBMIT_BUTTON).click()
-            self.wait.until(EC.visibility_of_element_located(self.PASSWORD_INPUT))
+        if email_inputs:
+            # 일반 로그인 폼 (이메일 + 비밀번호)
+            email_inputs[0].clear()
+            email_inputs[0].send_keys(email)
+            try:
+                WebDriverWait(self.driver, 2).until(
+                    EC.visibility_of_element_located(self.PASSWORD_INPUT)
+                )
+            except Exception:
+                self.driver.find_element(*self.SUBMIT_BUTTON).click()
+                self.wait.until(EC.visibility_of_element_located(self.PASSWORD_INPUT))
+        else:
+            # 히스토리 로그인 폼 (signin/history — 이메일 미표시, 비밀번호만 요구)
+            print("히스토리 로그인 페이지 감지 -> 비밀번호만 입력")
 
         pwd_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_INPUT))
         pwd_input.clear()
         pwd_input.send_keys(password)
         self.driver.find_element(*self.SUBMIT_BUTTON).click()
 
-        self.wait.until(EC.invisibility_of_element_located(self.EMAIL_INPUT))
+        WebDriverWait(self.driver, 20).until(
+            EC.invisibility_of_element_located(self.PASSWORD_INPUT)
+        )
         print(f"로그인 성공: {email}")
 
     # ========== 페이지 이동 ==========
