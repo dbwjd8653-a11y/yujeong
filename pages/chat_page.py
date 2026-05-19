@@ -22,13 +22,14 @@ class ChatPage(BasePage):
     # '새 대화' LNB 버튼 (anchor 태그, href="/ai-helpy-chat")
     LNB_NEW_CHAT = (
         By.XPATH,
-        "//span[normalize-space(text())='새 대화']/ancestor::a",
+        "//span[normalize-space(text())='새 대화' or normalize-space(text())='New Chat']/ancestor::a",
     )
 
     # '검색' LNB 버튼 (div[role='button'])
     LNB_SEARCH = (
         By.XPATH,
-        "//span[normalize-space(text())='검색']/ancestor::*[@role='button' or local-name()='a'][1]",
+        "//span[normalize-space(text())='검색' or normalize-space(text())='Search']"
+        "/ancestor::*[@role='button' or local-name()='a'][1]",
     )
 
     # LNB 기존 대화 목록 아이템 (chats 경로를 가진 링크)
@@ -54,7 +55,7 @@ class ChatPage(BasePage):
     # 메시지 입력 textarea
     CHAT_INPUT = (
         By.CSS_SELECTOR,
-        "textarea[name='input'][placeholder='메시지를 입력해 주세요.']",
+        "textarea[name='input']",
     )
 
     # 전송 버튼 (화살표)
@@ -66,7 +67,7 @@ class ChatPage(BasePage):
     # '생각 중...' 로딩 텍스트 (AI 응답 생성 중 표시)
     THINKING_INDICATOR = (
         By.XPATH,
-        "//*[contains(text(),'생각 중')]",
+        "//*[contains(text(),'생각 중') or contains(text(),'Thinking')]",
     )
 
     # AI 응답 완료 컨테이너 (data-with-artifact 속성)

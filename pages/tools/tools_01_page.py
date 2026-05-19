@@ -18,23 +18,24 @@ class SpecialtyPage(BaseToolPage):
 
     GRADE_COMBOBOX = (
         By.XPATH,
-        "//label[contains(text(),'학년')]/following-sibling::div//div[@role='combobox']",
+        "//label[contains(text(),'학년') or contains(text(),'Grade')]/following-sibling::div//div[@role='combobox']",
     )
-    SUBJECT_INPUT = (By.CSS_SELECTOR, "input[placeholder*='과목']")
-    UNIT_INPUT    = (By.CSS_SELECTOR, "input[placeholder*='단원']")
+    SUBJECT_INPUT = (By.CSS_SELECTOR, "input[placeholder*='과목'], input[placeholder*='Subject']")
+    UNIT_INPUT    = (By.CSS_SELECTOR, "input[placeholder*='단원'], input[placeholder*='Unit']")
 
     # 키워드 모달 — 학습 태도 아코디언
     STUDY_ATTITUDE_ACCORDION = (
         By.XPATH,
         "//*[@role='dialog']//div[contains(@class,'MuiAccordionSummary-root')"
-        " and contains(normalize-space(.), '학습 태도')]",
+        " and (contains(normalize-space(.), '학습 태도') or contains(normalize-space(.), 'Learning Attitude'))]",
     )
     # 수업 집중도 높음 칩
     CONCENTRATION_CHIP = (
         By.XPATH,
         "//*[@role='dialog']//div[contains(@class,'MuiChip-root')"
         " and contains(@class,'MuiChip-outlined')]"
-        "[.//span[contains(@class,'MuiChip-label') and text()='수업 집중도 높음']]",
+        "[.//span[contains(@class,'MuiChip-label') and "
+        "(text()='수업 집중도 높음' or contains(text(),'Concentration') or contains(text(),'Focus'))]]",
     )
 
     # ========== 수업 정보 입력 — 학년/과목/단원 ==========

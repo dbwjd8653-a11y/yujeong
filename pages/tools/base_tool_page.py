@@ -26,51 +26,53 @@ class BaseToolPage(BasePage):
     PASSWORD_INPUT = (By.CSS_SELECTOR, "input[type='password']")
     SUBMIT_BUTTON  = (By.CSS_SELECTOR, "button[type='submit']")
 
-    RESET_BUTTON   = (By.XPATH, "//button[contains(text(),'입력 내역 초기화')]")
-    CONFIRM_RESET  = (By.XPATH, "//*[@role='dialog']//button[contains(text(),'초기화 하기')]")
+    RESET_BUTTON   = (By.XPATH, "//button[contains(text(),'입력 내역 초기화') or contains(text(),'Reset')]")
+    CONFIRM_RESET  = (By.XPATH, "//*[@role='dialog']//button[contains(text(),'초기화 하기') or contains(text(),'Reset')]")
 
-    CLASS_INFO_TAB = (By.XPATH, "//button[@role='tab' and contains(text(),'수업 정보 입력')]")
+    CLASS_INFO_TAB = (By.XPATH, "//button[@role='tab' and (contains(text(),'수업 정보 입력') or contains(text(),'Class Info'))]")
 
     SCHOOL_COMBOBOX = (
         By.XPATH,
-        "//label[contains(text(),'학교급')]/following-sibling::div//div[@role='combobox']",
+        "//label[contains(text(),'학교급') or contains(text(),'School')]/following-sibling::div//div[@role='combobox']",
     )
 
-    NEXT_BUTTON    = (By.XPATH, "//button[not(@disabled) and text()='다음으로']")
-    MODIFY_BUTTON  = (By.XPATH, "//*[@role='dialog']//button[contains(text(),'수정하기')]")
+    NEXT_BUTTON    = (By.XPATH, "//button[not(@disabled) and (text()='다음으로' or text()='Next')]")
+    MODIFY_BUTTON  = (By.XPATH, "//*[@role='dialog']//button[contains(text(),'수정하기') or contains(text(),'Modify') or contains(text(),'Edit')]")
 
-    STUDENT_TAB    = (By.XPATH, "//*[contains(text(),'학생 정보 입력 및 생성')]")
+    STUDENT_TAB    = (By.XPATH, "//*[contains(text(),'학생 정보 입력 및 생성') or contains(text(),'Student Info')]")
 
     STUDENT_NAME_PLACEHOLDER = (
         By.XPATH,
-        "//p[@role='button' and text()='이름을 입력해주세요.']",
+        "//p[@role='button' and (text()='이름을 입력해주세요.' or text()='Enter name' or text()='Please enter a name')]",
     )
     ADD_STUDENT_BUTTON = (
         By.XPATH,
-        "//button[contains(@class,'MuiButton-outlined') and contains(text(),'학생 추가')]",
+        "//button[contains(@class,'MuiButton-outlined') and (contains(text(),'학생 추가') or contains(text(),'Add Student'))]",
     )
     FOOTER_NAME_PLACEHOLDER = (
         By.XPATH,
-        "//tr[contains(@class,'MuiTableRow-footer')]//p[@role='button' and text()='이름을 입력해주세요.']",
+        "//tr[contains(@class,'MuiTableRow-footer')]//p[@role='button' and "
+        "(text()='이름을 입력해주세요.' or text()='Enter name' or text()='Please enter a name')]",
     )
     FOOTER_NAME_INPUT = (
         By.XPATH,
-        "//tr[contains(@class,'MuiTableRow-footer')]//textarea[not(@aria-hidden='true') and @placeholder='이름을 입력해주세요.']",
+        "//tr[contains(@class,'MuiTableRow-footer')]//textarea[not(@aria-hidden='true')]",
     )
 
     KEYWORD_BUTTON = (
         By.XPATH,
         "//tr[contains(@class,'MuiTableRow-footer')]//button[contains(@class,'css-mowt55')]",
     )
-    KEYWORD_SAVE   = (By.XPATH, "//*[@role='dialog']//button[text()='저장']")
+    KEYWORD_SAVE   = (By.XPATH, "//*[@role='dialog']//button[text()='저장' or text()='Save']")
 
-    SEARCH_INPUT   = (By.XPATH, "//input[@placeholder='학생 이름 검색']")
-    RESULT_BUTTON  = (By.XPATH, "//button[contains(text(),'생성 결과 받기')]")
+    SEARCH_INPUT   = (By.XPATH, "//input[contains(@placeholder,'학생 이름 검색') or contains(@placeholder,'Search student') or contains(@placeholder,'검색')]")
+    RESULT_BUTTON  = (By.XPATH, "//button[contains(text(),'생성 결과 받기') or contains(text(),'Get Result') or contains(text(),'Download Result')]")
 
     # '생성 결과 받기' 클릭 후 확인 모달의 '다운받기' 버튼
     DOWNLOAD_CONFIRM_BUTTON = (
         By.XPATH,
-        "//div[contains(@class,'MuiDialogActions-root')]//button[normalize-space(text())='다운받기']",
+        "//div[contains(@class,'MuiDialogActions-root')]//button"
+        "[normalize-space(text())='다운받기' or normalize-space(text())='Download']",
     )
 
     # LNB '도구' 탭 링크

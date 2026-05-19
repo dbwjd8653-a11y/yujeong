@@ -28,7 +28,7 @@ class AgentDetailPage(BasePage):
     # 채팅 입력창
     CHAT_INPUT = (
         By.CSS_SELECTOR,
-        "textarea[placeholder='메시지를 입력해 주세요.']",
+        "textarea[name='input']",
     )
 
     # 전송 버튼 (화살표 아이콘 버튼 — submit)

@@ -19,12 +19,13 @@ class BehaviorPage(BaseToolPage):
     # 키워드 모달 — 인성·태도 아코디언
     CHARACTER_ACCORDION = (
         By.XPATH,
-        "//div[contains(@class,'MuiAccordionSummary-root') and contains(.,'인성')]",
+        "//div[contains(@class,'MuiAccordionSummary-root') and (contains(.,'인성') or contains(.,'Character'))]",
     )
     # 예의 바르고 배려심 있음 칩
     COURTESY_CHIP = (
         By.XPATH,
-        "//div[contains(@class,'MuiChip-outlined') and contains(.,'예의 바르고 배려심 있음')]",
+        "//div[contains(@class,'MuiChip-outlined') and "
+        "(contains(.,'예의 바르고 배려심 있음') or contains(.,'Polite') or contains(.,'Considerate'))]",
     )
 
     # ========== 키워드 선택 — 인성·태도 ==========
