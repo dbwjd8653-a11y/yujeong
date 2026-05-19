@@ -63,6 +63,7 @@ def _make_tools_driver(browser: str):
         )
     else:  # firefox (기본)
         opts = FirefoxOptions()
+        opts.set_preference("browser.privatebrowsing.autostart", True)  # 히스토리 로그인 방지
         opts.set_preference("browser.download.folderList", 2)
         opts.set_preference("browser.download.dir", DOWNLOAD_DIR)
         opts.set_preference("browser.download.useDownloadDir", True)
