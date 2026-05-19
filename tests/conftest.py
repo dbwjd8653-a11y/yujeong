@@ -1,5 +1,5 @@
 # tests/conftest.py
-# tests/ 폴더 전용 pytest fixture 정의
+# tools 테스트 전용 fixture (다운로드 디렉터리 설정 포함)
 
 import logging
 import os
@@ -7,11 +7,8 @@ from datetime import datetime
 
 import pytest
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.firefox.service import Service as FirefoxService
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.firefox import GeckoDriverManager
 
 _CACHED_GECKO = r"C:\Users\Admin\.wdm\drivers\geckodriver\win64\v0.36.0\geckodriver.exe"
