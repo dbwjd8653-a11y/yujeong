@@ -96,22 +96,14 @@ class BaseToolPage(BasePage):
 
     def login(self):
         self.driver.get(self.BASE_URL)
-        # 비밀번호 입력란 대기 (일반 로그인 / 히스토리 로그인 모두 존재)
-        WebDriverWait(self.driver, 15).until(
-            EC.presence_of_element_located(self.PASSWORD_INPUT)
-        )
-        # 이메일 입력란은 히스토리 로그인 페이지에 없을 수 있음
-        try:
-            email_el = WebDriverWait(self.driver, 3).until(
-                EC.presence_of_element_located(self.EMAIL_INPUT)
-            )
-            email_el.send_keys(self.LOGIN_EMAIL)
-        except Exception:
-            pass  # 히스토리 페이지: 이메일 자동 입력됨
+        self.wait.until(EC.presence_of_element_located(self.EMAIL_INPUT))
+        self.driver.find_element(*self.EMAIL_INPUT).send_keys(self.LOGIN_EMAIL)
         self.driver.find_element(*self.PASSWORD_INPUT).send_keys(self.LOGIN_PASSWORD)
-        self.driver.find_element(*self.SUBMIT_BUTTON).click()
-        # staleness_of 대신 실제 리다이렉트 완료까지 대기
-        WebDriverWait(self.driver, 30).until(
+        submit = self.driver.find_element(*self.SUBMIT_BUTTON)
+        submit.click()
+        self.wait.until(EC.staleness_of(submit))
+        # 리다이렉트가 qaproject로 완전히 완료될 때까지 추가 대기
+        WebDriverWait(self.driver, 20).until(
             EC.url_contains("qaproject.elice.io")
         )
         print("로그인 성공")
