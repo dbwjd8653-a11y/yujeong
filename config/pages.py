@@ -8,10 +8,17 @@ from pages.signup_page import SignupPage
 from pages.chat_page import ChatPage
 from pages.token_page import TokenPage
 from pages.tools.base_tool_page import BaseToolPage
+<<<<<<< Updated upstream
 from pages.tools.tools_01_page import SpecialtyPage
 from pages.tools.tools_02_page import BehaviorPage
 from pages.tools.tools_05_page import Tool5Page
 from pages.tools.tools_06_page import Tool6Page
+=======
+from pages.tools.tools_specialty_page import SpecialtyPage
+from pages.tools.tools_behavior_page import BehaviorPage
+from pages.tools.tools_05_quiz import Tool5Page
+from pages.tools.tools_06_deep import Tool6Page
+>>>>>>> Stashed changes
 from pages.tools.lesson_plan_page import LessonPlanPage
 from pages.tools.ppt_page import PPTPage
 from pages.agents.agents_page import AgentsPage
