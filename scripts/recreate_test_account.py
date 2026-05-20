@@ -10,8 +10,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from config.driver_factory import make_simple_firefox_driver
-from config.config import SIGNUP_URL
+from config.browser_factory import make_simple_firefox_driver
+from config.settings import SIGNUP_URL
 
 EMAIL    = "test_dummy@naver.com"
 PASSWORD = "test@1234"

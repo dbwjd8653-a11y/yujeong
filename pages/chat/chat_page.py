@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from pages.base_page import BasePage
-from config.config import BASE_URL
+from config.settings import BASE_URL
 
 
 class ChatPage(BasePage):

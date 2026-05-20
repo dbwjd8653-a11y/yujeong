@@ -6,7 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 
-from config.config import LOGIN_URL, TEST_USER, SHORT_WAIT, DEFAULT_WAIT
+from config.settings import LOGIN_URL, TEST_USER, SHORT_WAIT, DEFAULT_WAIT
 
 
 def do_login(driver, wait, user: dict = None):

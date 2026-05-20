@@ -1,16 +1,17 @@
-# config/driver_factory.py
+# config/browser_factory.py
 # 브라우저 드라이버 생성 팩토리
 
-import os
 import logging
+import os
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.firefox import GeckoDriverManager
 
-from config.config import DEFAULT_WAIT, DOWNLOAD_DIR
+from config.settings import DEFAULT_WAIT, DOWNLOAD_DIR
 
 _CACHED_GECKO = r"C:\Users\Admin\.wdm\drivers\geckodriver\win64\v0.36.0\geckodriver.exe"
+
 
 def _gecko_path() -> str:
     if os.path.exists(_CACHED_GECKO):
@@ -37,26 +38,14 @@ def make_firefox_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Firefox:
     return driver
 
 
-def make_simple_firefox_driver():
-    """
-    간단한 Firefox WebDriver 생성 함수
-    """
-
+def make_simple_firefox_driver() -> webdriver.Firefox:
+    """다운로드 설정 없는 기본 Firefox 드라이버 생성"""
     try:
-        # Firefox 브라우저 실행
         driver = webdriver.Firefox()
-
-        # 요소 탐색 시 최대 대기 시간 설정
         driver.implicitly_wait(DEFAULT_WAIT)
-
         return driver
-
     except Exception:
-
-        logging.exception(
-            "❌ Firefox Driver 생성 실패"
-        )
-
+        logging.exception("❌ Firefox Driver 생성 실패")
         raise
 
 
