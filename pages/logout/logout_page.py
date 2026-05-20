@@ -3,9 +3,8 @@
 BasePage를 상속받아 공통 동작을 재사용합니다.
 """
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from config.selenium_imports import By, TimeoutException
+
 from pages.base_page import BasePage
 
 

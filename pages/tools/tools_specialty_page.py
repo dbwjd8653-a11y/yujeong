@@ -2,10 +2,10 @@
 # '세부 특기사항' 도구 전용 Page 클래스
 # BaseToolPage에 없는 학년/과목/단원 입력 + 학습 태도 키워드 선택 로직을 담당
 
-from selenium.webdriver.common.by import By
+
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+
+from config.selenium_imports import By, EC, WebDriverWait
 
 from pages.tools.base_tool_page import BaseToolPage
 

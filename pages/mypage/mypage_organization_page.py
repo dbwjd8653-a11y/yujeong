@@ -2,9 +2,7 @@
 # 마이페이지 > 내 기관 전용 Page 클래스
 # FHC-081(UI 확인) / FHC-082(qaproject 링크) / FHC-083(헬프 센터 링크)
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from config.selenium_imports import By, EC, WebDriverWait
 
 from pages.mypage.mypage_page import MyPage
 

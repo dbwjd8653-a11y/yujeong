@@ -6,9 +6,8 @@ BasePage를 상속받아 공통 동작을 재사용합니다.
 한글 버전 로그인 페이지(lang=ko-KR) 기준으로 구현되었습니다.
 """
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from config.selenium_imports import By, EC, TimeoutException
+
 from pages.base_page import BasePage
 
 

@@ -2,11 +2,11 @@
 # 프로젝트 내 모든 Page 클래스 단일 임포트 지점
 
 from pages.base_page import BasePage
-from pages.login_page import LoginPage
-from pages.logout_page import LogoutPage
-from pages.signup_page import SignupPage
-from pages.chat_page import ChatPage
-from pages.token_page import TokenPage
+from pages.login.login_page import LoginPage
+from pages.logout.logout_page import LogoutPage
+from pages.signup.signup_page import SignupPage
+from pages.chat.chat_page import ChatPage
+from pages.token.token_page import TokenPage
 from pages.tools.base_tool_page import BaseToolPage
 from pages.tools.tools_specialty_page import SpecialtyPage
 from pages.tools.tools_behavior_page import BehaviorPage

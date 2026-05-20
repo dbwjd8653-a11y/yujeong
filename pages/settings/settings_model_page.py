@@ -1,6 +1,7 @@
 import time
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+
+from config.selenium_imports import By, EC
+
 from selenium.webdriver.common.keys import Keys
 
 from pages.settings.settings_general_page import SettingsPage
