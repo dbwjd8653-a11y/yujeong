@@ -1,0 +1,6 @@
+# import한 환경이 달라서 환경 맞추고 싶을 때
+# pip install -r requirements.txt
+pytest
+selenium
+webdriver-manager
+pytest-html
