@@ -3,7 +3,7 @@
 
 import logging
 import pytest
-from pages.signup.signup_page import SignupPage
+from pages.signup_page import SignupPage
 
 logger = logging.getLogger(__name__)
 

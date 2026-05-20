@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from pages.token.token_page import TokenPage
+from pages.token_page import TokenPage
 from pages.tools.base_tool_page import BaseToolPage
 
 TEST_MESSAGE = "안녕하세요, 토큰 사용량 테스트입니다."
