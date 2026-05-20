@@ -1,21 +1,22 @@
 # tests/conftest.py
-# tools 테스트 전용 fixture (다운로드 디렉터리 설정 포함)
+# 통합 conftest — 팀 전체 공통 fixture
 
 import logging
 import os
+import re
 from datetime import datetime
 
 import pytest
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
 
-_CACHED_GECKO = r"C:\Users\Admin\.wdm\drivers\geckodriver\win64\v0.36.0\geckodriver.exe"
+from common.config import DEFAULT_WAIT, DOWNLOAD_DIR
+from common.driver_factory import make_firefox_driver, make_simple_firefox_driver
+from common.helpers import do_login, close_token_banner
 
 logger = logging.getLogger(__name__)
 
 
+# ── 로깅 설정 ──────────────────────────────────────────────────────
 def pytest_configure(config):
     os.makedirs("logs", exist_ok=True)
     log_file = f"logs/test_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
@@ -33,21 +34,20 @@ def pytest_configure(config):
     logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
-def _gecko_driver_path() -> str:
-    if os.path.exists(_CACHED_GECKO):
-        return _CACHED_GECKO
-    return GeckoDriverManager().install()
+# ── 테스트 실행 순서 정렬 (FHC 번호 오름차순) ─────────────────────
+def pytest_collection_modifyitems(items):
+    """FHC_NNN 번호 기준으로 전체 테스트를 오름차순 정렬"""
+    def _fhc_key(item):
+        m = re.search(r'FHC_(\d+)', item.nodeid)
+        if m:
+            return int(m.group(1))
+        if 'recreate_account_after_withdraw' in item.nodeid:
+            return 86.5  # FHC-086(탈퇴) 직후, FHC-087 이전에 실행
+        return 9999
+    items.sort(key=_fhc_key)
 
 
-BASE_URL     = "https://qaproject.elice.io/ai-helpy-chat"
-LOGIN_URL    = (
-    "https://accounts.elice.io/accounts/signin/me"
-    "?continue_to=https%3A%2F%2Fqaproject.elice.io%2Fai-helpy-chat"
-    "&lang=ko-KR&org=qaproject"
-)
-DOWNLOAD_DIR = r"C:\Users\Admin\Downloads"
-
-
+# ── CLI 옵션 ───────────────────────────────────────────────────────
 def pytest_addoption(parser):
     parser.addoption(
         "--browser",
@@ -58,52 +58,77 @@ def pytest_addoption(parser):
     )
 
 
-def _make_tools_driver(browser: str):
-    if browser == "chrome":
-        from selenium.webdriver.chrome.options import Options as ChromeOptions
-        from selenium.webdriver.chrome.service import Service as ChromeService
-        from webdriver_manager.chrome import ChromeDriverManager
+# ── 브라우저 fixtures (테스트마다 독립 실행) ───────────────────────
 
-        opts = ChromeOptions()
-        opts.add_experimental_option("prefs", {
-            "download.default_directory": DOWNLOAD_DIR,
-            "download.prompt_for_download": False,
-            "plugins.always_open_pdf_externally": True,
-        })
-        _driver = webdriver.Chrome(
-            service=ChromeService(ChromeDriverManager().install()),
-            options=opts,
-        )
-    else:
-        opts = FirefoxOptions()
-        opts.set_preference("browser.download.folderList", 2)
-        opts.set_preference("browser.download.dir", DOWNLOAD_DIR)
-        opts.set_preference("browser.download.useDownloadDir", True)
-        opts.set_preference(
-            "browser.helperApps.neverAsk.saveToDisk",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        )
-        _driver = webdriver.Firefox(
-            service=FirefoxService(_gecko_driver_path()),
-            options=opts,
-        )
+@pytest.fixture
+def driver():
+    """테스트마다 새 Firefox 브라우저 실행"""
+    _driver = make_simple_firefox_driver()
+    yield _driver
+    _driver.quit()
 
-    _driver.implicitly_wait(10)
-    logger.info(f"브라우저: {browser.upper()} 실행 완료")
-    return _driver
+
+@pytest.fixture
+def wait(driver):
+    return WebDriverWait(driver, DEFAULT_WAIT)
+
+
+@pytest.fixture
+def login(driver, wait):
+    """로그인 완료 상태 반환 — (driver, wait) 튜플"""
+    do_login(driver, wait)
+    return driver, wait
+
+
+# ── 브라우저 fixtures (모듈 전체 공유) ────────────────────────────
+
+@pytest.fixture(scope="module")
+def driver_module():
+    """모듈 전체 공유 Firefox 브라우저"""
+    _driver = make_simple_firefox_driver()
+    yield _driver
+    _driver.quit()
 
 
 @pytest.fixture(scope="module")
+def wait_module(driver_module):
+    return WebDriverWait(driver_module, DEFAULT_WAIT)
+
+
+@pytest.fixture(scope="module")
+def login_module(driver_module):
+    """모듈 전체 공유 로그인 상태 — (driver, wait) 튜플"""
+    _wait = WebDriverWait(driver_module, DEFAULT_WAIT)
+    do_login(driver_module, _wait)
+    close_token_banner(driver_module, _wait)
+    return driver_module, _wait
+
+
+# ── tools 전용 fixtures (다운로드 디렉터리 설정 포함) ─────────────
+
+@pytest.fixture(scope="module")
 def tools_driver_module(request):
+    """tools 테스트 전용 모듈 공유 브라우저 (다운로드 설정 포함)"""
     browser = request.config.getoption("--browser")
-    _driver = _make_tools_driver(browser)
+    if browser == "chrome":
+        from common.driver_factory import make_chrome_driver
+        _driver = make_chrome_driver(DOWNLOAD_DIR)
+    else:
+        _driver = make_firefox_driver(DOWNLOAD_DIR)
+    logger.info(f"브라우저: {browser.upper()} 실행 완료")
     yield _driver
     _driver.quit()
 
 
 @pytest.fixture
 def tools_driver(request):
+    """tools 테스트 전용 독립 브라우저 (다운로드 설정 포함)"""
     browser = request.config.getoption("--browser")
-    _driver = _make_tools_driver(browser)
+    if browser == "chrome":
+        from common.driver_factory import make_chrome_driver
+        _driver = make_chrome_driver(DOWNLOAD_DIR)
+    else:
+        _driver = make_firefox_driver(DOWNLOAD_DIR)
+    logger.info(f"브라우저: {browser.upper()} 실행 완료")
     yield _driver
     _driver.quit()

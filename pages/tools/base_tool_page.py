@@ -11,19 +11,16 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from pages.base_page import BasePage
+from common.config import BASE_URL, LOGIN_URL, MYPAGE_USER
 
 
 class BaseToolPage(BasePage):
 
-    BASE_URL   = "https://qaproject.elice.io/ai-helpy-chat"
-    TOOLS_URL  = "https://qaproject.elice.io/ai-helpy-chat/tools"
-    LOGIN_URL  = (
-        "https://accounts.elice.io/accounts/signin/me"
-        "?continue_to=https%3A%2F%2Fqaproject.elice.io%2Fai-helpy-chat"
-        "&lang=ko-KR&org=qaproject"
-    )
-    LOGIN_EMAIL    = "qa5team3-02@elicer.com"
-    LOGIN_PASSWORD = "Mdk@02169630"
+    BASE_URL       = BASE_URL
+    TOOLS_URL      = "https://qaproject.elice.io/ai-helpy-chat/tools"
+    LOGIN_URL      = LOGIN_URL
+    LOGIN_EMAIL    = MYPAGE_USER["id"]
+    LOGIN_PASSWORD = MYPAGE_USER["pw"]
 
     # ========== Locators ==========
 
@@ -96,8 +93,8 @@ class BaseToolPage(BasePage):
 
     # ========== 초기화 ==========
 
-    def __init__(self, driver):
-        super().__init__(driver)
+    def __init__(self, driver, wait_or_timeout=10):
+        super().__init__(driver, wait_or_timeout)
 
     # ========== 로그인 ==========
 

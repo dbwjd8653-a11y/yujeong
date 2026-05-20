@@ -25,12 +25,6 @@ class MyPage08(MyPage):
 
     # ========== FHC-087/088 공통: 로그아웃 ==========
 
-    LOGIN_URL = (
-        "https://accounts.elice.io/accounts/signin/me"
-        "?continue_to=https%3A%2F%2Fqaproject.elice.io%2Fai-helpy-chat"
-        "&lang=ko-KR&org=qaproject"
-    )
-
     def logout_via_profile_menu(self):
         """accounts.elice.io 우상단 아바타 클릭 → 로그아웃 메뉴 클릭"""
         # accounts.elice.io로 이동 (헤더에 아바타 버튼 있음)

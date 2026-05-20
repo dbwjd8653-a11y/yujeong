@@ -26,7 +26,7 @@ class MyPage(BasePage):
     )
 
     # ========== 계정 정보 ==========
-    MAIN_EMAIL    = "test-dummy@naver.com"
+    MAIN_EMAIL    = "test_dummy@naver.com"
     MAIN_PASSWORD = "test@1234"
 
     # ========== Locators — 로그인 ==========
@@ -56,50 +56,23 @@ class MyPage(BasePage):
     # ========== 로그인 ==========
 
     def login(self, email: str = None, password: str = None):
-        """qaproject SSO 로그인 (기본: MAIN_EMAIL/MAIN_PASSWORD)
-        로그아웃 후 signin/history 페이지(비밀번호만 요구)도 처리
-        """
+        """qaproject SSO 로그인 (기본: MAIN_EMAIL/MAIN_PASSWORD)"""
+        from common.config import LOGIN_URL
         email    = email    or self.MAIN_EMAIL
         password = password or self.MAIN_PASSWORD
 
-        self.driver.get(self.CHAT_URL)
-
-        # 이메일 입력란 또는 비밀번호 입력란이 나타날 때까지 대기
-        try:
-            WebDriverWait(self.driver, 10).until(
-                lambda d: (
-                    d.find_elements(*self.EMAIL_INPUT)
-                    or d.find_elements(*self.PASSWORD_INPUT)
-                )
-            )
-        except Exception:
-            self.logger.info("로그인 폼 없음 → 이미 로그인된 상태")
-            return
-
-        email_inputs = self.driver.find_elements(*self.EMAIL_INPUT)
-
-        if email_inputs:
-            # 일반 로그인 폼 (이메일 + 비밀번호)
-            email_inputs[0].clear()
-            email_inputs[0].send_keys(email)
-            try:
-                WebDriverWait(self.driver, 2).until(
-                    EC.visibility_of_element_located(self.PASSWORD_INPUT)
-                )
-            except Exception:
-                self.driver.find_element(*self.SUBMIT_BUTTON).click()
-                self.wait.until(EC.visibility_of_element_located(self.PASSWORD_INPUT))
-        else:
-            # 히스토리 로그인 폼 (signin/history — 이메일 미표시, 비밀번호만 요구)
-            self.logger.info("히스토리 로그인 페이지 감지 -> 비밀번호만 입력")
-
-        pwd_input = self.wait.until(EC.visibility_of_element_located(self.PASSWORD_INPUT))
-        pwd_input.clear()
-        pwd_input.send_keys(password)
-        self.driver.find_element(*self.SUBMIT_BUTTON).click()
-
+        self.driver.get(LOGIN_URL)
+        self.wait.until(EC.presence_of_element_located(self.EMAIL_INPUT))
+        self.driver.find_element(*self.EMAIL_INPUT).send_keys(email)
+        self.driver.find_element(*self.PASSWORD_INPUT).send_keys(password)
+        submit = self.driver.find_element(*self.SUBMIT_BUTTON)
+        submit.click()
+        self.wait.until(EC.staleness_of(submit))
+        WebDriverWait(self.driver, 30).until(EC.url_contains("qaproject.elice.io"))
         WebDriverWait(self.driver, 10).until(
-            EC.invisibility_of_element_located(self.PASSWORD_INPUT)
+            EC.presence_of_element_located(
+                (By.XPATH, "//a[contains(@href,'ai-helpy-chat')]")
+            )
         )
         self.logger.info(f"로그인 성공: {email}")
 
@@ -107,10 +80,10 @@ class MyPage(BasePage):
 
     def navigate_to_account(self):
         self.driver.get(self.ACCOUNT_URL)
-        self.wait.until(EC.url_contains("members/account"))
-        self.wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, "button.MuiIconButton-root")
-        ))
+        WebDriverWait(self.driver, 30).until(EC.url_contains("members/account"))
+        WebDriverWait(self.driver, 30).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "button.MuiIconButton-root"))
+        )
         self.logger.info("계정 관리 페이지 이동 완료")
 
     def navigate_to_org(self):

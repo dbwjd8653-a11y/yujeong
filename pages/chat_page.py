@@ -11,11 +11,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from pages.base_page import BasePage
+from common.config import BASE_URL
 
 
 class ChatPage(BasePage):
 
-    BASE_URL = "https://qaproject.elice.io/ai-helpy-chat"
+    BASE_URL = BASE_URL
 
     # ========== LNB Locators ==========
 
