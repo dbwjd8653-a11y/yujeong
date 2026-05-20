@@ -1,4 +1,4 @@
-# pages/mypage/mypage_08_page.py
+# pages/mypage/mypage_language_page.py
 # 마이페이지 > 언어 설정 전용 Page 클래스
 # FHC-086(언어 변경) / FHC-087(로그아웃 후 언어 확인) / FHC-088(재로그인 후 언어 유지)
 

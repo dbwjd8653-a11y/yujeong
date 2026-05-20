@@ -4,7 +4,7 @@
 
 import pytest
 
-from pages.mypage.mypage_06_page import MyPage06
+from pages.mypage.mypage_withdraw_page import MyPage06
 
 MAIN_EMAIL    = "test_dummy@naver.com"
 MAIN_PASSWORD = "test@1234"

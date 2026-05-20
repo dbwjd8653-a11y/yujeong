@@ -4,7 +4,7 @@
 import time
 import pytest
 
-from pages.mypage.mypage_08_page import MyPage08
+from pages.mypage.mypage_language_page import MyPage08
 
 
 # ── fixture ────────────────────────────────────────────────────────

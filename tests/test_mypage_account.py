@@ -3,7 +3,7 @@
 
 import pytest
 
-from pages.mypage.mypage_05_page import MyPage05
+from pages.mypage.mypage_account_page import MyPage05
 
 MAIN_EMAIL    = "test_dummy@naver.com"
 MAIN_PASSWORD = "test@1234"

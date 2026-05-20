@@ -3,7 +3,7 @@
 
 import pytest
 
-from pages.tools.tools_01_page import SpecialtyPage
+from pages.tools.tools_specialty_page import SpecialtyPage
 
 SCHOOL_LEVEL  = "중학교"
 GRADE         = "3학년"
