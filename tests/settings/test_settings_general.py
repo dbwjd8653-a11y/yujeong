@@ -1,7 +1,7 @@
 """[test_settings_01] 일반"""
 
 import pytest
-from pages.settings_page import SettingsPage
+from pages.settings.settings_general_page import SettingsPage
 
 
 @pytest.fixture(scope="module")

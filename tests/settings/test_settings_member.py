@@ -2,7 +2,7 @@
 
 import pytest
 import time
-from pages.settings_05_page import Settings05Page
+from pages.settings.settings_member_page import Settings05Page
 
 
 @pytest.fixture(scope="module")
