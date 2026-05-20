@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
-from pages.settings.settings_general_page import SettingsPage
+from pages.settings_page import SettingsPage
 
 
 class Settings03Page(SettingsPage):

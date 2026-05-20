@@ -1,7 +1,7 @@
 """[test_settings_02] 이용 내역"""
 
 import pytest
-from pages.settings.settings_useage_page import Settings02Page
+from pages.settings_02_page import Settings02Page
 
 
 @pytest.fixture(scope="module")

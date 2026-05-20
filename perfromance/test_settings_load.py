@@ -1,7 +1,7 @@
 """[tc_01] 설정 > 탭 클릭 부하 테스트"""
 
 import pytest
-from pages.performance.settings_load_page import Tc01Page
+from pages.tc_01_page import Tc01Page
 
 
 @pytest.fixture(scope="module")
