@@ -1,6 +1,7 @@
 # common/driver_factory.py
 # 브라우저 드라이버 생성 팩토리
 
+import logging
 import os
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
@@ -39,9 +40,13 @@ def make_firefox_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Firefox:
 
 def make_simple_firefox_driver() -> webdriver.Firefox:
     """다운로드 설정 없는 기본 Firefox 드라이버 생성"""
-    driver = webdriver.Firefox()
-    driver.implicitly_wait(DEFAULT_WAIT)
-    return driver
+    try:
+        driver = webdriver.Firefox()
+        driver.implicitly_wait(DEFAULT_WAIT)
+        return driver
+    except Exception:
+        logging.exception("❌ Firefox Driver 생성 실패")
+        raise
 
 
 def make_chrome_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Chrome:
