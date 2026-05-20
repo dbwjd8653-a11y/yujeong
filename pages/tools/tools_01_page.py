@@ -1,0 +1,125 @@
+# pages/tools/tools_01_page.py
+# '세부 특기사항' 도구 전용 Page 클래스
+# BaseToolPage에 없는 학년/과목/단원 입력 + 학습 태도 키워드 선택 로직을 담당
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
+from pages.tools.base_tool_page import BaseToolPage
+
+
+class SpecialtyPage(BaseToolPage):
+
+    TOOL_NAME = "세부 특기사항"
+
+    # ========== Locators ==========
+
+    GRADE_COMBOBOX = (
+        By.XPATH,
+        "//label[contains(text(),'학년') or contains(text(),'Grade')]/following-sibling::div//div[@role='combobox']",
+    )
+    SUBJECT_INPUT = (By.CSS_SELECTOR, "input[placeholder*='과목'], input[placeholder*='Subject']")
+    UNIT_INPUT    = (By.CSS_SELECTOR, "input[placeholder*='단원'], input[placeholder*='Unit']")
+
+    # 키워드 모달 — 학습 태도 아코디언
+    STUDY_ATTITUDE_ACCORDION = (
+        By.XPATH,
+        "//*[@role='dialog']//div[contains(@class,'MuiAccordionSummary-root')"
+        " and (contains(normalize-space(.), '학습 태도') or contains(normalize-space(.), 'Learning Attitude'))]",
+    )
+    # 수업 집중도 높음 칩
+    CONCENTRATION_CHIP = (
+        By.XPATH,
+        "//*[@role='dialog']//div[contains(@class,'MuiChip-root')"
+        " and contains(@class,'MuiChip-outlined')]"
+        "[.//span[contains(@class,'MuiChip-label') and "
+        "(text()='수업 집중도 높음' or contains(text(),'Concentration') or contains(text(),'Focus'))]]",
+    )
+
+    # ========== 수업 정보 입력 — 학년/과목/단원 ==========
+
+    def select_grade(self, grade: str):
+        self.wait.until(EC.element_to_be_clickable(self.GRADE_COMBOBOX)).click()
+        self.wait.until(
+            EC.element_to_be_clickable(
+                (By.XPATH, f"//li[@role='option' and normalize-space(text())='{grade}']")
+            )
+        ).click()
+        self.wait_backdrop_gone()
+        self.logger.info(f"학년 '{grade}' 선택 완료")
+
+    def enter_subject(self, subject: str):
+        subject_input = self.wait.until(EC.element_to_be_clickable(self.SUBJECT_INPUT))
+        subject_input.click()
+        subject_input.send_keys(Keys.CONTROL + "a")
+        subject_input.send_keys(Keys.DELETE)
+        subject_input.send_keys(subject)
+        try:
+            WebDriverWait(self.driver, 2).until(
+                EC.element_to_be_clickable(
+                    (By.XPATH, f"//li[@role='option' and normalize-space(text())='{subject}']")
+                )
+            ).click()
+            self.logger.info(f"과목 '{subject}' 목록에서 선택 완료")
+        except Exception:
+            subject_input.send_keys(Keys.ESCAPE)
+            self.logger.info(f"과목 '{subject}' 직접 입력 완료")
+
+    def enter_unit(self, unit: str):
+        unit_input = self.wait.until(EC.element_to_be_clickable(self.UNIT_INPUT))
+        unit_input.click()
+        unit_input.send_keys(Keys.CONTROL + "a")
+        unit_input.send_keys(Keys.DELETE)
+        unit_input.send_keys(unit)
+        self.logger.info(f"단원 '{unit}' 입력 완료")
+
+    # ========== 키워드 선택 — 학습 태도 ==========
+
+    def select_study_attitude_keyword(self):
+        """학습 태도 아코디언 → 수업 집중도 높음 칩 선택"""
+        self.js_click(
+            self.wait.until(EC.presence_of_element_located(self.STUDY_ATTITUDE_ACCORDION))
+        )
+        self.logger.info("학습 태도 아코디언 펼치기 완료")
+
+        self.js_click(
+            self.wait.until(EC.presence_of_element_located(self.CONCENTRATION_CHIP))
+        )
+        self.logger.info("수업 집중도 높음 선택 완료")
+
+    # ========== 전체 흐름 한 번에 실행 ==========
+
+    def run(
+        self,
+        school_level: str,
+        grade: str,
+        subject: str,
+        unit: str,
+        name: str,
+        request_text: str,
+        download_dir: str,
+        browser: str = "firefox",
+    ):
+        """세부 특기사항 테스트 전체 흐름"""
+        self.login()
+        self.navigate_to_tools()
+        self.click_tool_menu(self.TOOL_NAME)
+        self.reset_inputs()
+        self.click_class_info_tab()
+        self.select_school_level(school_level)
+        self.select_grade(grade)
+        self.enter_subject(subject)
+        self.enter_unit(unit)
+        self.click_next()
+        self.handle_modify_modal()
+        self.ensure_student_row_exists()
+        self.enter_student_name(name)
+        self.open_keyword_modal()
+        self.select_study_attitude_keyword()
+        self.save_keyword_modal()
+        self.enter_request_text(request_text)
+        self.trigger_generation()
+        self.search_student(name)
+        return self.download_result(download_dir, browser)
