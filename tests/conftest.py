@@ -9,9 +9,9 @@ from datetime import datetime
 import pytest
 from selenium.webdriver.support.ui import WebDriverWait
 
-from common.config import DEFAULT_WAIT, DOWNLOAD_DIR
-from common.driver_factory import make_firefox_driver, make_simple_firefox_driver
-from common.helpers import do_login, close_token_banner
+from config.config import DEFAULT_WAIT, DOWNLOAD_DIR
+from config.driver_factory import make_firefox_driver, make_simple_firefox_driver
+from config.helpers import do_login, close_token_banner
 
 logger = logging.getLogger(__name__)
 
