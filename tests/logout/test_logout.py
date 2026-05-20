@@ -3,7 +3,7 @@
 
 import logging
 import pytest
-from pages.logout.logout_page import LogoutPage
+from pages.logout_page import LogoutPage
 from config.settings import TEST_USER
 
 logger = logging.getLogger(__name__)

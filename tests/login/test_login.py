@@ -4,8 +4,8 @@
 import logging
 import pytest
 from selenium.common.exceptions import TimeoutException
-from pages.login.login_page import LoginPage
-from pages.logout.logout_page import LogoutPage
+from pages.login_page import LoginPage
+from pages.logout_page import LogoutPage
 from config.settings import LOGIN_URL, TEST_USER
 
 logger = logging.getLogger(__name__)
