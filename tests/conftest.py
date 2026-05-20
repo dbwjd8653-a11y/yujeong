@@ -111,7 +111,7 @@ def tools_driver_module(request):
     """tools 테스트 전용 모듈 공유 브라우저 (다운로드 설정 포함)"""
     browser = request.config.getoption("--browser")
     if browser == "chrome":
-        from common.driver_factory import make_chrome_driver
+        from config.driver_factory import make_chrome_driver
         _driver = make_chrome_driver(DOWNLOAD_DIR)
     else:
         _driver = make_firefox_driver(DOWNLOAD_DIR)
@@ -125,7 +125,7 @@ def tools_driver(request):
     """tools 테스트 전용 독립 브라우저 (다운로드 설정 포함)"""
     browser = request.config.getoption("--browser")
     if browser == "chrome":
-        from common.driver_factory import make_chrome_driver
+        from config.driver_factory import make_chrome_driver
         _driver = make_chrome_driver(DOWNLOAD_DIR)
     else:
         _driver = make_firefox_driver(DOWNLOAD_DIR)

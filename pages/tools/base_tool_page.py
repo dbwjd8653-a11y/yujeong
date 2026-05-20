@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from pages.base_page import BasePage
-from common.config import BASE_URL, LOGIN_URL, MYPAGE_USER
+from config.config import BASE_URL, LOGIN_URL, MYPAGE_USER
 
 
 class BaseToolPage(BasePage):
