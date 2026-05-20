@@ -1,4 +1,4 @@
-# common/driver_factory.py
+# config/browser_factory.py
 # 브라우저 드라이버 생성 팩토리
 
 import logging

@@ -3,7 +3,7 @@
 
 import pytest
 import logging
-from pages.tools.tools_06_page import Tool6Page
+from pages.tools.tools_deep_page import Tool6Page
 
 logger = logging.getLogger(__name__)
 
@@ -97,6 +97,11 @@ def test_FHC_060_generate_start(deep):
     deep.click_generate()
     assert deep.is_generating(), "생성이 시작되지 않았습니다"
     logger.info("[FHC-060] 생성 버튼 클릭 → 생성 시작 확인 완료")
+    """
+    ### 05-18 PM 6시 기준 PASSED ###
+    assert tools_ready.is_generated(timeout=600), "10분 이내 생성 실패"  # 생성완료 확인 시 주석 해제
+    logger.info("[FHC-060] 생성 확인 완료")
+    """
 
 
 def test_FHC_061_blank_topic_error(deep):

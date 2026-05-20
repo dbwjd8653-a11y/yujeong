@@ -1,4 +1,4 @@
-# tests/test_mypage_profile.py
+# tests/test_mypage_01.py
 # 마이페이지 프로필 E2E 테스트 — FHC-076 ~ FHC-079
 
 import logging
@@ -7,8 +7,7 @@ from pages.mypage.mypage_profile_page import MyPage
 
 logger = logging.getLogger(__name__)
 
-IMAGE_PATH = "images/test2.jpg"
-
+IMAGE_PATH = "images/test1.jpg"
 
 # ── fixture ────────────────────────────────────────────────────────
 

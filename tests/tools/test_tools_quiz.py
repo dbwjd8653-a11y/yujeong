@@ -3,7 +3,7 @@
 
 import pytest
 import logging
-from pages.tools.tools_05_page import Tool5Page
+from pages.tools.tools_quiz_page import Tool5Page
 
 logger = logging.getLogger(__name__)
 
