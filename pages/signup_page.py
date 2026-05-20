@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 from pages.base_page import BasePage
-from common.config import SIGNUP_URL
+from config.config import SIGNUP_URL
 
 
 class SignupPage(BasePage):

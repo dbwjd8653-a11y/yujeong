@@ -6,7 +6,7 @@ import pytest
 from selenium.common.exceptions import TimeoutException
 from pages.login_page import LoginPage
 from pages.logout_page import LogoutPage
-from common.config import LOGIN_URL, TEST_USER
+from config.config import LOGIN_URL, TEST_USER
 
 logger = logging.getLogger(__name__)
 
