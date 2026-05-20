@@ -1,7 +1,7 @@
 """[test_settings_04] 구독 관리"""
 
 import pytest
-from pages.settings_04_page import Settings04Page
+from pages.settings.settings_subscription_page import Settings04Page
 
 
 @pytest.fixture(scope="module")
