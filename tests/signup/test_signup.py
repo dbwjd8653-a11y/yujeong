@@ -3,9 +3,11 @@
 
 import logging
 import pytest
-from pages.signup_page import SignupPage
+from pages.signup.signup_page import SignupPage
 
 logger = logging.getLogger(__name__)
+
+LONG_TEXT_300 = "김수한무거북이와두루미삼천갑자동방삭치치카포사리사리센타워리워리세브리깡" * 10
 
 
 # ── fixture ────────────────────────────────────────────────────────
