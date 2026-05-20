@@ -3,7 +3,7 @@
 
 import pytest
 
-from pages.chat_page import ChatPage
+from pages.chat.chat_page import ChatPage
 from pages.tools.base_tool_page import BaseToolPage
 
 TEST_MESSAGE   = "오늘 마실 차를 추천해 주세요"
