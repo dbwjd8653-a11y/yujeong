@@ -10,8 +10,8 @@ from pages.token_page import TokenPage
 from pages.tools.base_tool_page import BaseToolPage
 from pages.tools.tools_specialty_page import SpecialtyPage
 from pages.tools.tools_behavior_page import BehaviorPage
-from pages.tools.tools_quiz_page import Tool5Page
-from pages.tools.tools_deep_page import Tool6Page
+from pages.tools.tools_quiz_page import QuizPage
+from pages.tools.tools_deep_page import DeepPage
 from pages.tools.lesson_plan_page import LessonPlanPage
 from pages.tools.ppt_page import PPTPage
 from pages.agents.agents_page import AgentsPage
@@ -34,8 +34,8 @@ __all__ = [
     "BaseToolPage",
     "SpecialtyPage",
     "BehaviorPage",
-    "Tool5Page",
-    "Tool6Page",
+    "QuizPage",
+    "DeepPage",
     "LessonPlanPage",
     "PPTPage",
     "AgentsPage",
