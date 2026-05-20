@@ -1,7 +1,7 @@
 """[test_settings_03] 모델 설정"""
 
 import pytest
-from pages.settings_03_page import Settings03Page
+from pages.settings.settings_model_page import Settings03Page
 
 
 @pytest.fixture(scope="module")
