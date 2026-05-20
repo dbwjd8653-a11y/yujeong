@@ -57,7 +57,7 @@ class MyPage(BasePage):
 
     def login(self, email: str = None, password: str = None):
         """qaproject SSO 로그인 (기본: MAIN_EMAIL/MAIN_PASSWORD)"""
-        from common.config import LOGIN_URL
+        from config.config import LOGIN_URL
         email    = email    or self.MAIN_EMAIL
         password = password or self.MAIN_PASSWORD
 
