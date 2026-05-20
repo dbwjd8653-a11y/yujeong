@@ -3,7 +3,7 @@
 
 import pytest
 import logging
-from pages.tools.tools_quiz_page import Tool5Page
+from pages.tools.tools_quiz_page import QuizPage
 
 logger = logging.getLogger(__name__)
 
@@ -17,10 +17,10 @@ def quiz(login_module):
 
     전제: login_module fixture로 로그인 완료 상태
     단계:
-      1. login_module에서 (driver, wait) 수신 → Tool5Page 생성
+      1. login_module에서 (driver, wait) 수신 → QuizPage 생성
       2. LNB 도구 메뉴 진입 및 퀴즈 생성 도구 초기 세팅
     """
-    tool = Tool5Page(login_module)
+    tool = QuizPage(login_module)
     tool.tools_LNB()
     tool.setup_tool()
     return tool
@@ -57,9 +57,9 @@ def test_FHC_055_fill_fields_and_btn_enabled(quiz):
       - 토큰 소진: 버튼 비활성화 (xfail)
     """
     logger.info("[FHC-055] 퀴즈 생성 내용 입력 → 버튼 활성화 확인 시작")
-    quiz.select_option(Tool5Page.OPTION_TYPE_DD, Tool5Page.OPTION_TYPE_VALUE)
-    quiz.select_option(Tool5Page.DIFFICULTY_DD, Tool5Page.DIFFICULTY_VALUE)
-    quiz.enter_text(Tool5Page.CONTENT_INPUT, Tool5Page.CONTENT_VALUE)
+    quiz.select_option(QuizPage.OPTION_TYPE_DD, QuizPage.OPTION_TYPE_VALUE)
+    quiz.select_option(QuizPage.DIFFICULTY_DD, QuizPage.DIFFICULTY_VALUE)
+    quiz.enter_text(QuizPage.CONTENT_INPUT, QuizPage.CONTENT_VALUE)
     quiz.assert_generate_btn_enabled()
     logger.info("[FHC-055] 퀴즈 생성 내용 입력 → 버튼 활성화 확인 완료")
 
