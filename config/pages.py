@@ -8,8 +8,8 @@ from pages.signup_page import SignupPage
 from pages.chat_page import ChatPage
 from pages.token_page import TokenPage
 from pages.tools.base_tool_page import BaseToolPage
-from pages.tools.tools_01_page import SpecialtyPage
-from pages.tools.tools_02_page import BehaviorPage
+from pages.tools.tools_specialty_page import SpecialtyPage
+from pages.tools.tools_behavior_page import BehaviorPage
 from pages.tools.tools_05_page import Tool5Page
 from pages.tools.tools_06_page import Tool6Page
 from pages.tools.lesson_plan_page import LessonPlanPage
@@ -18,11 +18,11 @@ from pages.agents.agents_page import AgentsPage
 from pages.agents.agents_detail_page import AgentDetailPage
 from pages.mypage.mypage_page import MyPage as MyPageBase
 from pages.mypage.mypage_profile_page import MyPage as MyPageProfile
-from pages.mypage.mypage_05_page import MyPage05
-from pages.mypage.mypage_06_page import MyPage06
-from pages.mypage.mypage_07_page import MyPage07
-from pages.mypage.mypage_08_page import MyPage08
-from pages.mypage.mypage_09_page import MyPage09
+from pages.mypage.mypage_account_page import MyPage05
+from pages.mypage.mypage_withdraw_page import MyPage06
+from pages.mypage.mypage_organization_page import MyPage07
+from pages.mypage.mypage_language_page import MyPage08
+from pages.mypage.mypage_support_page import MyPage09
 
 __all__ = [
     "BasePage",

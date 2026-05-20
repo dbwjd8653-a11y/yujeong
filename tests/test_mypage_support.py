@@ -3,7 +3,7 @@
 
 import pytest
 
-from pages.mypage.mypage_09_page import MyPage09
+from pages.mypage.mypage_support_page import MyPage09
 
 
 # ── fixture ────────────────────────────────────────────────────────
