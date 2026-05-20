@@ -12,7 +12,7 @@ from config.settings import DEFAULT_WAIT, SHORT_WAIT
 import pytest
 
 
-class Tool6Page(BasePage):
+class DeepPage(BasePage):
 
     # ── Locators ───────────────────────────────────────────────────
     LNB_MENU_BTN    = (By.XPATH, "//button[.//*[@data-testid='barsIcon']]")              # 햄버거 메뉴
