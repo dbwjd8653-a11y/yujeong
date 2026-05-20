@@ -1,13 +1,11 @@
-# tests/test_signup.py
-# 회원가입 E2E 테스트 — FHC-001 ~ FHC-005
+# tests/test_signup_01.py
+# 회원가입 E2E 테스트 — FHC-001 ~ FHC-00
 
 import logging
 import pytest
 from pages.signup_page import SignupPage
 
 logger = logging.getLogger(__name__)
-
-LONG_TEXT_300 = "김수한무거북이와두루미삼천갑자동방삭치치카포사리사리센타워리워리세브리깡" * 10
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -47,7 +45,7 @@ def test_FHC_001_signup_page_elements(signup):
     assert signup.get_agree_checkbox().is_displayed()
     logger.info("[FHC-001] 회원가입 페이지 요소 확인 완료")
 
-
+# ── 테스트 케이스 ──────────────────────────────────────────────────
 def test_FHC_002_signup_agree_all(signup):
     """
     [FHC-002] 전체 동의 회원가입 동작 테스트
@@ -62,14 +60,13 @@ def test_FHC_002_signup_agree_all(signup):
     기대: AI Helpy Chat > Helpy Pro Agent 창 활성화 (랜딩 페이지 이동)
     """
     logger.info("[FHC-002] 전체 동의 회원가입 시작")
-    signup.enter_email("testteam3js7@test.com")
+    signup.enter_email("testteam3js16@test.com")
     signup.enter_password("test1234!!")
     signup.enter_name("김엘리스")
     signup.click_agree_checkbox()
     signup.click_create_account_button()
     assert signup.is_signup_success(), "회원가입 후 랜딩 페이지로 이동하지 않았습니다"
     logger.info("[FHC-002] 전체 동의 회원가입 완료")
-
 
 def test_FHC_003_signup_required_only(signup):
     """
@@ -86,7 +83,7 @@ def test_FHC_003_signup_required_only(signup):
     기대: AI Helpy Chat > Helpy Pro Agent 창 활성화 (랜딩 페이지 이동)
     """
     logger.info("[FHC-003] 필수 약관 회원가입 시작")
-    signup.enter_email("testteam3js8@test.com")
+    signup.enter_email("testteam3js17@test.com")
     signup.enter_password("test1234!!")
     signup.enter_name("김엘리스")
     signup.click_age_checkbox()
@@ -94,7 +91,6 @@ def test_FHC_003_signup_required_only(signup):
     signup.click_create_account_button()
     assert signup.is_signup_success(), "회원가입 후 랜딩 페이지로 이동하지 않았습니다"
     logger.info("[FHC-003] 필수 약관 회원가입 완료")
-
 
 def test_FHC_004_signup_invalid_email(signup):
     """
@@ -110,7 +106,6 @@ def test_FHC_004_signup_invalid_email(signup):
     assert signup.get_email_error_message().is_displayed()
     logger.info("[FHC-004] 이메일 유효성 검사 완료")
 
-
 def test_FHC_005_signup_invalid_name(signup):
     """
     [FHC-005] 이름 유효성 검사 (negative test)
@@ -125,7 +120,7 @@ def test_FHC_005_signup_invalid_name(signup):
     기대: '예기치 못한 문제가 발생하였습니다. 잠시 후, 다시 시도해주세요.' 오류 메시지 표시
     """
     logger.info("[FHC-005] 이름 유효성 검사 시작")
-    signup.enter_email("testteam3js15@test.com")
+    signup.enter_email("testteam3js18@test.com")
     signup.enter_password("test1234!!")
     signup.enter_name(LONG_TEXT_300)
     signup.click_agree_checkbox()
