@@ -1,4 +1,4 @@
-# tests/test_mypage_01.py
+# tests/mypage/test_mypage_profile.py
 # 마이페이지 프로필 E2E 테스트 — FHC-076 ~ FHC-079
 
 import logging
