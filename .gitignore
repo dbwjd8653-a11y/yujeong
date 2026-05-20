@@ -13,9 +13,6 @@ __pycache__/
 # 테스트 실행 로그
 logs/
 
-# 테스트 아티팩트
-# images/
-
 # Claude Code 내부 상태
 .claude/
 
