@@ -3,7 +3,7 @@
 
 import pytest
 
-from pages.tools.tools_02_page import BehaviorPage
+from pages.tools.tools_behavior_page import BehaviorPage
 
 SCHOOL_LEVEL  = "중학교"
 NAME_TEXT     = "포커스 1차 프로젝트"

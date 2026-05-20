@@ -1,4 +1,4 @@
-# pages/mypage/mypage_05_page.py
+# pages/mypage/mypage_account_page.py
 # 마이페이지 > 계정 관리 — 기본 정보 전용 Page 클래스
 # FHC-073(이름 변경) / FHC-074(비밀번호 변경) / FHC-075(프로모션 알림) / FHC-076(선호 언어)
 

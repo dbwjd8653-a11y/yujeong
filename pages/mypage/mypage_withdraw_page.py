@@ -1,4 +1,4 @@
-# pages/mypage/mypage_06_page.py
+# pages/mypage/mypage_withdraw_page.py
 # 마이페이지 > 계정 탈퇴 + 재가입 전용 Page 클래스
 # FHC-077(탈퇴 영역) / FHC-078(탈퇴 확인) / FHC-079(탈퇴) / FHC-080(재가입)
 
