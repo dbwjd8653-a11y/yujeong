@@ -2,7 +2,7 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
-from pages.settings_page import SettingsPage
+from pages.settings.settings_general_page import SettingsPage
 
 
 class Settings02Page(SettingsPage):
