@@ -8,7 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from pages.base_page import BasePage
-from config.config import DEFAULT_WAIT, SHORT_WAIT
+from config.settings import DEFAULT_WAIT, SHORT_WAIT
 import pytest
 
 

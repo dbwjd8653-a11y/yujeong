@@ -7,7 +7,7 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.firefox import GeckoDriverManager
 
-from config.config import DEFAULT_WAIT, DOWNLOAD_DIR
+from config.settings import DEFAULT_WAIT, DOWNLOAD_DIR
 
 _CACHED_GECKO = r"C:\Users\Admin\.wdm\drivers\geckodriver\win64\v0.36.0\geckodriver.exe"
 

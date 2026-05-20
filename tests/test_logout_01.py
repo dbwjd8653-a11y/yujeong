@@ -4,7 +4,7 @@
 import logging
 import pytest
 from pages.logout_page import LogoutPage
-from config.config import TEST_USER
+from config.settings import TEST_USER
 
 logger = logging.getLogger(__name__)
 

@@ -46,7 +46,7 @@ class AgentsPage(BasePage):
 
     def navigate_to_base(self):
         """메인 채팅 페이지로 이동 후 페이지 로드 대기 (LNB 탭 클릭 테스트 전제 조건)"""
-        from config.config import BASE_URL
+        from config.settings import BASE_URL
         self.driver.get(BASE_URL)
         self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
