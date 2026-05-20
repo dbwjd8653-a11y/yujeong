@@ -1,11 +1,13 @@
-# tests/test_signup_01.py
-# 회원가입 E2E 테스트 — FHC-001 ~ FHC-00
+# tests/signup/test_signup.py
+# 회원가입 E2E 테스트 — FHC-001 ~ FHC-005
 
 import logging
 import pytest
-from pages.signup_page import SignupPage
+from pages.signup.signup_page import SignupPage
 
 logger = logging.getLogger(__name__)
+
+LONG_TEXT_300 = "김수한무거북이와두루미삼천갑자동방삭치치카포사리사리센타워리워리세브리깡" * 10
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -60,7 +62,7 @@ def test_FHC_002_signup_agree_all(signup):
     기대: AI Helpy Chat > Helpy Pro Agent 창 활성화 (랜딩 페이지 이동)
     """
     logger.info("[FHC-002] 전체 동의 회원가입 시작")
-    signup.enter_email("testteam3js16@test.com")
+    signup.enter_email("testteam3js22@test.com")
     signup.enter_password("test1234!!")
     signup.enter_name("김엘리스")
     signup.click_agree_checkbox()
@@ -83,7 +85,7 @@ def test_FHC_003_signup_required_only(signup):
     기대: AI Helpy Chat > Helpy Pro Agent 창 활성화 (랜딩 페이지 이동)
     """
     logger.info("[FHC-003] 필수 약관 회원가입 시작")
-    signup.enter_email("testteam3js17@test.com")
+    signup.enter_email("testteam3js23@test.com")
     signup.enter_password("test1234!!")
     signup.enter_name("김엘리스")
     signup.click_age_checkbox()
@@ -120,7 +122,7 @@ def test_FHC_005_signup_invalid_name(signup):
     기대: '예기치 못한 문제가 발생하였습니다. 잠시 후, 다시 시도해주세요.' 오류 메시지 표시
     """
     logger.info("[FHC-005] 이름 유효성 검사 시작")
-    signup.enter_email("testteam3js18@test.com")
+    signup.enter_email("testteam3js24@test.com")
     signup.enter_password("test1234!!")
     signup.enter_name(LONG_TEXT_300)
     signup.click_agree_checkbox()
