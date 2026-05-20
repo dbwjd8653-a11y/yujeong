@@ -1,4 +1,4 @@
-# common/helpers.py
+# config/helpers.py
 # 공통 유틸리티 함수 (로그인, 배너 닫기 등)
 
 from selenium.webdriver.common.by import By
@@ -6,7 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 
-from common.config import LOGIN_URL, TEST_USER, SHORT_WAIT, DEFAULT_WAIT
+from config.config import LOGIN_URL, TEST_USER, SHORT_WAIT, DEFAULT_WAIT
 
 
 def do_login(driver, wait, user: dict = None):
