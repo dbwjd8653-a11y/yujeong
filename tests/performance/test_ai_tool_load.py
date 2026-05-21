@@ -4,6 +4,7 @@
 import time
 import logging
 import pytest
+import allure
 from selenium.webdriver.support.ui import WebDriverWait
 
 from config.settings import DEFAULT_WAIT, DOWNLOAD_DIR
@@ -12,6 +13,11 @@ from config.login_helpers import do_login, close_token_banner
 from pages.tools.tools_behavior_page import BehaviorPage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Performance"),
+    allure.feature("AI 도구 부하 테스트"),
+]
 
 REPEAT      = 3
 SCHOOL_LEVEL = "중학교"
@@ -33,6 +39,9 @@ def ai_tool_load():
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("AI 도구 연속 생성 요청 부하 테스트")
+@allure.title("[FHC-097] AI 도구(행동특성) 연속 생성 요청 부하 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_097_ai_tool_load(ai_tool_load):
     """
     [FHC-097] AI 도구(행동특성) 연속 생성 요청 부하 테스트

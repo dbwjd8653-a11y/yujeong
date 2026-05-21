@@ -3,9 +3,15 @@
 
 import pytest
 import logging
+import allure
 from pages.tools.tools_deep_page import DeepPage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Tools"),
+    allure.feature("심층 조사"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -28,6 +34,9 @@ def deep(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("심층 조사 메뉴 확인")
+@allure.title("[FHC-057] '심층 조사' 메뉴 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_057_navigate_to_deep_research(deep):
     """
     [FHC-057] '심층 조사' 메뉴 확인
@@ -43,6 +52,9 @@ def test_FHC_057_navigate_to_deep_research(deep):
     logger.info("[FHC-057] 심층 조사 페이지 진입 확인 완료")
 
 
+@allure.story("주제만 입력 버튼 활성화")
+@allure.title("[FHC-058] 주제만 입력 → [자동 생성] 버튼 활성화 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_058_topic_only_btn_enabled(deep):
     """
     [FHC-058] 주제만 입력 → [자동 생성] 버튼 활성화 확인
@@ -62,6 +74,9 @@ def test_FHC_058_topic_only_btn_enabled(deep):
     logger.info("[FHC-058] 주제만 입력 → 버튼 활성화 확인 완료")
 
 
+@allure.story("주제 지시사항 입력 버튼 활성화")
+@allure.title("[FHC-059] 주제 + 지시사항 입력 → [자동 생성] 버튼 활성화 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_059_topic_and_message_btn_enabled(deep):
     """
     [FHC-059] 주제 + 지시사항 입력 → [자동 생성] 버튼 활성화 확인
@@ -79,6 +94,9 @@ def test_FHC_059_topic_and_message_btn_enabled(deep):
     logger.info("[FHC-059] 주제 + 지시사항 입력 → 버튼 활성화 확인 완료")
 
 
+@allure.story("생성 버튼 클릭 생성 시작 확인")
+@allure.title("[FHC-060] 생성 버튼 클릭 → 생성 시작 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_060_generate_start(deep):
     """
     [FHC-060] 생성 버튼 클릭 → 생성 시작 확인
@@ -104,6 +122,9 @@ def test_FHC_060_generate_start(deep):
     """
 
 
+@allure.story("주제 공백 입력 오류 메시지")
+@allure.title("[FHC-061] 주제 공백 입력 시 오류 메시지 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_061_blank_topic_error(deep):
     """
     [FHC-061] 주제 공백 입력 시 오류 메시지 확인
@@ -125,6 +146,9 @@ def test_FHC_061_blank_topic_error(deep):
     logger.info("[FHC-061] 주제 공백 입력 시 오류 메시지 확인 완료")
 
 
+@allure.story("주제 500자 입력 버튼 활성화 경계값")
+@allure.title("[FHC-062] 주제 500자 입력 → [자동 생성] 버튼 활성화 확인 (경계값)")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_062_topic_500_chars_btn_enabled(deep):
     """
     [FHC-062] 주제 500자 입력 → [자동 생성] 버튼 활성화 확인 (경계값)
@@ -144,6 +168,9 @@ def test_FHC_062_topic_500_chars_btn_enabled(deep):
     logger.info("[FHC-062] 주제 500자 입력 → 버튼 활성화 확인 완료")
 
 
+@allure.story("주제 501자 입력 버튼 비활성화 경계값")
+@allure.title("[FHC-063] 주제 501자 입력 → [자동 생성] 버튼 비활성화 확인 (경계값)")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_063_topic_501_chars_btn_disabled(deep):
     """
     [FHC-063] 주제 501자 입력 → [자동 생성] 버튼 비활성화 확인 (경계값)

@@ -2,8 +2,14 @@
 # 마이페이지 > 고객 센터 E2E 테스트 — FHC-093
 
 import pytest
+import allure
 
 from pages.mypage.mypage_support_page import MyPage09
+
+pytestmark = [
+    allure.epic("MyPage"),
+    allure.feature("고객 센터"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -24,6 +30,9 @@ def mypage(tools_driver_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("고객 센터 AI 작동")
+@allure.title("[FHC-093] 고객 센터 AI 작동")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_093_customer_service_ai(mypage):
     """
     [FHC-093] 고객 센터 AI 작동

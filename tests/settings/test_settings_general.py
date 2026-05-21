@@ -3,9 +3,15 @@
 
 import pytest
 import logging
+import allure
 from pages.settings.settings_general_page import SettingsPage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Settings"),
+    allure.feature("일반 설정"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -25,6 +31,9 @@ def settings_general(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("설정창 기본값 확인")
+@allure.title("[FHC-067] 설정창 기본값 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_067_navigate_to_settings(settings_general):
     """
     [FHC-067] 설정창 기본 값 테스트

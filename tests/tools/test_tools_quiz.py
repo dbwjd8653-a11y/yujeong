@@ -3,9 +3,15 @@
 
 import pytest
 import logging
+import allure
 from pages.tools.tools_quiz_page import QuizPage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Tools"),
+    allure.feature("퀴즈 생성"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -28,6 +34,9 @@ def quiz(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("퀴즈 생성 메뉴 확인")
+@allure.title("[FHC-054] '퀴즈 생성' 메뉴 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_054_navigate_to_quiz(quiz):
     """
     [FHC-054] '퀴즈 생성' 메뉴 확인
@@ -43,6 +52,9 @@ def test_FHC_054_navigate_to_quiz(quiz):
     logger.info("[FHC-054] 퀴즈 생성 페이지 진입 확인 완료")
 
 
+@allure.story("퀴즈 생성 내용 입력 버튼 활성화")
+@allure.title("[FHC-055] 퀴즈 생성 내용 입력 → [자동 생성] 버튼 활성화 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_055_fill_fields_and_btn_enabled(quiz):
     """
     [FHC-055] 퀴즈 생성 내용 입력 → [자동 생성] 버튼 활성화 확인
@@ -64,6 +76,9 @@ def test_FHC_055_fill_fields_and_btn_enabled(quiz):
     logger.info("[FHC-055] 퀴즈 생성 내용 입력 → 버튼 활성화 확인 완료")
 
 
+@allure.story("퀴즈 생성 완료 확인")
+@allure.title("[FHC-056] 퀴즈 생성 버튼 클릭 → 생성 시작 및 완료 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_056_generate_quiz(quiz):
     """
     [FHC-056] 퀴즈 생성 버튼 클릭 → 생성 시작 및 완료 확인

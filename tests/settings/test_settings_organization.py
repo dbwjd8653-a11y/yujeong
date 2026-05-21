@@ -3,6 +3,7 @@
 
 import pytest
 import logging
+import allure
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -11,6 +12,11 @@ from config.browser_factory import make_simple_firefox_driver
 from config.login_helpers import do_login, close_token_banner
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Settings"),
+    allure.feature("조직 설정"),
+]
 
 NON_ADMIN_USER = {
     "id": "elice_3@naver.com",
@@ -40,6 +46,9 @@ def non_admin_login():
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("비관리자 설정 접근 불가 확인")
+@allure.title("[FHC-075] 조직 구성원 추가 가능 여부 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_075_non_admin_cannot_access_settings(non_admin_login):
     """
     [FHC-075] 조직 구성원 추가 가능 여부 테스트

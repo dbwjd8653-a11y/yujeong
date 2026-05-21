@@ -3,12 +3,18 @@
 
 import logging
 import pytest
+import allure
 from pages.logout.logout_page import LogoutPage
 from config.settings import TEST_USER
 
 logger = logging.getLogger(__name__)
 
 INPUT_PWD_INVALID = "12345678"
+
+pytestmark = [
+    allure.epic("Logout"),
+    allure.feature("로그아웃"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -28,6 +34,9 @@ def logout_page(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("로그아웃 마스킹 이메일 검증")
+@allure.title("[FHC-014] 로그아웃 마스킹 이메일 검증")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_014_logout_masked_email(logout_page):
     """
     [FHC-014] 로그아웃 동작 및 마스킹 이메일 검증
@@ -46,6 +55,9 @@ def test_FHC_014_logout_masked_email(logout_page):
     logger.info("[FHC-014] 로그아웃 마스킹 이메일 검증 완료")
 
 
+@allure.story("잘못된 비밀번호 재로그인 오류")
+@allure.title("[FHC-015] 잘못된 비밀번호 재로그인 오류")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_015_wrong_password_error(logout_page):
     """
     [FHC-015] 유효하지 않은 비밀번호로 재로그인 시도 → 오류 메시지 확인
@@ -63,6 +75,9 @@ def test_FHC_015_wrong_password_error(logout_page):
     logger.info("[FHC-015] 잘못된 비밀번호 재로그인 완료")
 
 
+@allure.story("올바른 비밀번호 재로그인")
+@allure.title("[FHC-016] 올바른 비밀번호 재로그인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_016_correct_password_relogin(logout_page):
     """
     [FHC-016] 올바른 비밀번호로 재로그인
@@ -80,6 +95,9 @@ def test_FHC_016_correct_password_relogin(logout_page):
     logger.info("[FHC-016] 올바른 비밀번호 재로그인 완료")
 
 
+@allure.story("다른 계정으로 전환")
+@allure.title("[FHC-017] 다른 계정으로 전환")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_017_switch_account(logout_page):
     """
     [FHC-017] 다른 계정으로 전환 → 로그인 페이지 이동 확인

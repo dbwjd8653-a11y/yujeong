@@ -3,10 +3,16 @@
 
 import pytest
 import logging
+import allure
 from pages.tools.tools_ppt_page import PPTPage
 from config.settings import DOWNLOAD_DIR
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Tools"),
+    allure.feature("PPT 생성"),
+]
 
 TOPIC        = "AI"
 INSTRUCTIONS = "간략하고 빠르게 생성"
@@ -29,6 +35,9 @@ def ppt(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("PPT 생성 메뉴 확인")
+@allure.title("[FHC-050] 'PPT 생성' 메뉴 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_050_navigate_to_ppt(ppt):
     """
     [FHC-050] 'PPT 생성' 메뉴 확인
@@ -46,6 +55,9 @@ def test_FHC_050_navigate_to_ppt(ppt):
     logger.info("[FHC-050] PPT 생성 메뉴 확인 완료")
 
 
+@allure.story("PPT 생성 내용 입력 필수 항목")
+@allure.title("[FHC-051] PPT 생성 내용 입력 (필수 항목만)")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_051_fill_required_fields(ppt):
     """
     [FHC-051] PPT 생성 내용 입력 (필수 항목만)
@@ -67,6 +79,9 @@ def test_FHC_051_fill_required_fields(ppt):
     logger.info("[FHC-051] PPT 필수 항목 입력 완료")
 
 
+@allure.story("PPT 생성 내용 입력 선택 항목 포함")
+@allure.title("[FHC-051] PPT 생성 내용 입력 (선택 항목 포함)")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_051_fill_with_optional_fields(ppt):
     """
     [FHC-051] PPT 생성 내용 입력 (선택 항목 포함)
@@ -87,6 +102,9 @@ def test_FHC_051_fill_with_optional_fields(ppt):
     logger.info("[FHC-051] PPT 선택 항목 포함 입력 완료")
 
 
+@allure.story("심층조사 모드 토글 확인")
+@allure.title("[FHC-052] '심층조사 모드' 토글 활성화/비활성화 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_052_deep_research_toggle(ppt):
     """
     [FHC-052] '심층조사 모드' 토글 활성화/비활성화 확인
@@ -106,6 +124,9 @@ def test_FHC_052_deep_research_toggle(ppt):
     logger.info("[FHC-052] 심층조사 모드 토글 확인 완료")
 
 
+@allure.story("PPT 생성 결과 다운로드")
+@allure.title("[FHC-053] PPT 생성 결과 다운로드")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_053_download_ppt(ppt):
     """
     [FHC-053] PPT 생성 결과 다운로드

@@ -3,9 +3,15 @@
 
 import pytest
 import logging
+import allure
 from pages.performance.settings_load_page import SettingsLoadPage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Performance"),
+    allure.feature("탭 부하 테스트"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -28,6 +34,9 @@ def settings_load(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("설정 탭 부하 테스트")
+@allure.title("[FHC-094] 설정 탭 부하 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_094_tab_load(settings_load):
     """
     [FHC-094] 설정 탭 부하 테스트

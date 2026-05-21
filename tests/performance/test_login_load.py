@@ -4,6 +4,7 @@
 import time
 import logging
 import pytest
+import allure
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -13,6 +14,11 @@ from config.login_helpers import do_login, close_token_banner
 from pages.logout.logout_page import LogoutPage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Performance"),
+    allure.feature("로그인 부하 테스트"),
+]
 
 REPEAT = 5
 
@@ -29,6 +35,9 @@ def login_load():
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("로그인 로그아웃 반복 부하 테스트")
+@allure.title("[FHC-096] 로그인/로그아웃 반복 부하 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_096_login_logout_load(login_load):
     """
     [FHC-096] 로그인/로그아웃 반복 부하 테스트
