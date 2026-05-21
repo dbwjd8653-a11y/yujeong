@@ -10,7 +10,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 
 from config.settings import DEFAULT_WAIT, DOWNLOAD_DIR
 
-_CACHED_GECKO = r"C:\Users\Admin\.wdm\drivers\geckodriver\win64\v0.36.0\geckodriver.exe"
+_CACHED_GECKO = os.path.join(os.path.expanduser("~"), r".wdm\drivers\geckodriver\win64\v0.36.0\geckodriver.exe")
 
 
 def _gecko_path() -> str:
