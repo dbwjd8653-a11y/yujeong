@@ -3,11 +3,18 @@
 
 import logging
 import pytest
+import allure
 from pages.mypage.mypage_profile_page import MyPage
 
 logger = logging.getLogger(__name__)
 
+pytestmark = [
+    allure.epic("MyPage"),
+    allure.feature("프로필"),
+]
+
 IMAGE_PATH = "images/test1.jpg"
+
 
 # ── fixture ────────────────────────────────────────────────────────
 
@@ -26,6 +33,9 @@ def mypage(login):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("프로필 드롭다운 메뉴 확인")
+@allure.title("[FHC-076] 프로필 드롭다운 메뉴 항목 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_076_profile_dropdown_menu(mypage):
     """
     [FHC-076] 프로필 드롭다운 메뉴 항목 확인
@@ -45,6 +55,9 @@ def test_FHC_076_profile_dropdown_menu(mypage):
     logger.info("[FHC-076] 프로필 드롭다운 메뉴 항목 확인 완료")
 
 
+@allure.story("계정 관리 페이지 이동")
+@allure.title("[FHC-077] 계정 관리 페이지 이동 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_077_navigate_to_account_management(mypage):
     """
     [FHC-077] 계정 관리 페이지 이동 확인
@@ -62,6 +75,9 @@ def test_FHC_077_navigate_to_account_management(mypage):
     logger.info("[FHC-077] 계정 관리 페이지 이동 확인 완료")
 
 
+@allure.story("프로필 이미지 변경")
+@allure.title("[FHC-078] 프로필 이미지 변경 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_078_change_profile_image(mypage):
     """
     [FHC-078] 프로필 이미지 변경 확인
@@ -82,6 +98,9 @@ def test_FHC_078_change_profile_image(mypage):
     logger.info("[FHC-078] 프로필 이미지 변경 확인 완료")
 
 
+@allure.story("프로필 이미지 제거")
+@allure.title("[FHC-079] 프로필 이미지 제거 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_079_remove_profile_image(mypage):
     """
     [FHC-079] 프로필 이미지 제거 확인

@@ -3,8 +3,14 @@
 
 import time
 import pytest
+import allure
 
 from pages.mypage.mypage_language_page import MyPage08
+
+pytestmark = [
+    allure.epic("MyPage"),
+    allure.feature("언어 설정"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -25,6 +31,9 @@ def mypage(tools_driver_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("언어 변경 국가 설정")
+@allure.title("[FHC-090] 언어 변경 국가 설정")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_090_language_setting(mypage):
     """
     [FHC-090] 언어 변경 국가 설정
@@ -34,7 +43,7 @@ def test_FHC_090_language_setting(mypage):
       1. 마이페이지 → '언어 설정' 영역 클릭
       2. 변경할 언어 선택 (ko-KR → en-US)
     기대: 선택한 언어로 변경된다 ('Saved successfully' 메시지 출력)
-    ※ 현재 언어와 무관하게 저장이 일어나도록 ko-KR 먼저 변경 후 en-US로 변경
+        ※ 현재 언어와 무관하게 저장이 일어나도록 ko-KR 먼저 변경 후 en-US로 변경
     """
     mypage.navigate_to_language()
     assert mypage.is_language_setting_displayed(), \
@@ -47,6 +56,9 @@ def test_FHC_090_language_setting(mypage):
     mypage.change_language("ko-KR")
 
 
+@allure.story("언어 변경 후 로그아웃 로그인 페이지 언어")
+@allure.title("[FHC-091] 언어 변경 후 로그아웃 로그인 페이지 언어")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_091_logout_shows_language_login_page(mypage):
     """
     [FHC-091] 언어 변경 후 로그아웃 시 로그인 페이지 언어 확인
@@ -56,7 +68,7 @@ def test_FHC_091_logout_shows_language_login_page(mypage):
       1. 마이페이지 > 언어 설정 → 한국어 선택
       2. [로그아웃] 버튼 클릭
     기대: 로그아웃 후 설정한 언어(한국어)의 로그인 페이지로 이동한다
-    ※ 로그인 페이지가 영어로 표시되면 Fail
+        ※ 로그인 페이지가 영어로 표시되면 Fail
     """
     mypage.navigate_to_language()
     mypage.change_language("ko-KR")
@@ -67,6 +79,9 @@ def test_FHC_091_logout_shows_language_login_page(mypage):
         "로그아웃 후 로그인 페이지가 영어로 표시됩니다 (설정한 언어로 표시되어야 합니다)"
 
 
+@allure.story("언어 변경 후 재로그인 언어 유지")
+@allure.title("[FHC-092] 언어 변경 후 재로그인 언어 유지")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_092_language_maintained_after_relogin(mypage):
     """
     [FHC-092] 언어 변경 후 재로그인 시 언어 유지
