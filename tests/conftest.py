@@ -6,6 +6,8 @@ import os
 import re
 from datetime import datetime
 
+import requests
+
 import pytest
 
 from config.selenium_imports import WebDriverWait
@@ -202,3 +204,25 @@ def pytest_runtest_makereport(item, call):
                     issue_key,
                     screenshot
                 )
+
+
+# ── pytest 종료 시 Discord 결과 전송 ──────────────────────────────
+DISCORD_WEBHOOK_URL = "https://discordapp.com/api/webhooks/1506913724663992330/fFs7F0fWTaAADPwpaRXfTE0MkPPlLVuYKVERtR8qwdBfpJhSBwRyCbv8aYHj-5CfrJSV"
+
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    passed = len(terminalreporter.stats.get('passed', []))
+    failed = len(terminalreporter.stats.get('failed', []))
+    error  = len(terminalreporter.stats.get('error', []))
+    total  = passed + failed + error
+    date   = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+    message = f"""🚀 Settings 테스트 결과
+- 테스트 일자: {date}
+- ✅ 성공: {passed}건
+- ❌ 실패: {failed}건
+- 총: {total}건"""
+
+    try:
+        requests.post(DISCORD_WEBHOOK_URL, json={"content": message}, timeout=10)
+    except Exception as e:
+        logger.warning(f"Discord 전송 실패: {e}")
