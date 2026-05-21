@@ -5,7 +5,7 @@ from config.selenium_imports import By, EC
 from pages.settings.settings_general_page import SettingsPage
 
 
-class Settings04Page(SettingsPage):
+class SettingsSubscriptionPage(SettingsPage):
 
     _SUBSCRIPTION_TAB = (By.CSS_SELECTOR, 'a[href="/ai-helpy-chat/admin/subscription"][role="tab"]')
 

@@ -3,7 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from config.settings import DEFAULT_WAIT
 from config.browser_factory import make_simple_firefox_driver
-from tests.conftest import do_login, close_token_banner
+from config.login_helpers import do_login, close_token_banner
 
 
 @pytest.fixture(scope="module")

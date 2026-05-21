@@ -5,7 +5,7 @@ from config.selenium_imports import By, EC
 from pages.settings.settings_general_page import SettingsPage
 
 
-class Settings05Page(SettingsPage):
+class SettingsMemberPage(SettingsPage):
 
     _MEMBER_TAB = (By.CSS_SELECTOR, 'a[href="/ai-helpy-chat/admin/users"][role="tab"]')
     _NO_LIMIT_CHECKBOX = (By.CSS_SELECTOR, 'input[name="accountTokenQuotaList.0.quota.noLimit"][type="checkbox"]')
