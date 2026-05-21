@@ -7,13 +7,14 @@ import re
 from datetime import datetime
 
 import pytest
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException
+
+from config.selenium_imports import By, EC, WebDriverWait,TimeoutException
 
 from config.settings import DEFAULT_WAIT, DOWNLOAD_DIR, LOGIN_URL, TEST_USER, SHORT_WAIT
 from config.browser_factory import make_firefox_driver, make_simple_firefox_driver
+from utils.jira_helper import create_jira_bug_ticket, attach_image_to_jira
+
+# ── Logger 설정 ───────────────────────────────────────────────────
 
 logger = logging.getLogger(__name__)
 
@@ -184,3 +185,56 @@ def tools_driver(request):
     logger.info(f"브라우저: {browser.upper()} 실행 완료")
     yield _driver
     _driver.quit()
+
+# ── 테스트 실패 시 Jira 이슈 생성 및 스크린샷 첨부 Hook ───────────
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+
+    outcome = yield
+    report = outcome.get_result()
+
+    # print("HOOK 실행됨")
+
+    if report.when == "call" and report.failed:
+
+        # print("실패 감지됨")
+
+        signup = item.funcargs.get("signup")
+
+        if signup:
+
+            # print("signup fixture 확인")
+
+            driver = signup.driver
+
+            screenshot = driver.get_screenshot_as_png()
+
+            summary = f"[UI 자동화 실패] {item.name}"
+
+            description = f"""
+                        자동화 테스트 실패
+
+                        [Test Case]
+                        {item.name}
+
+                        [Error]
+                        {call.excinfo.value}
+                        """
+
+            print("Jira 생성 시작")
+
+            issue_key = create_jira_bug_ticket(
+                summary=summary,
+                description=description
+            )
+
+            print(f"issue_key: {issue_key}")
+
+            if issue_key:
+
+                # print("스크린샷 첨부 시작")
+
+                attach_image_to_jira(
+                    issue_key,
+                    screenshot
+                )

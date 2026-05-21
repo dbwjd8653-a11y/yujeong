@@ -4,6 +4,7 @@
 import logging
 import pytest
 from pages.signup.signup_page import SignupPage
+from utils.random_generator import generate_test_email
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,8 @@ def test_FHC_002_signup_agree_all(signup):
     기대: AI Helpy Chat > Helpy Pro Agent 창 활성화 (랜딩 페이지 이동)
     """
     logger.info("[FHC-002] 전체 동의 회원가입 시작")
-    signup.enter_email("testteam3js22@test.com")
+    email = generate_test_email()
+    signup.enter_email(email)
     signup.enter_password("test1234!!")
     signup.enter_name("김엘리스")
     signup.click_agree_checkbox()
@@ -85,7 +87,8 @@ def test_FHC_003_signup_required_only(signup):
     기대: AI Helpy Chat > Helpy Pro Agent 창 활성화 (랜딩 페이지 이동)
     """
     logger.info("[FHC-003] 필수 약관 회원가입 시작")
-    signup.enter_email("testteam3js23@test.com")
+    email = generate_test_email()
+    signup.enter_email(email)
     signup.enter_password("test1234!!")
     signup.enter_name("김엘리스")
     signup.click_age_checkbox()
@@ -122,7 +125,8 @@ def test_FHC_005_signup_invalid_name(signup):
     기대: '예기치 못한 문제가 발생하였습니다. 잠시 후, 다시 시도해주세요.' 오류 메시지 표시
     """
     logger.info("[FHC-005] 이름 유효성 검사 시작")
-    signup.enter_email("testteam3js24@test.com")
+    email = generate_test_email()
+    signup.enter_email(email)
     signup.enter_password("test1234!!")
     signup.enter_name(LONG_TEXT_300)
     signup.click_agree_checkbox()
