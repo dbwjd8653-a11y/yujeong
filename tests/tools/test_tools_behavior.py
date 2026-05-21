@@ -5,10 +5,11 @@ import pytest
 
 from pages.tools.tools_behavior_page import BehaviorPage
 
+from config.settings import DOWNLOAD_DIR
+
 SCHOOL_LEVEL  = "중학교"
 NAME_TEXT     = "포커스 1차 프로젝트"
 REQUEST_TEXT  = "엘리스 부트 캠프"
-DOWNLOAD_DIR  = r"C:\Users\Admin\Downloads"
 
 
 # ── fixture ────────────────────────────────────────────────────────

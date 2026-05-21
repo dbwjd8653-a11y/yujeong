@@ -3,7 +3,7 @@
 
 import pytest
 import logging
-from pages.tools.lesson_plan_page import LessonPlanPage
+from pages.tools.tools_lesson_page import LessonPlanPage
 
 logger = logging.getLogger(__name__)
 
