@@ -27,6 +27,7 @@ def do_login(driver, wait, user: dict = None):
         EC.element_to_be_clickable((By.XPATH, "//button[text()='로그인']"))
     ).click()
     wait.until(EC.url_contains("ai-helpy-chat"))
+    close_token_banner(driver, wait)
 
 
 def close_token_banner(driver, wait):
