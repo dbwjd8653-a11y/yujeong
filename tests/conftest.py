@@ -75,6 +75,12 @@ def pytest_addoption(parser):
         choices=["firefox", "chrome"],
         help="테스트에 사용할 브라우저 (기본값: firefox)",
     )
+    parser.addoption(
+        "--discord",
+        action="store_true",
+        default=False,
+        help="테스트 완료 후 Discord로 결과 전송",
+    )
 
 
 # ── 브라우저 fixtures (테스트마다 독립 실행) ───────────────────────
@@ -210,17 +216,26 @@ def pytest_runtest_makereport(item, call):
 DISCORD_WEBHOOK_URL = "https://discordapp.com/api/webhooks/1506913724663992330/fFs7F0fWTaAADPwpaRXfTE0MkPPlLVuYKVERtR8qwdBfpJhSBwRyCbv8aYHj-5CfrJSV"
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    if not config.getoption("--discord", default=False):
+        return
+
     passed = len(terminalreporter.stats.get('passed', []))
     failed = len(terminalreporter.stats.get('failed', []))
     error  = len(terminalreporter.stats.get('error', []))
     total  = passed + failed + error
     date   = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    message = f"""🚀 Settings 테스트 결과
-- 테스트 일자: {date}
-- ✅ 성공: {passed}건
-- ❌ 실패: {failed}건
-- 총: {total}건"""
+    args = [a for a in config.args if not a.startswith("-")]
+    if args:
+        test_name = ", ".join(os.path.basename(a.rstrip("/\\")) for a in args) + " 테스트 결과"
+    else:
+        test_name = "전체 테스트 결과"
+
+    message = f"""🚀 {test_name}
+테스트 일자: {date}
+✅ 성공: {passed}건
+❌ 실패: {failed}건
+총: {total}건"""
 
     try:
         requests.post(DISCORD_WEBHOOK_URL, json={"content": message}, timeout=10)
