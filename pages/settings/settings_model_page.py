@@ -7,11 +7,11 @@ from selenium.webdriver.common.keys import Keys
 from pages.settings.settings_general_page import SettingsPage
 
 
-class Settings03Page(SettingsPage):
+class SettingsModelPage(SettingsPage):
 
     _MODELS_TAB = (By.CSS_SELECTOR, 'a[href="/ai-helpy-chat/admin/models"][role="tab"]')
-    _NEW_CHAT_BTN = (By.CSS_SELECTOR, 'a[href="/ai-helpy-chat"]')
-    _AGENT_DROPDOWN = (By.CSS_SELECTOR, 'div.css-18ssuj3')
+    _NEW_CHAT_BTN = (By.CSS_SELECTOR, 'a:has(svg[data-testid="pen-to-squareIcon"])')
+    _AGENT_DROPDOWN = (By.CSS_SELECTOR, 'button:has(svg[data-testid="chevron-downIcon"])')
     _MODEL_TITLE = (By.CSS_SELECTOR, 'span.MuiListItemText-primary')
 
     def navigate_to_models_tab(self):

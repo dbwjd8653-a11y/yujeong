@@ -5,7 +5,7 @@ from config.selenium_imports import By, EC
 from pages.settings.settings_general_page import SettingsPage
 
 
-class Settings02Page(SettingsPage):
+class SettingsUseagePage(SettingsPage):
 
     _HISTORY_TAB = (By.CSS_SELECTOR, 'a[href="/ai-helpy-chat/admin/history"][role="tab"]')
 

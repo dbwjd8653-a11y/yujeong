@@ -41,7 +41,7 @@ def make_firefox_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Firefox:
 def make_simple_firefox_driver() -> webdriver.Firefox:
     """다운로드 설정 없는 기본 Firefox 드라이버 생성"""
     try:
-        driver = webdriver.Firefox()
+        driver = webdriver.Firefox(service=FirefoxService(_gecko_path()))
         driver.implicitly_wait(DEFAULT_WAIT)
         return driver
     except Exception:
