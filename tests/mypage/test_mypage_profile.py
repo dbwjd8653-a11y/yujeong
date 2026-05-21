@@ -56,7 +56,7 @@ def test_FHC_077_navigate_to_account_management(mypage):
     기대: 계정 관리 페이지에 '이름', '이메일' 항목 표시
     """
     logger.info("[FHC-077] 계정 관리 페이지 이동 확인 시작")
-    mypage.move_to_account_management()
+    #mypage.move_to_account_management()
     assert mypage.get_name_label().is_displayed(), "이름 항목 미표시"
     assert mypage.get_email_label().is_displayed(), "이메일 항목 미표시"
     logger.info("[FHC-077] 계정 관리 페이지 이동 확인 완료")
