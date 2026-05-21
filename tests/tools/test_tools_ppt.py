@@ -3,7 +3,7 @@
 
 import pytest
 import logging
-from pages.tools.ppt_page import PPTPage
+from pages.tools.tools_ppt_page import PPTPage
 from config.settings import DOWNLOAD_DIR
 
 logger = logging.getLogger(__name__)

@@ -12,8 +12,8 @@ from pages.tools.tools_specialty_page import SpecialtyPage
 from pages.tools.tools_behavior_page import BehaviorPage
 from pages.tools.tools_quiz_page import QuizPage
 from pages.tools.tools_deep_page import DeepPage
-from pages.tools.lesson_plan_page import LessonPlanPage
-from pages.tools.ppt_page import PPTPage
+from pages.tools.tools_lesson_page import LessonPlanPage
+from pages.tools.tools_ppt_page import PPTPage
 from pages.agents.agents_page import AgentsPage
 from pages.agents.agents_detail_page import AgentDetailPage
 from pages.mypage.mypage_page import MyPage as MyPageBase

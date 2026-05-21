@@ -5,13 +5,14 @@ import pytest
 
 from pages.tools.tools_specialty_page import SpecialtyPage
 
+from config.settings import DOWNLOAD_DIR
+
 SCHOOL_LEVEL  = "중학교"
 GRADE         = "3학년"
 SUBJECT       = "수학"
 UNIT          = "1"
 NAME_TEXT     = "포커스 1차 프로젝트"
 REQUEST_TEXT  = ""
-DOWNLOAD_DIR  = r"C:\Users\Admin\Downloads"
 
 
 # ── fixture ────────────────────────────────────────────────────────

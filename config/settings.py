@@ -36,4 +36,5 @@ MYPAGE_USER = {
 }
 
 # ── 다운로드 경로 ───────────────────────────────────────────────────
-DOWNLOAD_DIR = r"C:\Users\Admin\Downloads"
+# DOWNLOAD_DIR = r"C:\Users\Admin\Downloads"
+DOWNLOAD_DIR = os.path.join(os.path.expanduser("~"), "Downloads")
