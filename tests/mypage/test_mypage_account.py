@@ -2,8 +2,14 @@
 # 마이페이지 > 계정 관리 — 기본 정보 E2E 테스트 — FHC-080 ~ FHC-083
 
 import pytest
+import allure
 
 from pages.mypage.mypage_account_page import MyPage05
+
+pytestmark = [
+    allure.epic("MyPage"),
+    allure.feature("계정 관리"),
+]
 
 MAIN_EMAIL    = "test_dummy@naver.com"
 MAIN_PASSWORD = "test@1234"
@@ -29,6 +35,9 @@ def mypage(tools_driver_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("이름 변경")
+@allure.title("[FHC-080] 이름 변경")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_080_change_name(mypage):
     """
     [FHC-080] 이름 변경
@@ -48,6 +57,9 @@ def test_FHC_080_change_name(mypage):
         "이름 변경 후 '저장되었습니다' 메시지가 표시되지 않았습니다"
 
 
+@allure.story("비밀번호 변경")
+@allure.title("[FHC-081] 비밀번호 변경")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_081_change_password(mypage):
     """
     [FHC-081] 비밀번호 변경
@@ -70,6 +82,9 @@ def test_FHC_081_change_password(mypage):
     mypage.change_password(NEW_PASSWORD, MAIN_PASSWORD)
 
 
+@allure.story("프로모션 알림 설정 변경")
+@allure.title("[FHC-082] 프로모션 알림 설정 변경")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_082_toggle_promotion(mypage):
     """
     [FHC-082] 프로모션 알림 설정 변경
@@ -90,6 +105,9 @@ def test_FHC_082_toggle_promotion(mypage):
         f"프로모션 알림 상태가 변경되지 않았습니다 (전: {before}, 후: {after})"
 
 
+@allure.story("선호 언어 설정 변경")
+@allure.title("[FHC-083] 선호 언어 설정 변경")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_083_change_language(mypage):
     """
     [FHC-083] 선호 언어 설정 변경

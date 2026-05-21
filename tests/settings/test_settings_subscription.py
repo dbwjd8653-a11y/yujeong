@@ -3,9 +3,15 @@
 
 import pytest
 import logging
+import allure
 from pages.settings.settings_subscription_page import SettingsSubscriptionPage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Settings"),
+    allure.feature("구독 관리"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -28,6 +34,9 @@ def settings_subscription(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("구독 관리 탭 출력")
+@allure.title("[FHC-071] '구독 관리' 탭 출력 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_071_navigate_to_subscription_tab(settings_subscription):
     """
     [FHC-071] '구독 관리' 탭 출력 테스트

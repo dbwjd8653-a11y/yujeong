@@ -2,12 +2,18 @@
 # 메인 채팅 / 검색 / 대화 목록 E2E 테스트 — FHC-022 ~ FHC-027
 
 import pytest
+import allure
 
 from pages.chat.chat_page import ChatPage
 from pages.tools.base_tool_page import BaseToolPage
 
 TEST_MESSAGE   = "오늘 마실 차를 추천해 주세요"
 SEARCH_KEYWORD = "오늘"
+
+pytestmark = [
+    allure.epic("Chat"),
+    allure.feature("채팅"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -30,6 +36,9 @@ def chat(tools_driver_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("새 대화 탭 확인")
+@allure.title("[FHC-022] '새 대화' 탭 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_022_new_chat_tab_click(chat):
     """
     [FHC-022] '새 대화' 탭 확인
@@ -46,6 +55,9 @@ def test_FHC_022_new_chat_tab_click(chat):
         "새 대화창의 기본 에이전트가 Helpy Pro Agent가 아닙니다"
 
 
+@allure.story("AI 대화 기능 테스트")
+@allure.title("[FHC-023] AI 대화 기능 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_023_ai_chat_response(chat):
     """
     [FHC-023] AI 대화 기능 테스트
@@ -60,6 +72,9 @@ def test_FHC_023_ai_chat_response(chat):
         "메시지 전송 후 AI 답변이 생성되지 않았습니다"
 
 
+@allure.story("검색 탭 확인")
+@allure.title("[FHC-024] '검색' 탭 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_024_search_tab_click(chat):
     """
     [FHC-024] '검색' 탭 확인
@@ -74,6 +89,9 @@ def test_FHC_024_search_tab_click(chat):
         "검색 탭 클릭 후 검색 창이 열리지 않았습니다"
 
 
+@allure.story("검색 기능 테스트")
+@allure.title("[FHC-025] 검색 기능 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_025_search_keyword_results(chat):
     """
     [FHC-025] 검색 기능 테스트
@@ -88,6 +106,9 @@ def test_FHC_025_search_keyword_results(chat):
         f"'{SEARCH_KEYWORD}' 검색 후 결과가 표시되지 않았습니다"
 
 
+@allure.story("검색 기존 대화 선택")
+@allure.title("[FHC-026] '검색' 기능 — 기존 대화 선택")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_026_search_select_existing_chat(chat):
     """
     [FHC-026] '검색' 기능 — 기존 대화 선택
@@ -102,6 +123,9 @@ def test_FHC_026_search_select_existing_chat(chat):
         "검색 결과 클릭 후 대화 상세 화면으로 전환되지 않았습니다"
 
 
+@allure.story("대화 목록 확인")
+@allure.title("[FHC-027] '대화 목록' 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_027_lnb_chat_list_click(chat):
     """
     [FHC-027] '대화 목록' 확인

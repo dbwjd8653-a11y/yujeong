@@ -3,9 +3,15 @@
 
 import pytest
 import logging
+import allure
 from pages.tools.tools_lesson_page import LessonPlanPage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Tools"),
+    allure.feature("수업지도안"),
+]
 
 SCHOOL_LEVEL = "중학교"
 GRADE        = "3학년"
@@ -33,6 +39,9 @@ def page(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("수업지도안 메뉴 확인")
+@allure.title("[FHC-045] '수업지도안' 메뉴 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_045_navigate_to_lesson_plan(page):
     """
     [FHC-045] '수업지도안' 메뉴 확인
@@ -50,6 +59,9 @@ def test_FHC_045_navigate_to_lesson_plan(page):
     logger.info("[FHC-045] 수업지도안 메뉴 확인 완료")
 
 
+@allure.story("수업 내용 입력 필수 항목")
+@allure.title("[FHC-046] 수업 내용 입력 (필수 항목만)")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_046_fill_required_fields(page):
     """
     [FHC-046] 수업 내용 입력 (필수 항목만)
@@ -72,6 +84,9 @@ def test_FHC_046_fill_required_fields(page):
     logger.info("[FHC-046] 필수 항목 입력 완료")
 
 
+@allure.story("수업 내용 입력 선택 항목 포함")
+@allure.title("[FHC-047] 수업 내용 입력 (선택 항목 포함)")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_047_fill_with_optional_fields(page):
     """
     [FHC-047] 수업 내용 입력 (선택 항목 포함)
@@ -93,6 +108,9 @@ def test_FHC_047_fill_with_optional_fields(page):
     logger.info("[FHC-047] 선택 항목 포함 입력 완료")
 
 
+@allure.story("수업지도안 생성 완료")
+@allure.title("[FHC-049] 수업지도안 생성 완료")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_049_generate_lesson_plan(page):
     """
     [FHC-049] 수업지도안 생성 완료

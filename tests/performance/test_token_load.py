@@ -4,9 +4,15 @@
 import time
 import logging
 import pytest
+import allure
 from pages.token.token_page import TokenPage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Performance"),
+    allure.feature("토큰 부하 테스트"),
+]
 
 REPEAT = 5
 
@@ -23,6 +29,9 @@ def token_load(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("토큰 사용량 페이지 반복 조회 부하 테스트")
+@allure.title("[FHC-099] 토큰 사용량 페이지 반복 조회 부하 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_099_token_page_load(token_load):
     """
     [FHC-099] 토큰 사용량 페이지 반복 조회 부하 테스트
