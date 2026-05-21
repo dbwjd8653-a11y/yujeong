@@ -21,3 +21,9 @@ project/
 backup/
 allure-results/
 allure-report/
+
+# 환경 파일
+# example 파일은 gitlab 업로드
+.env
+.env.*
+!.env.example
