@@ -38,21 +38,6 @@ def pytest_configure(config):
     logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
-# ── 테스트 실패 자동 로깅 ──────────────────────────────────────────
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    outcome = yield
-    report = outcome.get_result()
-
-    if report.when == "call" and report.failed:
-        _logger = logging.getLogger(item.module.__name__)
-        # AssertionError 메시지만 추출
-        msg = str(report.longrepr)
-        match = re.search(r'AssertionError:\s*(.+)', msg)
-        fail_msg = match.group(1).strip() if match else msg.splitlines()[-1].strip()
-        _logger.error(f"[FAIL] {item.name} | {fail_msg}")
-
-
 # ── 테스트 실행 순서 정렬 (FHC 번호 오름차순) ─────────────────────
 def pytest_collection_modifyitems(items):
     """FHC_NNN 번호 기준으로 전체 테스트를 오름차순 정렬"""
@@ -152,58 +137,42 @@ def tools_driver(request):
     yield _driver
     _driver.quit()
 
-# ── 테스트 실패 시 Jira 이슈 생성 및 스크린샷 첨부 Hook ───────────
-@pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item, call):
 
+# ── 테스트 실패 시 자동 로깅, Jira 이슈 생성 및 스크린샷 첨부 Hook ───────────
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
 
-    # print("HOOK 실행됨")
-
     if report.when == "call" and report.failed:
+        # ① 로그 기록
+        _logger = logging.getLogger(item.module.__name__)
+        msg = str(report.longrepr)
+        match = re.search(r'AssertionError:\s*(.+)', msg)
+        fail_msg = match.group(1).strip() if match else msg.splitlines()[-1].strip()
+        _logger.error(f"[FAIL] {item.name} | {fail_msg}")
 
-        # print("실패 감지됨")
-
+        # ② Jira 이슈 생성
         signup = item.funcargs.get("signup")
-
         if signup:
-
-            # print("signup fixture 확인")
-
             driver = signup.driver
-
             screenshot = driver.get_screenshot_as_png()
-
             summary = f"[UI 자동화 실패] {item.name}"
-
             description = f"""
-                        자동화 테스트 실패
+                자동화 테스트 실패
 
-                        [Test Case]
-                        {item.name}
+                [Test Case]
+                {item.name}
 
-                        [Error]
-                        {call.excinfo.value}
-                        """
-
-            print("Jira 생성 시작")
-
+                [Error]
+                {call.excinfo.value}
+                """
             issue_key = create_jira_bug_ticket(
                 summary=summary,
                 description=description
             )
-
-            print(f"issue_key: {issue_key}")
-
             if issue_key:
-
-                # print("스크린샷 첨부 시작")
-
-                attach_image_to_jira(
-                    issue_key,
-                    screenshot
-                )
+                attach_image_to_jira(issue_key, screenshot)
 
 
 # ── pytest 종료 시 Discord 결과 전송 ──────────────────────────────
