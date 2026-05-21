@@ -1,0 +1,10 @@
+notify_discord:
+  stage: .post
+  script:
+    - |
+      curl -X POST "$DISCORD_WEBHOOK_URL" \
+        -H "Content-Type: application/json" \
+        -d "{\"content\": \"✅ **${CI_PROJECT_NAME}** - \`${CI_COMMIT_REF_NAME}\` 브랜치에 머지 완료\\n- 작성자: ${GITLAB_USER_NAME}\\n- 커밋: ${CI_COMMIT_TITLE}\"}"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+      when: on_success
