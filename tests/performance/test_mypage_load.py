@@ -4,9 +4,15 @@
 import time
 import logging
 import pytest
+import allure
 from pages.mypage.mypage_page import MyPage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Performance"),
+    allure.feature("마이페이지 부하 테스트"),
+]
 
 REPEAT = 3
 
@@ -23,6 +29,9 @@ def mypage_load(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("마이페이지 탭 반복 이동 부하 테스트")
+@allure.title("[FHC-098] 마이페이지 탭 반복 이동 부하 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_098_mypage_tab_load(mypage_load):
     """
     [FHC-098] 마이페이지 탭 반복 이동 부하 테스트

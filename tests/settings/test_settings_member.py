@@ -4,9 +4,15 @@
 import pytest
 import logging
 import time
+import allure
 from pages.settings.settings_member_page import SettingsMemberPage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Settings"),
+    allure.feature("구성원 관리"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -31,6 +37,9 @@ def settings_member(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("토큰 한도 토글 비활성화")
+@allure.title("[FHC-072] 토큰 한도 토글 비활성화 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_072_token_limit_disable(settings_member):
     """
     [FHC-072] 토큰 한도 토글 비활성화 테스트
@@ -52,6 +61,9 @@ def test_FHC_072_token_limit_disable(settings_member):
     logger.info("[FHC-072] 토큰 한도 토글 비활성화 완료")
 
 
+@allure.story("토큰 한도 토글 활성화")
+@allure.title("[FHC-073] 토큰 한도 토글 활성화 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_073_token_limit_enable(settings_member):
     """
     [FHC-073] 토큰 한도 토글 활성화 테스트
@@ -72,6 +84,9 @@ def test_FHC_073_token_limit_enable(settings_member):
     logger.info("[FHC-073] 토큰 한도 토글 활성화 완료")
 
 
+@allure.story("무제한 토큰 멤버 선택")
+@allure.title("[FHC-074] 무제한 토큰 멤버 선택 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_074_member_no_limit(settings_member):
     """
     [FHC-074] 무제한 토큰 멤버 선택 테스트

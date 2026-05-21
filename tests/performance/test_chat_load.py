@@ -4,9 +4,15 @@
 import time
 import logging
 import pytest
+import allure
 from pages.chat.chat_page import ChatPage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Performance"),
+    allure.feature("채팅 부하 테스트"),
+]
 
 REPEAT = 10
 TEST_MESSAGE = "안녕하세요"
@@ -24,6 +30,9 @@ def chat_load(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("채팅 메시지 연속 전송 부하 테스트")
+@allure.title("[FHC-095] 채팅 메시지 연속 전송 부하 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_095_chat_load(chat_load):
     """
     [FHC-095] 채팅 메시지 연속 전송 부하 테스트
