@@ -10,6 +10,7 @@ from config.selenium_imports import By, EC, WebDriverWait
 
 from pages.base_page import BasePage
 from config.settings import BASE_URL, LOGIN_URL, MYPAGE_USER
+from config.login_helpers import close_token_banner
 
 
 class BaseToolPage(BasePage):
@@ -115,6 +116,7 @@ class BaseToolPage(BasePage):
             )
         )
         self.logger.info("로그인 성공")
+        close_token_banner(self.driver, self.wait)
 
     # ========== LNB 탭 이동 ==========
 
