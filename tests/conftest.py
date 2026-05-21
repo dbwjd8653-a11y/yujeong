@@ -171,17 +171,34 @@ def pytest_runtest_makereport(item, call):
 
         # print("실패 감지됨")
 
-        signup = item.funcargs.get("signup")
+        # ── Jira 중복 생성 방지 ─────────────────────
+        if hasattr(item, "_jira_created"):
+            return
 
-        if signup:
+        item._jira_created = True
 
-            # print("signup fixture 확인")
+        # ── driver 탐색 ───────────────────────────
+        driver = (
+            item.funcargs.get("driver")
+            or item.funcargs.get("driver_module")
+            or item.funcargs.get("tools_driver")
+            or item.funcargs.get("tools_driver_module")
+        )
 
-            driver = signup.driver
+        if driver:
+
+            # print("driver fixture 확인")
 
             screenshot = driver.get_screenshot_as_png()
 
             summary = f"[UI 자동화 실패] {item.name}"
+
+            current_url = None
+
+            try:
+                current_url = driver.current_url
+            except Exception:
+                current_url = "URL 확인 실패"
 
             description = f"""
                         자동화 테스트 실패
@@ -191,6 +208,9 @@ def pytest_runtest_makereport(item, call):
 
                         [Error]
                         {call.excinfo.value}
+
+                        [URL]
+                        {current_url}
                         """
 
             print("Jira 생성 시작")
@@ -204,13 +224,20 @@ def pytest_runtest_makereport(item, call):
 
             if issue_key:
 
-                # print("스크린샷 첨부 시작")
+                try:
 
-                attach_image_to_jira(
-                    issue_key,
-                    screenshot
-                )
+                    # print("스크린샷 첨부 시작")
 
+                    attach_image_to_jira(
+                        issue_key,
+                        screenshot
+                    )
+
+                except Exception as e:
+
+                    print(
+                        f"스크린샷 첨부 실패: {e}"
+                    )
 
 # ── pytest 종료 시 Discord 결과 전송 ──────────────────────────────
 DISCORD_WEBHOOK_URL = "https://discordapp.com/api/webhooks/1506913724663992330/fFs7F0fWTaAADPwpaRXfTE0MkPPlLVuYKVERtR8qwdBfpJhSBwRyCbv8aYHj-5CfrJSV"
