@@ -8,6 +8,8 @@ BasePage를 상속받아 공통 동작을 재사용합니다.
 
 from config.selenium_imports import By, EC, TimeoutException
 
+from selenium.webdriver.common.keys import Keys
+
 from pages.base_page import BasePage
 
 
@@ -54,6 +56,7 @@ class LoginPage(BasePage):
     def enter_email(self, email):
         """이메일 입력 필드에 텍스트를 입력한다."""
         self.enter_text(self.EMAIL_INPUT, email)
+        self.driver.find_element(*self.EMAIL_INPUT).send_keys(Keys.TAB)
 
     def enter_password(self, pwd):
         """비밀번호 입력 필드에 텍스트를 입력한다."""
