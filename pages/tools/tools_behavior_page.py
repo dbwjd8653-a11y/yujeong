@@ -39,32 +39,3 @@ class BehaviorPage(BaseToolPage):
         chip = self.wait.until(EC.element_to_be_clickable(self.COURTESY_CHIP))
         self.js_click(chip)
         self.logger.info("예의 바르고 배려심 있음 선택 완료")
-
-    # ========== 전체 흐름 한 번에 실행 ==========
-
-    def run(
-        self,
-        school_level: str,
-        name: str,
-        request_text: str,
-        download_dir: str,
-        browser: str = "firefox",
-    ):
-        """행동특성 및 종합의견 테스트 전체 흐름"""
-        self.login()
-        self.navigate_to_tools()
-        self.click_tool_menu(self.TOOL_NAME)
-        self.reset_inputs()
-        self.click_class_info_tab()
-        self.select_school_level(school_level)
-        self.click_next()
-        self.handle_modify_modal()
-        self.ensure_student_row_exists()
-        self.enter_student_name(name)
-        self.open_keyword_modal()
-        self.select_character_keyword()
-        self.save_keyword_modal()
-        self.enter_request_text(request_text)
-        self.trigger_generation()
-        self.search_student(name)
-        return self.download_result(download_dir, browser)

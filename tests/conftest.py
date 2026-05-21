@@ -76,13 +76,6 @@ def pytest_collection_modifyitems(items):
 # ── CLI 옵션 ───────────────────────────────────────────────────────
 def pytest_addoption(parser):
     parser.addoption(
-        "--browser",
-        action="store",
-        default="firefox",
-        choices=["firefox", "chrome"],
-        help="테스트에 사용할 브라우저 (기본값: firefox)",
-    )
-    parser.addoption(
         "--discord",
         action="store_true",
         default=False,
@@ -144,29 +137,19 @@ def login_module(driver_module):
 # ── tools 전용 fixtures (다운로드 디렉터리 설정 포함) ─────────────
 
 @pytest.fixture(scope="module")
-def tools_driver_module(request):
+def tools_driver_module():
     """tools 테스트 전용 모듈 공유 브라우저 (다운로드 설정 포함)"""
-    browser = request.config.getoption("--browser")
-    if browser == "chrome":
-        from config.browser_factory import make_chrome_driver
-        _driver = make_chrome_driver(DOWNLOAD_DIR)
-    else:
-        _driver = make_firefox_driver(DOWNLOAD_DIR)
-    logger.info(f"브라우저: {browser.upper()} 실행 완료")
+    _driver = make_firefox_driver(DOWNLOAD_DIR)
+    logger.info("브라우저: FIREFOX 실행 완료")
     yield _driver
     _driver.quit()
 
 
 @pytest.fixture
-def tools_driver(request):
+def tools_driver():
     """tools 테스트 전용 독립 브라우저 (다운로드 설정 포함)"""
-    browser = request.config.getoption("--browser")
-    if browser == "chrome":
-        from config.browser_factory import make_chrome_driver
-        _driver = make_chrome_driver(DOWNLOAD_DIR)
-    else:
-        _driver = make_firefox_driver(DOWNLOAD_DIR)
-    logger.info(f"브라우저: {browser.upper()} 실행 완료")
+    _driver = make_firefox_driver(DOWNLOAD_DIR)
+    logger.info("브라우저: FIREFOX 실행 완료")
     yield _driver
     _driver.quit()
 

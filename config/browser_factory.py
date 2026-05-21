@@ -47,23 +47,3 @@ def make_simple_firefox_driver() -> webdriver.Firefox:
     except Exception:
         logging.exception("❌ Firefox Driver 생성 실패")
         raise
-
-
-def make_chrome_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Chrome:
-    """파일 다운로드 설정이 포함된 Chrome 드라이버 생성"""
-    from selenium.webdriver.chrome.options import Options as ChromeOptions
-    from selenium.webdriver.chrome.service import Service as ChromeService
-    from webdriver_manager.chrome import ChromeDriverManager
-
-    opts = ChromeOptions()
-    opts.add_experimental_option("prefs", {
-        "download.default_directory": download_dir,
-        "download.prompt_for_download": False,
-        "plugins.always_open_pdf_externally": True,
-    })
-    driver = webdriver.Chrome(
-        service=ChromeService(ChromeDriverManager().install()),
-        options=opts,
-    )
-    driver.implicitly_wait(DEFAULT_WAIT)
-    return driver
