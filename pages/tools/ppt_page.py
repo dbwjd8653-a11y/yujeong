@@ -3,8 +3,8 @@ import os
 import random
 import time
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+from config.selenium_imports import By, EC
+
 
 from pages.tools.base_tool_page import BaseToolPage
 

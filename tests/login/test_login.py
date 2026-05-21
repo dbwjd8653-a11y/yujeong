@@ -3,7 +3,9 @@
 
 import logging
 import pytest
-from selenium.common.exceptions import TimeoutException
+
+from config.selenium_imports import TimeoutException
+
 from pages.login.login_page import LoginPage
 from pages.logout.logout_page import LogoutPage
 from config.settings import LOGIN_URL, TEST_USER
@@ -167,5 +169,6 @@ def test_FHC_013_language_reset_after_logout(login_page, login):
     logout_page.click_logout()
     current_lang = login_page.get_current_language()
     logger.info(f"[FHC-013] 로그아웃 후 언어: {current_lang}")
+    
     assert current_lang == "ko-KR", f"언어가 초기화됨 (현재: {current_lang})"
     logger.info("[FHC-013] 언어 초기화 버그 확인 완료")

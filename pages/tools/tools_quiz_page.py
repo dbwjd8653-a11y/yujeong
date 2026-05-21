@@ -3,10 +3,8 @@
 BasePage를 상속받아 퀴즈 생성 전용 동작을 구현합니다.
 """
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from config.selenium_imports import By, EC, WebDriverWait, TimeoutException
+
 from pages.base_page import BasePage
 from config.settings import DEFAULT_WAIT, SHORT_WAIT
 import pytest

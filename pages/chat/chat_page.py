@@ -5,10 +5,9 @@
 import random
 import time
 
-from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+
+from config.selenium_imports import By, EC, WebDriverWait
 
 from pages.base_page import BasePage
 from config.settings import BASE_URL

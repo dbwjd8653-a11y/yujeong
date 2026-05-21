@@ -71,6 +71,21 @@ def pytest_configure(config):
     logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
+# ── 테스트 실패 자동 로깅 ──────────────────────────────────────────
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+
+    if report.when == "call" and report.failed:
+        _logger = logging.getLogger(item.module.__name__)
+        # AssertionError 메시지만 추출
+        msg = str(report.longrepr)
+        match = re.search(r'AssertionError:\s*(.+)', msg)
+        fail_msg = match.group(1).strip() if match else msg.splitlines()[-1].strip()
+        _logger.error(f"[FAIL] {item.name} | {fail_msg}")
+
+
 # ── 테스트 실행 순서 정렬 (FHC 번호 오름차순) ─────────────────────
 def pytest_collection_modifyitems(items):
     """FHC_NNN 번호 기준으로 전체 테스트를 오름차순 정렬"""
