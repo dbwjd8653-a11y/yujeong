@@ -125,7 +125,6 @@ def login_module(driver_module):
     """모듈 전체 공유 로그인 상태 — (driver, wait) 튜플"""
     _wait = WebDriverWait(driver_module, DEFAULT_WAIT)
     do_login(driver_module, _wait)
-    close_token_banner(driver_module, _wait)
     return driver_module, _wait
 
 
