@@ -11,5 +11,5 @@ class SettingsSubscriptionPage(SettingsPage):
 
     def navigate_to_subscription_tab(self):
         self.wait.until(EC.element_to_be_clickable(self._SUBSCRIPTION_TAB)).click()
-        assert self.wait.until(EC.url_contains("/ai-helpy-chat/admin/subscription")), "구독 관리 탭 이동 실패"
+        self.wait.until(EC.url_contains("/ai-helpy-chat/admin/subscription"))
         time.sleep(3)

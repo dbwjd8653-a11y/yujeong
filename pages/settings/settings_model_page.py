@@ -1,5 +1,3 @@
-import time
-
 from config.selenium_imports import By, EC
 
 from selenium.webdriver.common.keys import Keys
@@ -16,9 +14,8 @@ class SettingsModelPage(SettingsPage):
 
     def navigate_to_models_tab(self):
         self.wait.until(EC.element_to_be_clickable(self._MODELS_TAB)).click()
-        assert self.wait.until(EC.url_contains("/ai-helpy-chat/admin/models")), "모델 설정 탭 이동 실패"
+        self.wait.until(EC.url_contains("/ai-helpy-chat/admin/models"))
         self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'li.MuiListItem-root')))
-        time.sleep(1)
 
     def activate_disabled_model(self):
         checkboxes = self.driver.find_elements(By.CSS_SELECTOR, 'input[type="checkbox"]')
@@ -29,7 +26,6 @@ class SettingsModelPage(SettingsPage):
                     name_el = list_item.find_element(By.CSS_SELECTOR, 'span.MuiListItemText-primary')
                     model_name = name_el.text
                     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
-                    time.sleep(0.5)
                     self.driver.execute_script("arguments[0].click();", checkbox)
                     return model_name
                 except Exception:
@@ -44,7 +40,6 @@ class SettingsModelPage(SettingsPage):
                 name_el = list_item.find_element(By.CSS_SELECTOR, 'span.MuiListItemText-primary')
                 if name_el.text == model_name:
                     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
-                    time.sleep(0.5)
                     self.driver.execute_script("arguments[0].click();", checkbox)
                     return
             except Exception:
@@ -52,8 +47,7 @@ class SettingsModelPage(SettingsPage):
 
     def navigate_to_new_chat(self):
         self.wait.until(EC.element_to_be_clickable(self._NEW_CHAT_BTN)).click()
-        assert self.wait.until(lambda d: "admin" not in d.current_url), "새 대화 탭 이동 실패"
-        time.sleep(2)
+        self.wait.until(lambda d: "admin" not in d.current_url)
 
     def open_agent_dropdown(self):
         before = len(self.driver.find_elements(*self._MODEL_TITLE))
@@ -67,4 +61,3 @@ class SettingsModelPage(SettingsPage):
 
     def close_dropdown(self):
         self.driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.ESCAPE)
-        time.sleep(1)
