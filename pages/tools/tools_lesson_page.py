@@ -68,9 +68,7 @@ class LessonPlanPage(BaseToolPage):
         self.driver.execute_script(
             "arguments[0].scrollIntoView({block:'center'});", combo
         )
-        time.sleep(0.3)
         self.wait.until(EC.element_to_be_clickable(self.SCHOOL_COMBOBOX)).click()
-        time.sleep(0.5)
         self.wait.until(
             EC.element_to_be_clickable(
                 (By.XPATH, f"//li[@role='option' and contains(normalize-space(), '{school_level}')]")
@@ -85,7 +83,6 @@ class LessonPlanPage(BaseToolPage):
         combo = self.wait.until(EC.element_to_be_clickable(self.GRADE_COMBOBOX))
         self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", combo)
         combo.click()
-        time.sleep(0.5)
         self.wait.until(
             EC.element_to_be_clickable(
                 (By.XPATH, f"//li[@role='option' and contains(normalize-space(), '{grade}')]")
@@ -97,7 +94,6 @@ class LessonPlanPage(BaseToolPage):
         combo = self.wait.until(EC.element_to_be_clickable(self.SUBJECT_COMBOBOX))
         self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", combo)
         combo.click()
-        time.sleep(0.5)
         self.wait.until(
             EC.element_to_be_clickable(
                 (By.XPATH, f"//li[@role='option' and contains(normalize-space(), '{subject}')]")
@@ -115,7 +111,6 @@ class LessonPlanPage(BaseToolPage):
         combo = self.wait.until(EC.element_to_be_clickable(self.PERIOD_COMBOBOX))
         self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", combo)
         combo.click()
-        time.sleep(0.5)
         self.wait.until(
             EC.element_to_be_clickable(
                 (By.XPATH, f"//li[@role='option' and contains(normalize-space(), '{period}')]")
@@ -135,7 +130,6 @@ class LessonPlanPage(BaseToolPage):
         self.driver.execute_script(
             "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", dropzone
         )
-        time.sleep(0.5)
 
     def is_upload_area_visible(self):
         try:
@@ -192,11 +186,9 @@ class LessonPlanPage(BaseToolPage):
         self.driver.execute_script(
             "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", ta
         )
-        time.sleep(0.5)
         ta = self.wait.until(EC.element_to_be_clickable(self.COMMENT_TEXTAREA))
         ta.clear()
         ta.send_keys(comment)
-        time.sleep(0.5)
 
     # ========== 이전 결과 감지 및 재입력 ==========
 

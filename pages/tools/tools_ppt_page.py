@@ -66,21 +66,17 @@ class PPTPage(BaseToolPage):
             try:
                 el = self.wait.until(EC.element_to_be_clickable(locator))
                 el.click()
-                time.sleep(0.3)
                 el.clear()
             except Exception:
                 pass
-        time.sleep(0.5)
 
     # ========== 필수 입력 ==========
 
     def enter_topic(self, topic):
         inp = self.wait.until(EC.element_to_be_clickable(self.TOPIC_INPUT))
         inp.click()
-        time.sleep(0.5)
         inp.clear()
         inp.send_keys(topic)
-        time.sleep(0.5)
 
     # ========== 선택 입력 ==========
 
@@ -89,28 +85,22 @@ class PPTPage(BaseToolPage):
             return
         ta = self.wait.until(EC.element_to_be_clickable(self.INSTRUCTIONS_TEXTAREA))
         ta.click()
-        time.sleep(0.5)
         ta.clear()
         ta.send_keys(instructions)
-        time.sleep(0.5)
 
     def enter_slides_count(self, count=None):
         count = count or str(random.randint(3, 10))
         inp = self.wait.until(EC.element_to_be_clickable(self.SLIDES_COUNT_INPUT))
         inp.click()
-        time.sleep(0.5)
         inp.clear()
         inp.send_keys(count)
-        time.sleep(0.5)
 
     def enter_section_count(self, count=None):
         count = count or str(random.randint(1, 5))
         inp = self.wait.until(EC.element_to_be_clickable(self.SECTION_COUNT_INPUT))
         inp.click()
-        time.sleep(0.5)
         inp.clear()
         inp.send_keys(count)
-        time.sleep(0.5)
 
     # ========== 심층조사 모드 토글 ==========
 
@@ -129,7 +119,6 @@ class PPTPage(BaseToolPage):
         self.driver.execute_script(
             "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btn
         )
-        time.sleep(0.5)
 
     # ========== 다운로드 ==========
 
@@ -138,9 +127,7 @@ class PPTPage(BaseToolPage):
         self.driver.execute_script(
             "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btn
         )
-        time.sleep(0.5)
         self.js_click(btn)
-        time.sleep(1)
 
     def is_pptx_downloaded(self, download_dir, timeout=30):
         deadline = time.time() + timeout
