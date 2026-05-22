@@ -80,6 +80,7 @@ def test_FHC_073_token_limit_enable(settings_member):
     toggle = settings_member.get_toggle()
     settings_member.click_toggle(toggle)
     assert settings_member.is_toggle_checked(toggle), "토큰 한도 토글 활성화 실패"
+    settings_member.set_global_token("10")
     settings_member.save_and_verify_toast()
     logger.info("[FHC-073] 토큰 한도 토글 활성화 완료")
 
