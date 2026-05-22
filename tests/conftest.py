@@ -27,7 +27,7 @@ def pytest_configure(config):
     log_file = f"logs/test_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s [%(levelname)-8s] %(name)s: %(message)s",
+        format="%(asctime)s [%(levelname)-5s] %(name)s: %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
         handlers=[
             logging.FileHandler(log_file, encoding="utf-8"),
@@ -65,14 +65,24 @@ def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
 
-    if report.when == "call" and report.failed:
-
-        # ① 로그 기록
+    if report.when == "call":
         _logger = logging.getLogger(item.module.__name__)
-        msg = str(report.longrepr)
-        match = re.search(r'AssertionError:\s*(.+)', msg)
-        fail_msg = match.group(1).strip() if match else msg.splitlines()[-1].strip()
-        _logger.error(f"[FAIL] {item.name} | {fail_msg}")
+
+        if report.failed:
+            # ① 로그 기록
+            msg = str(report.longrepr)
+            match = re.search(r'AssertionError:\s*(.+)', msg)
+            fail_msg = match.group(1).strip() if match else msg.splitlines()[-1].strip()
+            _logger.error(f"[FAIL ] {item.name} | {fail_msg}")
+
+        elif report.passed:
+            _logger.info(f"[PASS ] {item.name}")
+
+        elif report.skipped:
+            reason = getattr(report, 'wasxfail', None) or str(report.longrepr)
+            _logger.warning(f"[XFAIL] {item.name} | {reason}")
+
+    if report.when == "call" and report.failed:
 
         # ② driver 탐색
         driver = (
