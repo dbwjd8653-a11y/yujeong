@@ -391,6 +391,7 @@ class BaseToolPage(BasePage):
 
     def search_student(self, name: str):
         search_input = self.wait.until(EC.visibility_of_element_located(self.SEARCH_INPUT))
+        search_input.clear()
         search_input.send_keys(name)
         self.logger.info(f"학생 이름 검색 입력 완료: {name}")
 
