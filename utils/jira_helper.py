@@ -44,8 +44,7 @@ def create_jira_bug_ticket(summary, description):
                 "name": "버그"
             },
             "labels": [
-                "Automation",
-                "UI-Test"
+                "Automation"
             ]
         }
     }
