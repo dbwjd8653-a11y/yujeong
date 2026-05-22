@@ -1,6 +1,7 @@
 # tests/test_tools_03.py
 # 수업지도안 도구 E2E 테스트 — FHC-045 ~ FHC-049
 
+import os
 import pytest
 import logging
 import allure
@@ -13,13 +14,14 @@ pytestmark = [
     allure.feature("수업지도안"),
 ]
 
-SCHOOL_LEVEL = "중학교"
-GRADE        = "3학년"
-SUBJECT      = "수학"
-TOPIC        = "교육"
-PERIOD       = "1"
-METHOD       = "basic"
-COMMENT      = "없음"
+SCHOOL_LEVEL   = "중학교"
+GRADE          = "3학년"
+SUBJECT        = "수학"
+TOPIC          = "교육"
+PERIOD         = "1"
+METHOD         = "basic"
+COMMENT        = "없음"
+REFERENCE_FILE = os.path.join(os.path.dirname(__file__), "../fixtures/file_choose_test.pdf")
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -101,7 +103,7 @@ def test_FHC_047_fill_with_optional_fields(page):
     logger.info("[FHC-047] 선택 항목 포함 입력 시작")
     page.scroll_to_upload_area()
     assert page.is_upload_area_visible(), "업로드 영역 미표시"
-    assert page.click_upload_area_and_verify(), "파일 선택 창 미활성화"
+    page.upload_reference(os.path.abspath(REFERENCE_FILE))
     page.enter_comment(COMMENT)
     assert page.is_generate_btn_enabled(), "[수업지도안 생성] 버튼 미활성화"
     page.click_generate()
