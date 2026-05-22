@@ -141,6 +141,5 @@ def test_FHC_053_download_ppt(ppt):
     logger.info("[FHC-053] PPT 다운로드 시작")
     ppt.click_generate()
     assert ppt.wait_for_generation(timeout=120), "PPT 2분 이내 생성 실패"
-    ppt.click_download()
-    assert ppt.is_pptx_downloaded(DOWNLOAD_DIR, timeout=30), "PPT 파일 다운로드 실패"
+    assert ppt.download_result(DOWNLOAD_DIR), "PPT 파일 다운로드 실패"
     logger.info("[FHC-053] PPT 다운로드 완료")

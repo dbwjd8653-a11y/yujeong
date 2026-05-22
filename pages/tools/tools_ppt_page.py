@@ -3,7 +3,7 @@ import os
 import random
 import time
 
-from config.selenium_imports import By, EC
+from config.selenium_imports import By, EC, WebDriverWait
 
 
 from pages.tools.base_tool_page import BaseToolPage
@@ -40,15 +40,17 @@ class PPTPage(BaseToolPage):
         "//a[contains(., '생성 결과 다운받기')]",
     )
 
+    _ALL_FIELDS = [
+        "TOPIC_INPUT",
+        "INSTRUCTIONS_TEXTAREA",
+        "SLIDES_COUNT_INPUT",
+        "SECTION_COUNT_INPUT",
+    ]
+
     # ========== 입력 필드 사전 체크 / 초기화 ==========
 
     def has_any_field_value(self):
-        for locator in [
-            self.TOPIC_INPUT,
-            self.INSTRUCTIONS_TEXTAREA,
-            self.SLIDES_COUNT_INPUT,
-            self.SECTION_COUNT_INPUT,
-        ]:
+        for locator in [getattr(self, f) for f in self._ALL_FIELDS]:
             try:
                 if self.driver.find_element(*locator).get_attribute("value"):
                     return True
@@ -57,12 +59,7 @@ class PPTPage(BaseToolPage):
         return False
 
     def clear_all_fields(self):
-        for locator in [
-            self.TOPIC_INPUT,
-            self.INSTRUCTIONS_TEXTAREA,
-            self.SLIDES_COUNT_INPUT,
-            self.SECTION_COUNT_INPUT,
-        ]:
+        for locator in [getattr(self, f) for f in self._ALL_FIELDS]:
             try:
                 el = self.wait.until(EC.element_to_be_clickable(locator))
                 el.click()
@@ -122,19 +119,27 @@ class PPTPage(BaseToolPage):
 
     # ========== 다운로드 ==========
 
-    def click_download(self):
+    def download_result(self, download_dir: str, browser: str = "firefox"):
+        existing = set(glob.glob(os.path.join(download_dir, "*.pptx")))
         btn = self.wait.until(EC.element_to_be_clickable(self.DOWNLOAD_BTN))
         self.driver.execute_script(
             "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btn
         )
         self.js_click(btn)
+        self.logger.info("생성 결과 다운받기 버튼 클릭 완료")
 
-    def is_pptx_downloaded(self, download_dir, timeout=30):
-        deadline = time.time() + timeout
+        self.logger.info("파일 다운로드 대기 중...")
+        temp_ext = "*.part" if browser.lower() == "firefox" else "*.crdownload"
+        deadline = time.time() + 30
         while time.time() < deadline:
-            if glob.glob(os.path.join(download_dir, "*.pptx")):
-                return True
             time.sleep(1)
+            current = set(glob.glob(os.path.join(download_dir, "*.pptx")))
+            new_files = current - existing
+            temp_files = glob.glob(os.path.join(download_dir, temp_ext))
+            if new_files and not temp_files:
+                self.logger.info(f"다운로드 완료: {list(new_files)[0]}")
+                return True
+        self.logger.warning("다운로드 타임아웃 (30초 초과)")
         return False
 
     # ========== 생성 버튼 활성화 확인 / 클릭 / 결과 대기 ==========
@@ -152,7 +157,6 @@ class PPTPage(BaseToolPage):
 
     def wait_for_generation(self, timeout: int = 120) -> bool:
         try:
-            from selenium.webdriver.support.ui import WebDriverWait
             WebDriverWait(self.driver, timeout).until(
                 EC.visibility_of_element_located(self.SUCCESS_MESSAGE)
             )
