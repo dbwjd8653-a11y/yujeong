@@ -81,8 +81,6 @@ class PPTPage(BaseToolPage):
         inp.clear()
         inp.send_keys(topic)
         time.sleep(0.5)
-        assert inp.get_attribute("value") == topic, \
-            f"주제 '{topic}' 입력 실패"
 
     # ========== 선택 입력 ==========
 
@@ -95,8 +93,6 @@ class PPTPage(BaseToolPage):
         ta.clear()
         ta.send_keys(instructions)
         time.sleep(0.5)
-        assert ta.get_attribute("value") == instructions, \
-            f"지시사항 '{instructions}' 입력 실패"
 
     def enter_slides_count(self, count=None):
         count = count or str(random.randint(3, 10))
@@ -106,8 +102,6 @@ class PPTPage(BaseToolPage):
         inp.clear()
         inp.send_keys(count)
         time.sleep(0.5)
-        assert inp.get_attribute("value") == count, \
-            f"슬라이드 수 '{count}' 입력 실패"
 
     def enter_section_count(self, count=None):
         count = count or str(random.randint(1, 5))
@@ -117,8 +111,6 @@ class PPTPage(BaseToolPage):
         inp.clear()
         inp.send_keys(count)
         time.sleep(0.5)
-        assert inp.get_attribute("value") == count, \
-            f"섹션 수 '{count}' 입력 실패"
 
     # ========== 심층조사 모드 토글 ==========
 

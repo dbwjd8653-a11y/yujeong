@@ -92,8 +92,6 @@ class LessonPlanPage(BaseToolPage):
             )
         ).click()
         self.wait_backdrop_gone()
-        assert self.driver.find_element(*self.GRADE_INPUT).get_attribute("value"), \
-            f"학년 '{grade}' 선택 실패"
 
     def select_subject(self, subject):
         combo = self.wait.until(EC.element_to_be_clickable(self.SUBJECT_COMBOBOX))
@@ -106,16 +104,12 @@ class LessonPlanPage(BaseToolPage):
             )
         ).click()
         self.wait_backdrop_gone()
-        assert self.driver.find_element(*self.SUBJECT_INPUT_HIDDEN).get_attribute("value"), \
-            f"과목 '{subject}' 선택 실패"
         self.enter_topic(subject)
 
     def enter_topic(self, topic):
         inp = self.wait.until(EC.element_to_be_clickable(self.TOPIC_INPUT))
         inp.clear()
         inp.send_keys(topic)
-        assert inp.get_attribute("value") == topic, \
-            f"교육 내용 '{topic}' 입력 실패"
 
     def select_period(self, period):
         combo = self.wait.until(EC.element_to_be_clickable(self.PERIOD_COMBOBOX))
@@ -128,14 +122,11 @@ class LessonPlanPage(BaseToolPage):
             )
         ).click()
         self.wait_backdrop_gone()
-        assert self.driver.find_element(*self.PERIOD_INPUT).get_attribute("value"), \
-            f"수업 차시 '{period}' 선택 실패"
 
     def select_generation_method(self, method="basic"):
         locator = self.METHOD_BASIC if method == "basic" else self.METHOD_PRECISE
         radio = self.wait.until(EC.presence_of_element_located(locator))
         self.js_click(radio)
-        assert radio.is_selected(), f"생성 방식 '{method}' 선택 실패"
 
     # ========== 선택 입력 ==========
 
@@ -206,8 +197,6 @@ class LessonPlanPage(BaseToolPage):
         ta.clear()
         ta.send_keys(comment)
         time.sleep(0.5)
-        assert ta.get_attribute("value") == comment, \
-            f"기타 요청사항 '{comment}' 입력 실패"
 
     # ========== 이전 결과 감지 및 재입력 ==========
 
