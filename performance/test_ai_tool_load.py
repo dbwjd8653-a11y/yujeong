@@ -62,33 +62,46 @@ def test_FHC_097_ai_tool_load(ai_tool_load):
 
     page = BehaviorPage(driver, wait)
 
-    for i in range(1, REPEAT + 1):
-        logger.info(f"[{i}/{REPEAT}] 생성 요청 시작")
+    # 공통 셋업: 도구 진입 → 수업 정보 → 학생 정보 입력 → 1회차 생성 결과 받기
+    page.navigate_to_tools()
+    page.click_tool_menu(page.TOOL_NAME)
+    page.reset_inputs()
+    page.click_class_info_tab()
+    page.select_school_level(SCHOOL_LEVEL)
+    page.click_next()
+    page.handle_modify_modal()
+    page.ensure_student_row_exists()
+    page.enter_student_name(STUDENT_NAME)
+    page.open_keyword_modal()
+    page.select_character_keyword()
+    page.save_keyword_modal()
+    page.enter_request_text(REQUEST_TEXT)
+    page.trigger_generation()
+    page.search_student(STUDENT_NAME)
+
+    logger.info(f"[1/{REPEAT}] 생성 결과 받기 시작")
+    start = time.time()
+    result = page.download_result(DOWNLOAD_DIR)
+    elapsed = round(time.time() - start, 2)
+    if result:
+        logger.info(f"[1/{REPEAT}] 다운로드 완료 ({elapsed}s)")
+    else:
+        fail_count += 1
+        logger.error(f"[1/{REPEAT}] 다운로드 실패 ({elapsed}s)")
+
+    # 같은 상태에서 '생성 결과 받기' 버튼 추가 2회 클릭
+    for i in range(2, REPEAT + 1):
+        logger.info(f"[{i}/{REPEAT}] 생성 결과 받기 시작")
         start = time.time()
 
-        page.navigate_to_tools()
-        page.click_tool_menu(page.TOOL_NAME)
-        page.reset_inputs()
-        page.click_class_info_tab()
-        page.select_school_level(SCHOOL_LEVEL)
-        page.click_next()
-        page.handle_modify_modal()
-        page.ensure_student_row_exists()
-        page.enter_student_name(STUDENT_NAME)
-        page.open_keyword_modal()
-        page.select_character_keyword()
-        page.save_keyword_modal()
-        page.enter_request_text(REQUEST_TEXT)
-        page.trigger_generation()
-        page.search_student(STUDENT_NAME)
         result = page.download_result(DOWNLOAD_DIR)
         elapsed = round(time.time() - start, 2)
 
         if result:
-            logger.info(f"[{i}/{REPEAT}] 생성 및 다운로드 완료 ({elapsed}s)")
+            logger.info(f"[{i}/{REPEAT}] 다운로드 완료 ({elapsed}s)")
         else:
             fail_count += 1
-            logger.error(f"[{i}/{REPEAT}] 생성 실패 또는 다운로드 실패 ({elapsed}s)")
+            logger.error(f"[{i}/{REPEAT}] 다운로드 실패 ({elapsed}s)")
 
     assert fail_count == 0, f"3회 중 {fail_count}회 생성 실패"
     logger.info("[FHC-097] AI 도구 연속 생성 부하 테스트 완료")
