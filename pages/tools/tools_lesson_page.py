@@ -1,5 +1,4 @@
-import ctypes
-import time
+import os
 
 from config.selenium_imports import By, EC
 
@@ -45,7 +44,6 @@ class LessonPlanPage(BaseToolPage):
         "//input[@type='radio'][ancestor::label[.//*[contains(text(),'정교한 생성')]]]",
     )
 
-    FILE_UPLOAD_TEXT = (By.CSS_SELECTOR, "[data-testid='file-arrow-upIcon']")
     DROPZONE         = (By.CSS_SELECTOR, "div[data-scope='file-upload'][data-part='dropzone']")
     FILE_INPUT       = (By.CSS_SELECTOR, "input[accept='.pdf,.ppt,.jpg']")
 
@@ -137,46 +135,15 @@ class LessonPlanPage(BaseToolPage):
         except Exception:
             return False
 
-    def click_upload_area_and_verify(self):
-        VK_ESCAPE  = 0x1B
-        WM_COMMAND = 0x0111
-        IDCANCEL   = 2
-
-        hwnd_before = ctypes.windll.user32.GetForegroundWindow()
-
-        p_elem = self.wait.until(EC.element_to_be_clickable(self.FILE_UPLOAD_TEXT))
-        p_elem.click()
-
-        dialog_opened = False
-        hwnd_dialog = None
-        deadline = time.time() + 5
-        while time.time() < deadline:
-            time.sleep(0.3)
-            hwnd_fg = ctypes.windll.user32.GetForegroundWindow()
-            if hwnd_fg != hwnd_before:
-                dialog_opened = True
-                hwnd_dialog = hwnd_fg
-                break
-            hwnd_found = ctypes.windll.user32.FindWindowW("#32770", None)
-            if hwnd_found:
-                dialog_opened = True
-                hwnd_dialog = hwnd_found
-                break
-
-        assert dialog_opened, "파일 선택 창 미탐지 — 포그라운드 창 변화 없음"
-
-        time.sleep(1)
-        if hwnd_dialog:
-            ctypes.windll.user32.SendMessageW(hwnd_dialog, WM_COMMAND, IDCANCEL, 0)
-        else:
-            ctypes.windll.user32.keybd_event(VK_ESCAPE, 0, 0, 0)
-            ctypes.windll.user32.keybd_event(VK_ESCAPE, 0, 2, 0)
-        time.sleep(0.3)
-
-        return dialog_opened
+    @staticmethod
+    def get_current_path():
+        print("current path is ", os.getcwd())
+        return os.getcwd()
 
     def upload_reference(self, file_path):
         file_input = self.wait.until(EC.presence_of_element_located(self.FILE_INPUT))
+        if not os.path.isabs(file_path):
+            file_path = os.path.join(self.get_current_path(), file_path)
         file_input.send_keys(file_path)
 
     def enter_comment(self, comment):
