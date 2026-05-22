@@ -94,6 +94,7 @@ def test_FHC_059_topic_and_message_btn_enabled(deep):
     logger.info("[FHC-059] 주제 + 지시사항 입력 → 버튼 활성화 확인 완료")
 
 
+@pytest.mark.slow
 @allure.story("생성 버튼 클릭 생성 시작 확인")
 @allure.title("[FHC-060] 생성 버튼 클릭 → 생성 시작 확인")
 @allure.severity(allure.severity_level.NORMAL)
