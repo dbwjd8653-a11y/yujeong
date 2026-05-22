@@ -108,6 +108,7 @@ def test_FHC_047_fill_with_optional_fields(page):
     logger.info("[FHC-047] 선택 항목 포함 입력 완료")
 
 
+@pytest.mark.slow
 @allure.story("수업지도안 생성 완료")
 @allure.title("[FHC-049] 수업지도안 생성 완료")
 @allure.severity(allure.severity_level.NORMAL)

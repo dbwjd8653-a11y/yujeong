@@ -168,6 +168,7 @@ def test_FHC_043_select_and_save_keyword(behavior):
         "키워드 저장 후 '생성 결과 받기' 버튼이 표시되지 않았습니다"
 
 
+@pytest.mark.slow
 @allure.story("AI 생성 및 결과 파일 다운로드")
 @allure.title("[FHC-044] AI 생성 및 결과 파일 다운로드")
 @allure.severity(allure.severity_level.NORMAL)

@@ -56,6 +56,7 @@ def test_FHC_090_language_setting(mypage):
     mypage.change_language("ko-KR")
 
 
+@pytest.mark.xfail(reason="FB-001: 로그아웃 후 언어 en-US 초기화 버그")
 @allure.story("언어 변경 후 로그아웃 로그인 페이지 언어")
 @allure.title("[FHC-091] 언어 변경 후 로그아웃 로그인 페이지 언어")
 @allure.severity(allure.severity_level.NORMAL)

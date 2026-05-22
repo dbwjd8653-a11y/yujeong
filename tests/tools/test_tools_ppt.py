@@ -124,6 +124,7 @@ def test_FHC_052_deep_research_toggle(ppt):
     logger.info("[FHC-052] 심층조사 모드 토글 확인 완료")
 
 
+@pytest.mark.slow
 @allure.story("PPT 생성 결과 다운로드")
 @allure.title("[FHC-053] PPT 생성 결과 다운로드")
 @allure.severity(allure.severity_level.NORMAL)

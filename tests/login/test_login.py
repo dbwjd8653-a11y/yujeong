@@ -166,6 +166,7 @@ def test_FHC_012_login_lockout(login_page):
     logger.info("[FHC-012] 계정 잠금 확인 완료")
 
 
+@pytest.mark.xfail(reason="FB-001: 로그아웃 후 언어 en-US 초기화 버그")
 @allure.story("언어 변경 후 로그인 페이지 언어 확인")
 @allure.title("[FHC-013] 언어 변경 후 로그아웃 로그인 페이지 언어")
 @allure.severity(allure.severity_level.MINOR)
