@@ -73,14 +73,14 @@ def pytest_runtest_makereport(item, call):
             msg = str(report.longrepr)
             match = re.search(r'AssertionError:\s*(.+)', msg)
             fail_msg = match.group(1).strip() if match else msg.splitlines()[-1].strip()
-            _logger.error(f"[FAIL ] {item.name} | {fail_msg}")
+            _logger.error(f"❌ {item.name} | {fail_msg}")
 
         elif report.passed:
-            _logger.info(f"[PASS ] {item.name}")
+            _logger.info(f"✅ {item.name}")
 
         elif report.skipped:
             reason = getattr(report, 'wasxfail', None) or str(report.longrepr)
-            _logger.warning(f"[XFAIL] {item.name} | {reason}")
+            _logger.warning(f"⚠️  {item.name} | {reason}")
 
     if report.when == "call" and report.failed:
 
