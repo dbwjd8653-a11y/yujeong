@@ -89,7 +89,6 @@ def test_FHC_007_invalid_email(login_page):
     """
     logger.info("[FHC-007] 이메일 유효성 검사 시작")
     login_page.enter_email(INPUT_EMAIL_INVALID)
-    login_page.click(login_page.PWD_INPUT)   # blur 트리거
     assert login_page.is_email_error_displayed(), "이메일 유효성 오류 메시지 미표시"
     logger.info("[FHC-007] 이메일 유효성 검사 완료")
 
