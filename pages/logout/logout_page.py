@@ -48,7 +48,7 @@ class LogoutPage(BasePage):
         masked = self.wait_for_visible(self.MASKED_EMAIL).text
         prefix = original_email[:2]           # 앞 2자리
         domain = original_email.split("@")[1] # @이후
-        print(f"마스킹된 이메일: {masked}")
+        self.logger.info(f"마스킹된 이메일 확인: {masked}")
         return masked.startswith(prefix) and masked.endswith(domain)
 
     def enter_password(self, pwd):
