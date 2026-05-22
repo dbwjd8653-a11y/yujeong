@@ -76,7 +76,6 @@ def test_FHC_055_fill_fields_and_btn_enabled(quiz):
     logger.info("[FHC-055] 퀴즈 생성 내용 입력 → 버튼 활성화 확인 완료")
 
 
-@pytest.mark.slow
 @allure.story("퀴즈 생성 완료 확인")
 @allure.title("[FHC-056] 퀴즈 생성 버튼 클릭 → 생성 시작 및 완료 확인")
 @allure.severity(allure.severity_level.NORMAL)
