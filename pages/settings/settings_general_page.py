@@ -16,7 +16,8 @@ class SettingsPage:
         self.wait = wait
 
     def navigate_to_settings(self):
-        self.driver.find_element(*self._GEAR_BTN).click()
+        gear = self.wait.until(EC.presence_of_element_located(self._GEAR_BTN))
+        self.driver.execute_script("arguments[0].click();", gear)
         time.sleep(1)
 
         self.wait.until(EC.element_to_be_clickable(self._SETTINGS_MENU_ITEM)).click()

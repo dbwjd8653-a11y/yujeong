@@ -13,7 +13,7 @@ class SettingsMemberPage(SettingsPage):
     _GLOBAL_TOKEN_INPUT = (By.CSS_SELECTOR, 'input[name="quota.quantity"]')
     _TOKEN_LIMIT_TOGGLE = (By.CSS_SELECTOR, 'span.MuiSwitch-sizeMedium input[type="checkbox"]')
     _SAVE_BTN = (By.XPATH, '//button[normalize-space()="저장"]')
-    _TOAST = (By.XPATH, '//*[contains(text(),"토큰 한도가 저장되었습니다")]')
+    _TOAST = (By.XPATH, '//*[@role="alert" and contains(.,"저장")]')
 
     def navigate_to_member_tab(self):
         self.wait.until(EC.element_to_be_clickable(self._MEMBER_TAB)).click()
@@ -64,10 +64,10 @@ class SettingsMemberPage(SettingsPage):
         time.sleep(1)
 
     def save_and_verify_toast(self):
-        save_btn = self.wait.until(EC.presence_of_element_located(self._SAVE_BTN))
+        save_btn = self.wait.until(EC.element_to_be_clickable(self._SAVE_BTN))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", save_btn)
         time.sleep(0.5)
-        self.driver.execute_script("arguments[0].click();", save_btn)
+        save_btn.click()
         time.sleep(1)
         assert self.wait.until(EC.presence_of_element_located(self._TOAST)), "토큰 한도 저장 알림 팝업 미확인"
         time.sleep(2)
