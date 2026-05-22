@@ -2,10 +2,16 @@
 # '세부 특기사항' 도구 E2E 테스트 — FHC-028 ~ FHC-036
 
 import pytest
+import allure
 
 from pages.tools.tools_specialty_page import SpecialtyPage
 
 from config.settings import DOWNLOAD_DIR
+
+pytestmark = [
+    allure.epic("Tools"),
+    allure.feature("세부 특기사항"),
+]
 
 SCHOOL_LEVEL  = "중학교"
 GRADE         = "3학년"
@@ -33,6 +39,9 @@ def specialty(tools_driver_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("도구 목록 표시 확인")
+@allure.title("[FHC-028] 도구 목록 표시 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_028_tools_list_displayed(specialty):
     """
     [FHC-028] 도구 목록 표시 확인
@@ -47,6 +56,9 @@ def test_FHC_028_tools_list_displayed(specialty):
         "도구 목록 페이지에 도구 카드가 표시되지 않았습니다"
 
 
+@allure.story("세부 특기사항 도구 선택")
+@allure.title("[FHC-029] '세부 특기사항' 도구 선택")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_029_navigate_to_specialty(specialty):
     """
     [FHC-029] '세부 특기사항' 도구 선택
@@ -61,6 +73,9 @@ def test_FHC_029_navigate_to_specialty(specialty):
         "세부 특기사항 도구 페이지로 이동하지 못했습니다"
 
 
+@allure.story("입력 내역 초기화")
+@allure.title("[FHC-030] 입력 내역 초기화")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_030_reset_inputs(specialty):
     """
     [FHC-030] 입력 내역 초기화
@@ -76,6 +91,9 @@ def test_FHC_030_reset_inputs(specialty):
         "초기화 완료 후 수업 정보 입력 탭이 표시되지 않았습니다"
 
 
+@allure.story("수업 정보 입력 탭 이동")
+@allure.title("[FHC-031] 수업 정보 입력 탭 이동")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_031_class_info_tab(specialty):
     """
     [FHC-031] 수업 정보 입력 탭 이동
@@ -90,6 +108,9 @@ def test_FHC_031_class_info_tab(specialty):
         "수업 정보 입력 화면(학교급 콤보박스)이 표시되지 않았습니다"
 
 
+@allure.story("수업 정보 입력")
+@allure.title("[FHC-032] 수업 정보 입력 (학교급 / 학년 / 과목 / 단원)")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_032_fill_class_info(specialty):
     """
     [FHC-032] 수업 정보 입력 (학교급 / 학년 / 과목 / 단원)
@@ -107,6 +128,9 @@ def test_FHC_032_fill_class_info(specialty):
         "수업 정보 입력 완료 후 '다음으로' 버튼이 활성화되지 않았습니다"
 
 
+@allure.story("다음으로 버튼 클릭 학생 정보 화면 이동")
+@allure.title("[FHC-033] '다음으로' 버튼 클릭 → 학생 정보 화면 이동")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_033_click_next_to_student(specialty):
     """
     [FHC-033] '다음으로' 버튼 클릭 → 학생 정보 화면 이동
@@ -122,6 +146,9 @@ def test_FHC_033_click_next_to_student(specialty):
         "학생 정보 입력 화면으로 이동하지 못했습니다"
 
 
+@allure.story("학생 이름 입력")
+@allure.title("[FHC-034] 학생 이름 입력")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_034_enter_student_name(specialty):
     """
     [FHC-034] 학생 이름 입력
@@ -137,6 +164,9 @@ def test_FHC_034_enter_student_name(specialty):
         f"학생 이름 '{NAME_TEXT}'이 입력 필드에 반영되지 않았습니다"
 
 
+@allure.story("학습 태도 키워드 선택 및 저장")
+@allure.title("[FHC-035] 학습 태도 키워드 선택 및 저장")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_035_select_and_save_keyword(specialty):
     """
     [FHC-035] 학습 태도 키워드 선택 및 저장
@@ -157,6 +187,9 @@ def test_FHC_035_select_and_save_keyword(specialty):
         "키워드 저장 후 '생성 결과 받기' 버튼이 표시되지 않았습니다"
 
 
+@allure.story("AI 생성 및 결과 파일 다운로드")
+@allure.title("[FHC-036] AI 생성 및 결과 파일 다운로드")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_036_generate_and_download(specialty):
     """
     [FHC-036] AI 생성 및 결과 파일 다운로드

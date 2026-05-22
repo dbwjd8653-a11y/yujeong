@@ -3,9 +3,15 @@
 
 import pytest
 import logging
+import allure
 from pages.settings.settings_model_page import SettingsModelPage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Settings"),
+    allure.feature("모델 설정"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -30,6 +36,9 @@ def settings_model(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("비활성화 모델 활성화")
+@allure.title("[FHC-069] 비활성화 모델 활성화 후 에이전트 모델 리스트 업데이트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_069_activate_model(settings_model):
     """
     [FHC-069] 비활성화 모델 활성화 후 에이전트 모델 리스트 업데이트
@@ -55,6 +64,9 @@ def test_FHC_069_activate_model(settings_model):
     logger.info("[FHC-069] 비활성화 모델 활성화 완료")
 
 
+@allure.story("활성화 모델 비활성화")
+@allure.title("[FHC-070] 활성화 모델 비활성화 후 에이전트 모델 리스트 업데이트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_070_deactivate_model(settings_model):
     """
     [FHC-070] 활성화 모델 비활성화 후 에이전트 모델 리스트 업데이트

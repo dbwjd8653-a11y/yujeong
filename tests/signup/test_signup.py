@@ -3,12 +3,18 @@
 
 import logging
 import pytest
+import allure
 from pages.signup.signup_page import SignupPage
 from utils.random_generator import generate_test_email
 
 logger = logging.getLogger(__name__)
 
 LONG_TEXT_300 = "김수한무거북이와두루미삼천갑자동방삭치치카포사리사리센타워리워리세브리깡" * 10
+
+pytestmark = [
+    allure.epic("Signup"),
+    allure.feature("회원가입"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -31,6 +37,9 @@ def signup(driver):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("회원가입 페이지 요소 확인")
+@allure.title("[FHC-001] 회원가입 페이지 이동 확인")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_001_signup_page_elements(signup):
     """
     [FHC-001] 회원가입 페이지 이동 확인
@@ -48,7 +57,12 @@ def test_FHC_001_signup_page_elements(signup):
     assert signup.get_agree_checkbox().is_displayed()
     logger.info("[FHC-001] 회원가입 페이지 요소 확인 완료")
 
+
 # ── 테스트 케이스 ──────────────────────────────────────────────────
+
+@allure.story("전체 동의 회원가입")
+@allure.title("[FHC-002] 전체 동의 회원가입 동작 테스트")
+@allure.severity(allure.severity_level.CRITICAL)
 def test_FHC_002_signup_agree_all(signup):
     """
     [FHC-002] 전체 동의 회원가입 동작 테스트
@@ -72,6 +86,10 @@ def test_FHC_002_signup_agree_all(signup):
     assert signup.is_signup_success(), "회원가입 후 랜딩 페이지로 이동하지 않았습니다"
     logger.info("[FHC-002] 전체 동의 회원가입 완료")
 
+
+@allure.story("필수 약관 회원가입")
+@allure.title("[FHC-003] 필수 약관만 동의 후 회원가입 동작 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_003_signup_required_only(signup):
     """
     [FHC-003] 필수 약관만 동의 후 회원가입 동작 테스트
@@ -97,6 +115,10 @@ def test_FHC_003_signup_required_only(signup):
     assert signup.is_signup_success(), "회원가입 후 랜딩 페이지로 이동하지 않았습니다"
     logger.info("[FHC-003] 필수 약관 회원가입 완료")
 
+
+@allure.story("이메일 유효성 검사")
+@allure.title("[FHC-004] 이메일 유효성 검사")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_004_signup_invalid_email(signup):
     """
     [FHC-004] 이메일 유효성 검사 (negative test)
@@ -111,6 +133,10 @@ def test_FHC_004_signup_invalid_email(signup):
     assert signup.get_email_error_message().is_displayed()
     logger.info("[FHC-004] 이메일 유효성 검사 완료")
 
+
+@allure.story("이름 유효성 검사")
+@allure.title("[FHC-005] 이름 유효성 검사")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_005_signup_invalid_name(signup):
     """
     [FHC-005] 이름 유효성 검사 (negative test)

@@ -3,8 +3,14 @@
 # ※ FHC-086 계정 탈퇴 후 test_recreate_account_after_withdraw에서 동일 계정으로 재가입하여 복구
 
 import pytest
+import allure
 
 from pages.mypage.mypage_withdraw_page import MyPage06
+
+pytestmark = [
+    allure.epic("MyPage"),
+    allure.feature("계정 탈퇴"),
+]
 
 MAIN_EMAIL    = "test_dummy@naver.com"
 MAIN_PASSWORD = "test@1234"
@@ -29,6 +35,9 @@ def mypage(tools_driver_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("계정 탈퇴 영역 확인")
+@allure.title("[FHC-084] 계정 탈퇴 영역 확인")
+@allure.severity(allure.severity_level.CRITICAL)
 def test_FHC_084_withdraw_area_displayed(mypage):
     """
     [FHC-084] '계정 탈퇴' 영역 확인
@@ -44,6 +53,9 @@ def test_FHC_084_withdraw_area_displayed(mypage):
         "계정 탈퇴 영역 또는 [탈퇴하기] 버튼이 표시되지 않았습니다"
 
 
+@allure.story("계정 탈퇴 2차 확인 문구")
+@allure.title("[FHC-085] 계정 탈퇴 2차 확인 문구")
+@allure.severity(allure.severity_level.CRITICAL)
 def test_FHC_085_withdraw_confirm_message(mypage):
     """
     [FHC-085] 계정 탈퇴 2차 확인 문구
@@ -62,6 +74,9 @@ def test_FHC_085_withdraw_confirm_message(mypage):
     mypage.driver.back()
 
 
+@allure.story("계정 탈퇴")
+@allure.title("[FHC-086] 계정 탈퇴")
+@allure.severity(allure.severity_level.CRITICAL)
 def test_FHC_086_withdraw_account(mypage):
     """
     [FHC-086] 계정 탈퇴
@@ -84,6 +99,9 @@ def test_FHC_086_withdraw_account(mypage):
         "계정 탈퇴 후 로그인 랜딩 페이지로 이동하지 못했습니다"
 
 
+@allure.story("탈퇴 후 재가입")
+@allure.title("[인프라] 계정 탈퇴 후 재가입")
+@allure.severity(allure.severity_level.MINOR)
 def test_recreate_account_after_withdraw(mypage):
     """
     [인프라] 계정 생성 (탈퇴 후 재가입)

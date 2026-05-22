@@ -116,7 +116,7 @@ class BaseToolPage(BasePage):
             )
         )
         self.logger.info("로그인 성공")
-        close_token_banner(self.driver, self.wait)
+        close_token_banner(self.driver, self.wait)  # BaseToolPage 자체 login() 전용
 
     # ========== LNB 탭 이동 ==========
 
@@ -130,7 +130,7 @@ class BaseToolPage(BasePage):
     # ========== 도구 선택 ==========
 
     def navigate_to_tools(self):
-        self.driver.get(self.TOOLS_URL)
+        self.go(self.TOOLS_URL)
         self.wait.until(
             EC.presence_of_element_located(
                 (By.XPATH, "//a[contains(@href,'ai-helpy-chat/tools/')]")
@@ -147,6 +147,7 @@ class BaseToolPage(BasePage):
         self.js_click(tool_btn)
         self.wait.until(EC.url_contains("ai-helpy-chat/tools/"))
         self.logger.info(f"'{tool_name}' 클릭 완료")
+        close_token_banner(self.driver, self.wait)
 
     # ========== 입력 내역 초기화 ==========
 

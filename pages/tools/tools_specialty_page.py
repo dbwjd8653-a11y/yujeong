@@ -88,38 +88,3 @@ class SpecialtyPage(BaseToolPage):
             self.wait.until(EC.presence_of_element_located(self.CONCENTRATION_CHIP))
         )
         self.logger.info("수업 집중도 높음 선택 완료")
-
-    # ========== 전체 흐름 한 번에 실행 ==========
-
-    def run(
-        self,
-        school_level: str,
-        grade: str,
-        subject: str,
-        unit: str,
-        name: str,
-        request_text: str,
-        download_dir: str,
-        browser: str = "firefox",
-    ):
-        """세부 특기사항 테스트 전체 흐름"""
-        self.login()
-        self.navigate_to_tools()
-        self.click_tool_menu(self.TOOL_NAME)
-        self.reset_inputs()
-        self.click_class_info_tab()
-        self.select_school_level(school_level)
-        self.select_grade(grade)
-        self.enter_subject(subject)
-        self.enter_unit(unit)
-        self.click_next()
-        self.handle_modify_modal()
-        self.ensure_student_row_exists()
-        self.enter_student_name(name)
-        self.open_keyword_modal()
-        self.select_study_attitude_keyword()
-        self.save_keyword_modal()
-        self.enter_request_text(request_text)
-        self.trigger_generation()
-        self.search_student(name)
-        return self.download_result(download_dir, browser)

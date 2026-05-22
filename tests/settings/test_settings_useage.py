@@ -3,9 +3,15 @@
 
 import pytest
 import logging
+import allure
 from pages.settings.settings_useage_page import SettingsUseagePage
 
 logger = logging.getLogger(__name__)
+
+pytestmark = [
+    allure.epic("Settings"),
+    allure.feature("이용 내역"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -28,6 +34,9 @@ def settings_useage(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("이용 내역 탭 출력")
+@allure.title("[FHC-068] '이용 내역' 탭 출력 테스트")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_068_navigate_to_history_tab(settings_useage):
     """
     [FHC-068] '이용 내역' 탭 출력 테스트

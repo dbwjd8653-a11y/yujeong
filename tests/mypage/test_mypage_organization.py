@@ -2,8 +2,14 @@
 # 마이페이지 > 내 기관 E2E 테스트 — FHC-087 ~ FHC-089
 
 import pytest
+import allure
 
 from pages.mypage.mypage_organization_page import MyPage07
+
+pytestmark = [
+    allure.epic("MyPage"),
+    allure.feature("내 기관"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -24,6 +30,9 @@ def mypage(tools_driver_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@allure.story("내 기관 UI 및 정보 표시")
+@allure.title("[FHC-087] 내 기관 클릭 시 UI 및 정보 표시")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_087_org_info_displayed(mypage):
     """
     [FHC-087] 내 기관 클릭 시 UI 및 정보 표시
@@ -40,6 +49,9 @@ def test_FHC_087_org_info_displayed(mypage):
         "내 기관 페이지에 UI 및 정보가 표시되지 않았습니다"
 
 
+@allure.story("qa프로젝트 페이지 하이퍼링크 작동")
+@allure.title("[FHC-088] qa프로젝트 페이지 하이퍼링크 작동")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_088_qaproject_link(mypage):
     """
     [FHC-088] qa프로젝트 페이지 하이퍼링크 작동
@@ -60,6 +72,9 @@ def test_FHC_088_qaproject_link(mypage):
     mypage.close_new_tabs_and_return(original_handle)
 
 
+@allure.story("헬프 센터 하이퍼링크 작동")
+@allure.title("[FHC-089] 헬프 센터 하이퍼링크 작동")
+@allure.severity(allure.severity_level.NORMAL)
 def test_FHC_089_help_center_link(mypage):
     """
     [FHC-089] 헬프 센터 하이퍼링크 작동
