@@ -1,11 +1,11 @@
-## pytest 기본 실행 (slow 제외 test)
+## pytest 평소 실행 (slow 제외 test)
 > pytest
 
 ## slow marker까지 실행
-> pytest -m "" 
+> pytest -m " " 
 
-## slow marker 만 실행
-> pytest -m slow
+## slow marker만 실행
+> pytest -m slow 
 
 
 ## pytest-xdist (pytest 병렬 실행)
@@ -15,6 +15,14 @@
 ### 기본 사용법
 1. CPU 개수만큼 자동 병렬 실행
 > pytest-n auto
+
+--> auto 사용 시 논리 프로세스 수로 워커 생성되어 과부하 발생 가능성 높아짐
+--> 아래 스텝으로 진행
+
+1. 본인 CPU 코어 수 확인 wmic cpu get NumberOfCores
+2. 코어 수에 맞게 실행pytest -n <코어수> --dist=loadfile
+
+=> 브라우저 과다 실행으로 TimeoutException, 세션 충돌 에러 증가 가능성 있음
 
 2. 직접 프로세스 개수 지정
 > pytest-n4
@@ -59,6 +67,7 @@ VS Code 터미널에서 우측 상단 + 옆 드롭다운 → PowerShell 선택
 
 * Scoop 설치 시 팝업이 뜨면 Yes 또는 A(모두 허용) 선택
 
+
 ## Allure 리포트 확인
 > pytest tests/폴더명/ --open
 
@@ -70,3 +79,7 @@ VS Code 터미널에서 우측 상단 + 옆 드롭다운 → PowerShell 선택
 
 ### Discord로 전송 (리포트 스크린샷 포함)
 > pytest tests/폴더명/ --discord
+
+
+## Allure 리포트 확인 없이 테스트만 실행
+> pytest tests/ --no-header -p no:allure
