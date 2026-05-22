@@ -30,11 +30,6 @@ TEST_USER = {
     "pw": os.getenv("TEST_USER_PW", "qa3teamjs@"),
 }
 
-MYPAGE_USER = {
-    "id": os.getenv("MYPAGE_USER_ID", "qa5team3-02@elicer.com"),
-    "pw": os.getenv("MYPAGE_USER_PW", "Mdk@02169630"),
-}
-
 # ── 다운로드 경로 ───────────────────────────────────────────────────
 # DOWNLOAD_DIR = r"C:\Users\~\Downloads"
 DOWNLOAD_DIR = os.path.join(os.path.expanduser("~"), "Downloads")
