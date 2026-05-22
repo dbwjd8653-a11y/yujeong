@@ -39,10 +39,24 @@ def pytest_configure(config):
     logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
+def pytest_sessionstart(session):
+    import shutil
+    history_src = Path("allure-report/history")
+    history_dst = Path("allure-results/history")
+    if history_src.exists():
+        if history_dst.exists():
+            shutil.rmtree(history_dst)
+        shutil.copytree(str(history_src), str(history_dst))
+
+
 def pytest_sessionfinish(session, exitstatus):
+    import subprocess
+    subprocess.run(
+        ["allure", "generate", "allure-results", "-o", "allure-report", "--clean"],
+        capture_output=True, timeout=60, shell=True
+    )
     if session.config.getoption("--open", default=False) or session.config.getoption("--discord", default=False):
-        import subprocess
-        subprocess.Popen(["allure", "serve", "allure-results"])
+        subprocess.Popen(["allure", "serve", "allure-results"], shell=True)
 
 
 # ── 테스트 실패 자동 로깅 ──────────────────────────────────────────
@@ -297,11 +311,6 @@ def pytest_unconfigure(config):
         import subprocess, threading, http.server, socket, time
         from selenium import webdriver
         from selenium.webdriver.firefox.options import Options as FirefoxOptions
-
-        subprocess.run(
-            ["allure", "generate", "allure-results", "-o", "allure-report", "--clean"],
-            capture_output=True, timeout=60
-        )
 
         with socket.socket() as s:
             s.bind(('', 0))
