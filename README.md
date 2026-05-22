@@ -14,7 +14,7 @@
 
 ### 기본 사용법
 1. CPU 개수만큼 자동 병렬 실행
-> pytest-n auto
+> pytest -n auto
 
 --> auto 사용 시 논리 프로세스 수로 워커 생성되어 과부하 발생 가능성 높아짐
 --> 아래 스텝으로 진행
@@ -25,7 +25,7 @@
 => 브라우저 과다 실행으로 TimeoutException, 세션 충돌 에러 증가 가능성 있음
 
 2. 직접 프로세스 개수 지정
-> pytest-n4
+> pytest -n 4
 
 
 ## Discord 알림 사용
