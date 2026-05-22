@@ -11,5 +11,5 @@ class SettingsUseagePage(SettingsPage):
 
     def navigate_to_history_tab(self):
         self.wait.until(EC.element_to_be_clickable(self._HISTORY_TAB)).click()
-        assert self.wait.until(EC.url_contains("/ai-helpy-chat/admin/history")), "이용 내역 탭 이동 실패"
+        self.wait.until(EC.url_contains("/ai-helpy-chat/admin/history"))
         time.sleep(3)

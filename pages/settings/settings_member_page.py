@@ -17,18 +17,15 @@ class SettingsMemberPage(SettingsPage):
 
     def navigate_to_member_tab(self):
         self.wait.until(EC.element_to_be_clickable(self._MEMBER_TAB)).click()
-        assert self.wait.until(EC.url_contains("/ai-helpy-chat/admin/users")), "구성원 관리 탭 이동 실패"
+        self.wait.until(EC.url_contains("/ai-helpy-chat/admin/users"))
         time.sleep(3)
 
     def click_no_limit_checkbox(self):
         checkbox = self.wait.until(EC.presence_of_element_located(self._NO_LIMIT_CHECKBOX))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
-        time.sleep(0.5)
         if self.driver.execute_script("return arguments[0].checked", checkbox):
             self.driver.execute_script("arguments[0].click();", checkbox)
-            time.sleep(1)
         self.driver.execute_script("arguments[0].click();", checkbox)
-        time.sleep(2)
 
     def is_no_limit_checked(self):
         checkbox = self.driver.find_element(*self._NO_LIMIT_CHECKBOX)
@@ -40,15 +37,12 @@ class SettingsMemberPage(SettingsPage):
     def set_global_token(self, value):
         input_el = self.wait.until(EC.presence_of_element_located(self._GLOBAL_TOKEN_INPUT))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", input_el)
-        time.sleep(0.5)
         input_el.clear()
         input_el.send_keys(value)
-        time.sleep(1)
 
     def get_toggle(self):
         toggle = self.wait.until(EC.presence_of_element_located(self._TOKEN_LIMIT_TOGGLE))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", toggle)
-        time.sleep(0.5)
         return toggle
 
     def is_toggle_checked(self, toggle):
@@ -68,6 +62,4 @@ class SettingsMemberPage(SettingsPage):
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", save_btn)
         time.sleep(0.5)
         self.driver.execute_script("arguments[0].click();", save_btn)
-        time.sleep(1)
-        assert self.wait.until(EC.presence_of_element_located(self._TOAST)), "토큰 한도 저장 알림 팝업 미확인"
-        time.sleep(2)
+        self.wait.until(EC.presence_of_element_located(self._TOAST))
