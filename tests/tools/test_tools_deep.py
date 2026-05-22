@@ -94,7 +94,7 @@ def test_FHC_059_topic_and_message_btn_enabled(deep):
     logger.info("[FHC-059] 주제 + 지시사항 입력 → 버튼 활성화 확인 완료")
 
 
-@pytest.mark.slow
+
 @allure.story("생성 버튼 클릭 생성 시작 확인")
 @allure.title("[FHC-060] 생성 버튼 클릭 → 생성 시작 확인")
 @allure.severity(allure.severity_level.NORMAL)
@@ -116,11 +116,26 @@ def test_FHC_060_generate_start(deep):
     deep.click_generate()
     assert deep.is_generating(), "생성이 시작되지 않았습니다"
     logger.info("[FHC-060] 생성 버튼 클릭 → 생성 시작 확인 완료")
+
+
+@pytest.mark.slow
+@allure.story("생성 버튼 클릭 생성 완료 확인")
+@allure.title("[FHC-060] 생성 버튼 클릭 → 생성 완료 확인 (slow)")
+@allure.severity(allure.severity_level.NORMAL)
+def test_FHC_060_generate_complete(deep):
     """
-    ### 05-18 PM 6시 기준 PASSED ###
-    assert tools_ready.is_generated(timeout=600), "10분 이내 생성 실패"  # 생성완료 확인 시 주석 해제
-    logger.info("[FHC-060] 생성 확인 완료")
+    [FHC-060] 생성 완료 확인 (최대 10분 소요 — slow 테스트)
+
+    전제: test_FHC_060_generate_start 이어서 생성 중인 상태
+    단계:
+      1. 생성 완료 체크 아이콘 확인 (최대 10분)
+    기대: 10분 이내 생성 완료
     """
+    logger.info("[FHC-060] 생성 완료 확인 시작")
+    if deep.is_token_exhausted():
+        pytest.xfail("토큰 한도 소진으로 생성 불가")
+    assert deep.is_generated(timeout=600), "10분 이내 생성 실패"
+    logger.info("[FHC-060] 생성 완료 확인 완료")
 
 
 @allure.story("주제 공백 입력 오류 메시지")
