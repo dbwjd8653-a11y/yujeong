@@ -1,3 +1,19 @@
+## 평소 실행 (slow 제외 test)
+```
+pytest
+```
+
+## slow marker까지 실행
+``` 
+pytest -m "" 
+```
+
+## slow marker 만 실행
+``` 
+pytest -m slow 
+```
+
+
 ## Discord 알림 사용
 
 ```bash

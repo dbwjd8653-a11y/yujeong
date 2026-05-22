@@ -18,7 +18,7 @@ pytestmark = [
     allure.feature("로그인"),
 ]
 
-INPUT_EMAIL_INVALID = "qa5team3-01"
+INPUT_EMAIL_INVALID = "email"
 INPUT_PWD_INVALID   = "1234"
 INPUT_PHONE_INVALID = "123456478"
 

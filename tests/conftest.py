@@ -59,19 +59,74 @@ def pytest_sessionfinish(session, exitstatus):
         subprocess.Popen(["allure", "serve", "allure-results"], shell=True)
 
 
-# ── 테스트 실패 자동 로깅 ──────────────────────────────────────────
+# ── 테스트 실패 자동 로깅 + Jira 이슈 생성 및 스크린샷 첨부 Hook ──
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
 
     if report.when == "call" and report.failed:
+
+        # ① 로그 기록
         _logger = logging.getLogger(item.module.__name__)
-        # AssertionError 메시지만 추출
         msg = str(report.longrepr)
         match = re.search(r'AssertionError:\s*(.+)', msg)
         fail_msg = match.group(1).strip() if match else msg.splitlines()[-1].strip()
         _logger.error(f"[FAIL] {item.name} | {fail_msg}")
+
+        # ② driver 탐색
+        driver = (
+            item.funcargs.get("driver")
+            or item.funcargs.get("driver_module")
+            or item.funcargs.get("tools_driver")
+            or item.funcargs.get("tools_driver_module")
+        )
+
+        current_url = "URL 확인 실패"
+        browser_name = "unknown"
+
+        if driver:
+            try:
+                current_url = driver.current_url
+            except Exception:
+                pass
+            try:
+                browser_name = driver.capabilities.get("browserName")
+            except Exception:
+                pass
+
+        # ③ Jira 이슈 생성
+        test_file = item.location[0]
+        error_message = str(call.excinfo.value)
+        summary = f"[자동화 테스트 실패] {item.name}"
+        description = f"""
+                    자동화 테스트 실패
+
+                    [Test Case]
+                    {item.name}
+
+                    [Test File]
+                    {test_file}
+
+                    [Browser]
+                    {browser_name}
+
+                    [URL]
+                    {current_url}
+
+                    [Error]
+                    {error_message}
+                    """
+
+        issue_key = create_jira_bug_ticket(summary=summary, description=description)
+
+        # ④ 스크린샷 첨부
+        if issue_key and driver:
+            try:
+                screenshot = driver.get_screenshot_as_png()
+                attach_image_to_jira(issue_key, screenshot)
+            except Exception as e:
+                print(f"스크린샷 첨부 실패: {e}")
 
 
 # ── 테스트 실행 순서 정렬 (FHC 번호 오름차순) ─────────────────────
@@ -82,7 +137,7 @@ def pytest_collection_modifyitems(items):
         if m:
             return int(m.group(1))
         if 'recreate_account_after_withdraw' in item.nodeid:
-            return 86.5  # FHC-086(탈퇴) 직후, FHC-087 이전에 실행
+            return 86.5
         return 9999
     items.sort(key=_fhc_key)
 
@@ -167,95 +222,6 @@ def tools_driver():
     yield _driver
     _driver.quit()
 
-# ── 테스트 실패 시 Jira 이슈 생성 및 스크린샷 첨부 Hook ───────────
-@pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-
-    outcome = yield
-    report = outcome.get_result()
-
-    if report.when == "call" and report.failed:
-
-        # ── driver 기본값 초기화 ─────────────────
-        driver = None
-
-        # ── driver 탐색 ─────────────────────────
-        driver = (
-            item.funcargs.get("driver")
-            or item.funcargs.get("driver_module")
-            or item.funcargs.get("tools_driver")
-            or item.funcargs.get("tools_driver_module")
-        )
-
-        current_url = "URL 확인 실패"
-
-        browser_name = "unknown"
-
-        if driver:
-
-            try:
-                current_url = driver.current_url
-            except Exception:
-                pass
-
-            try:
-                browser_name = (
-                    driver.capabilities.get(
-                        "browserName"
-                    )
-                )
-            except Exception:
-                pass
-
-        test_file = item.location[0]
-
-        error_message = str(call.excinfo.value)
-
-        summary = f"[자동화 테스트 실패] {item.name}"
-
-        description = f"""
-                    자동화 테스트 실패
-
-                    [Test Case]
-                    {item.name}
-
-                    [Test File]
-                    {test_file}
-
-                    [Browser]
-                    {browser_name}
-
-                    [URL]
-                    {current_url}
-
-                    [Error]
-                    {error_message}
-                    """
-
-        issue_key = create_jira_bug_ticket(
-            summary=summary,
-            description=description
-        )
-
-        # ── 스크린샷 첨부 ────────────────────────
-        if issue_key and driver:
-
-            try:
-
-                screenshot = (
-                    driver.get_screenshot_as_png()
-                )
-
-                attach_image_to_jira(
-                    issue_key,
-                    screenshot
-                )
-
-            except Exception as e:
-
-                print(
-                    f"스크린샷 첨부 실패: {e}"
-                )
 
 # ── pytest 종료 시 Discord 결과 전송 ──────────────────────────────
 DISCORD_WEBHOOK_URL = "https://discordapp.com/api/webhooks/1506913724663992330/fFs7F0fWTaAADPwpaRXfTE0MkPPlLVuYKVERtR8qwdBfpJhSBwRyCbv8aYHj-5CfrJSV"
