@@ -9,7 +9,7 @@ import time
 from config.selenium_imports import By, EC, WebDriverWait
 
 from pages.base_page import BasePage
-from config.settings import BASE_URL, LOGIN_URL, MYPAGE_USER
+from config.settings import BASE_URL, LOGIN_URL, TEST_USER
 from config.login_helpers import close_token_banner
 
 
@@ -18,8 +18,8 @@ class BaseToolPage(BasePage):
     BASE_URL       = BASE_URL
     TOOLS_URL      = "https://qaproject.elice.io/ai-helpy-chat/tools"
     LOGIN_URL      = LOGIN_URL
-    LOGIN_EMAIL    = MYPAGE_USER["id"]
-    LOGIN_PASSWORD = MYPAGE_USER["pw"]
+    LOGIN_EMAIL    = TEST_USER["id"]
+    LOGIN_PASSWORD = TEST_USER["pw"]
 
     # ========== Locators ==========
 
