@@ -56,8 +56,10 @@ class SettingsModelPage(SettingsPage):
         time.sleep(2)
 
     def open_agent_dropdown(self):
+        before = len(self.driver.find_elements(*self._MODEL_TITLE))
         self.wait.until(EC.element_to_be_clickable(self._AGENT_DROPDOWN)).click()
-        time.sleep(2)
+        # 드롭다운 항목이 추가로 렌더링될 때까지 대기
+        self.wait.until(lambda d: len(d.find_elements(*self._MODEL_TITLE)) > before)
 
     def get_dropdown_model_titles(self):
         elements = self.driver.find_elements(*self._MODEL_TITLE)
