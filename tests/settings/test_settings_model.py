@@ -50,8 +50,8 @@ def test_FHC_069_activate_model(settings_model):
     기대: '모델이 활성화되었습니다.' 알림창 활성화 됨
     """
     logger.info("[FHC-069] 비활성화 모델 활성화 시작")
-    settings_model.activated_model = settings_model.activate_disabled_model()
-    assert settings_model.activated_model is not None, "비활성화 모델이 없음"
+    model_name = settings_model.activate_disabled_model()
+    assert model_name is not None, "비활성화 모델이 없음"
     toast = settings_model.get_toast_message()
     assert toast == "모델이 활성화되었습니다.", f"알림창 메시지 불일치: '{toast}'"
     logger.info("[FHC-069] 비활성화 모델 활성화 완료")
@@ -73,7 +73,8 @@ def test_FHC_070_deactivate_model(settings_model):
     logger.info("[FHC-070] 활성화 모델 비활성화 시작")
     settings_model.navigate_to_settings()
     settings_model.navigate_to_models_tab()
-    settings_model.deactivate_model(settings_model.activated_model)
+    model_name = settings_model.deactivate_active_model()
+    assert model_name is not None, "활성화된 모델이 없음"
     toast = settings_model.get_toast_message()
     assert toast == "모델이 비활성화되었습니다.", f"알림창 메시지 불일치: '{toast}'"
     logger.info("[FHC-070] 활성화 모델 비활성화 완료")

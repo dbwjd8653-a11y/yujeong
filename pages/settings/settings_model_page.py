@@ -33,18 +33,20 @@ class SettingsModelPage(SettingsPage):
                     continue
         return None
 
-    def deactivate_model(self, model_name):
+    def deactivate_active_model(self):
         checkboxes = self.driver.find_elements(By.CSS_SELECTOR, 'input[type="checkbox"]')
-        for checkbox in checkboxes:
-            try:
-                list_item = checkbox.find_element(By.XPATH, './ancestor::li[contains(@class,"MuiListItem")]')
-                name_el = list_item.find_element(By.CSS_SELECTOR, 'span.MuiListItemText-primary')
-                if name_el.text == model_name:
+        for checkbox in reversed(checkboxes):
+            if checkbox.is_selected():
+                try:
+                    list_item = checkbox.find_element(By.XPATH, './ancestor::li[contains(@class,"MuiListItem")]')
+                    name_el = list_item.find_element(By.CSS_SELECTOR, 'span.MuiListItemText-primary')
+                    model_name = name_el.text
                     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
                     self.driver.execute_script("arguments[0].click();", checkbox)
-                    return
-            except Exception:
-                continue
+                    return model_name
+                except Exception:
+                    continue
+        return None
 
     def navigate_to_new_chat(self):
         self.wait.until(EC.element_to_be_clickable(self._NEW_CHAT_BTN)).click()
