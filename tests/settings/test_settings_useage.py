@@ -54,4 +54,5 @@ def test_FHC_068_navigate_to_history_tab(settings_useage):
 
 
 if __name__ == "__main__":
-    pytest.main([__file__, "-v", "-s"])
+    from tests.settings.settings_main import run
+    run(__file__)

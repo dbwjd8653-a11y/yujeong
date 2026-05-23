@@ -69,4 +69,5 @@ def test_FHC_075_non_admin_cannot_access_settings(non_admin_login):
 
 
 if __name__ == "__main__":
-    pytest.main([__file__, "-v", "-s"])
+    from tests.settings.settings_main import run
+    run(__file__)
