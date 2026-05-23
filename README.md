@@ -2,7 +2,7 @@
 > pytest
 
 ## slow marker까지 실행
-> pytest -m " " 
+> pytest -m "" 
 
 ## slow marker만 실행
 > pytest -m slow 

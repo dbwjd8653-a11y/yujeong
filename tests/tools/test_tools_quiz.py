@@ -1,10 +1,10 @@
 # tests/test_tools_05.py
 # 퀴즈 생성 도구 E2E 테스트 — FHC-054 ~ FHC-056
 
-import pytest
 import logging
 import allure
 from pages.tools.tools_quiz_page import QuizPage
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,8 @@ def quiz(login_module):
     전제: login_module fixture로 로그인 완료 상태
     단계:
       1. login_module에서 (driver, wait) 수신 → QuizPage 생성
-      2. LNB 도구 메뉴 진입 및 퀴즈 생성 도구 초기 세팅
+      2. LNB 도구 탭 이동
+      3. 퀴즈 생성 도구 초기 세팅
     """
     tool = QuizPage(login_module)
     tool.tools_LNB()
@@ -93,8 +94,6 @@ def test_FHC_056_generate_quiz(quiz):
       - 토큰 정상: 2분 이내 퀴즈 생성 완료
     """
     logger.info("[FHC-056] 퀴즈 생성 버튼 클릭 → 생성 완료 확인 시작")
-    if quiz.is_token_exhausted():
-        pytest.xfail("토큰 한도 소진으로 생성 불가")
     quiz.click_generate()
     assert quiz.is_generating(), "생성이 시작되지 않았습니다"
     assert quiz.is_generated(timeout=120), "2분 이내 퀴즈 생성 실패"
