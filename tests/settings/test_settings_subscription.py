@@ -54,4 +54,5 @@ def test_FHC_071_navigate_to_subscription_tab(settings_subscription):
 
 
 if __name__ == "__main__":
-    pytest.main([__file__, "-v", "-s"])
+    from tests.settings.settings_main import run
+    run(__file__)

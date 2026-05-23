@@ -50,4 +50,5 @@ def test_FHC_067_navigate_to_settings(settings_general):
 
 
 if __name__ == "__main__":
-    pytest.main([__file__, "-v", "-s"])
+    from tests.settings.settings_main import run
+    run(__file__)

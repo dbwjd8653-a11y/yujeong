@@ -11,6 +11,7 @@ class SettingsModelPage(SettingsPage):
     _NEW_CHAT_BTN = (By.CSS_SELECTOR, 'a:has(svg[data-testid="pen-to-squareIcon"])')
     _AGENT_DROPDOWN = (By.CSS_SELECTOR, 'button:has(svg[data-testid="chevron-downIcon"])')
     _MODEL_TITLE = (By.CSS_SELECTOR, 'span.MuiListItemText-primary')
+    _TOAST_ALERT = (By.ID, 'notistack-snackbar')
 
     def navigate_to_models_tab(self):
         self.wait.until(EC.element_to_be_clickable(self._MODELS_TAB)).click()
@@ -61,3 +62,7 @@ class SettingsModelPage(SettingsPage):
 
     def close_dropdown(self):
         self.driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.ESCAPE)
+
+    def get_toast_message(self):
+        el = self.wait.until(EC.visibility_of_element_located(self._TOAST_ALERT))
+        return el.text
