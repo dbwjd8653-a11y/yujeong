@@ -1,10 +1,10 @@
 # tests/test_tools_06.py
 # 심층 조사 도구 E2E 테스트 — FHC-057 ~ FHC-063
 
-import pytest
 import logging
 import allure
 from pages.tools.tools_deep_page import DeepPage
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,8 @@ def deep(login_module):
     전제: login_module fixture로 로그인 완료 상태
     단계:
       1. login_module에서 (driver, wait) 수신 → DeepPage 생성
-      2. LNB 도구 메뉴 진입 및 심층 조사 도구 초기 세팅
+      2. LNB 도구 탭 이동
+      3. 심층 조사 도구 초기 세팅
     """
     tool = DeepPage(login_module)
     tool.tools_LNB()
@@ -94,7 +95,6 @@ def test_FHC_059_topic_and_message_btn_enabled(deep):
     logger.info("[FHC-059] 주제 + 지시사항 입력 → 버튼 활성화 확인 완료")
 
 
-
 @allure.story("생성 버튼 클릭 생성 시작 확인")
 @allure.title("[FHC-060] 생성 버튼 클릭 → 생성 시작 확인")
 @allure.severity(allure.severity_level.NORMAL)
@@ -111,8 +111,6 @@ def test_FHC_060_generate_start(deep):
       - 토큰 정상: 로딩 스피너 표시 (생성 시작)
     """
     logger.info("[FHC-060] 생성 버튼 클릭 → 생성 시작 확인 시작")
-    if deep.is_token_exhausted():
-        pytest.xfail("토큰 한도 소진으로 생성 불가")
     deep.click_generate()
     assert deep.is_generating(), "생성이 시작되지 않았습니다"
     logger.info("[FHC-060] 생성 버튼 클릭 → 생성 시작 확인 완료")
@@ -120,11 +118,11 @@ def test_FHC_060_generate_start(deep):
 
 @pytest.mark.slow
 @allure.story("생성 버튼 클릭 생성 완료 확인")
-@allure.title("[FHC-060] 생성 버튼 클릭 → 생성 완료 확인 (slow)")
+@allure.title("[FHC-060a] 생성 버튼 클릭 → 생성 완료 확인 (slow)")
 @allure.severity(allure.severity_level.NORMAL)
 def test_FHC_060_generate_complete(deep):
     """
-    [FHC-060] 생성 완료 확인 (최대 10분 소요 — slow 테스트)
+    [FHC-060a] 생성 완료 확인 (최대 10분 소요 — slow 테스트)
 
     전제: test_FHC_060_generate_start 이어서 생성 중인 상태
     단계:
@@ -132,8 +130,6 @@ def test_FHC_060_generate_complete(deep):
     기대: 10분 이내 생성 완료
     """
     logger.info("[FHC-060] 생성 완료 확인 시작")
-    if deep.is_token_exhausted():
-        pytest.xfail("토큰 한도 소진으로 생성 불가")
     assert deep.is_generated(timeout=600), "10분 이내 생성 실패"
     logger.info("[FHC-060] 생성 완료 확인 완료")
 

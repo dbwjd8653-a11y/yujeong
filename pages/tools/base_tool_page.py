@@ -6,10 +6,10 @@ import glob
 import os
 import time
 
-from config.selenium_imports import By, EC, WebDriverWait
+from config.selenium_imports import By, EC, WebDriverWait, TimeoutException
 
 from pages.base_page import BasePage
-from config.settings import BASE_URL, LOGIN_URL, TEST_USER
+from config.settings import BASE_URL, LOGIN_URL, TEST_USER, DEFAULT_WAIT, SHORT_WAIT
 from config.login_helpers import close_token_banner
 
 
@@ -76,6 +76,10 @@ class BaseToolPage(BasePage):
         "[normalize-space(text())='다운받기' or normalize-space(text())='Download']",
     )
 
+    # LNB 햄버거 메뉴 / 도구 탭
+    LNB_MENU_BTN   = (By.XPATH, "//button[.//*[@data-testid='barsIcon']]")
+    LNB_TOOLS_BTN  = (By.XPATH, "//span[text()='도구']")
+
     # LNB '도구' 탭 링크
     LNB_TOOLS_LINK = (
         By.XPATH,
@@ -89,6 +93,10 @@ class BaseToolPage(BasePage):
         " and not(contains(@class,'MuiTableRow-head'))"
         " and not(contains(@class,'MuiTableRow-footer'))]",
     )
+    
+    STOP_BTN       = (By.XPATH, "//button[.//*[@data-testid='stopIcon']]")  # 생성 중단 버튼
+    SPINNER        = (By.CSS_SELECTOR, "span[role='progressbar']")          # 로딩 스피너
+    CHECK_ICON     = (By.CSS_SELECTOR, "[data-testid='circle-checkIcon']")  # 생성 완료 체크 아이콘
 
     # ========== 초기화 ==========
 
@@ -440,3 +448,97 @@ class BaseToolPage(BasePage):
                 return True
         self.logger.warning("다운로드 타임아웃 (90초 초과)")
         return False
+
+    # ========== AI 생성 공통 메서드 (DeepPage / QuizPage 등 생성형 도구 공용) ==========
+
+    def tools_LNB(self):
+        """LNB 햄버거 메뉴 → 도구 탭 클릭"""
+        menu = self.wait.until(EC.element_to_be_clickable(self.LNB_MENU_BTN))
+        self.js_click(menu)
+        tools_bt = self.wait.until(EC.element_to_be_clickable(self.LNB_TOOLS_BTN))
+        self.js_click(tools_bt)
+
+    def setup_tool(self):
+        """도구 메뉴 진입 후 생성 중이면 중단 (서브클래스의 tools_menu() 사용)"""
+        self.tools_menu()
+        self.stop_if_generating()
+
+    def stop_if_generating(self):
+        """
+        AI 생성 중단
+
+        단계:
+          1. stopIcon 버튼 존재 시 클릭 → 생성 중단
+          2. GENERATE_BTN 클릭 가능까지 대기 (disabled 해제 확인)
+
+        Note:
+          생성 중이 아닌 경우 TimeoutException 무시
+        """
+        try:
+            stop_btn = WebDriverWait(self.driver, SHORT_WAIT).until(
+                EC.presence_of_element_located(self.STOP_BTN)
+            )
+            self.js_click(stop_btn)
+            WebDriverWait(self.driver, DEFAULT_WAIT).until(
+                EC.element_to_be_clickable(self.GENERATE_BTN)
+            )
+        except TimeoutException:
+            pass
+
+    def get_generate_btn(self):
+        """생성 버튼 요소 반환 (활성화 여부 확인용)"""
+        return self.wait.until(EC.presence_of_element_located(self.GENERATE_BTN))
+
+    def assert_generate_btn_enabled(self):
+        """생성 버튼 활성화 검증"""
+        btn = self.get_generate_btn()
+        assert btn.is_enabled(), "모두 입력했는데 버튼이 비활성화 상태입니다"
+
+    def assert_generate_btn_disabled(self):
+        """생성 버튼 비활성화 검증"""
+        btn = self.get_generate_btn()
+        assert not btn.is_enabled(), "버튼이 활성화 상태입니다 (비활성화 예상)"
+
+    def click_generate(self):
+        """
+        생성 버튼 클릭
+
+        단계:
+          1. 생성 버튼 확인
+          2. 비활성화 상태이면 활성화까지 대기
+          3. 버튼 텍스트 확인
+          4. 버튼 클릭
+          5. '다시 생성' 버튼인 경우 확인 팝업에서 '다시 생성' 클릭
+        """
+        btn = self.get_generate_btn()
+        if not btn.is_enabled():
+            btn = self.wait.until(EC.element_to_be_clickable(self.GENERATE_BTN))
+        btn_text = btn.text
+        self.js_click(btn)
+        if btn_text == '다시 생성':
+            popup_btn = WebDriverWait(self.driver, DEFAULT_WAIT).until(
+                EC.element_to_be_clickable((By.XPATH, "//div[@role='dialog']//button[text()='다시 생성']"))
+            )
+            self.js_click(popup_btn)
+
+    def is_generating(self):
+        """로딩 스피너 표시 여부 → AI 생성 시작 확인"""
+        try:
+            spinner = self.wait_for_visible(self.SPINNER)
+            return spinner.is_displayed()
+        except TimeoutException:
+            return False
+
+    def is_generated(self, timeout=DEFAULT_WAIT):
+        """
+        AI 생성 완료 확인
+
+        단계:
+          1. 로딩 스피너 사라짐 대기
+          2. 완료 체크 아이콘 표시 대기
+        """
+        self.wait_until_invisible(self.SPINNER, timeout)
+        result = WebDriverWait(self.driver, timeout).until(
+            EC.visibility_of_element_located(self.CHECK_ICON)
+        )
+        return result.is_displayed()
