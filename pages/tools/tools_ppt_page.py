@@ -21,8 +21,17 @@ class PPTPage(BaseToolPage):
     SECTION_COUNT_INPUT   = (By.CSS_SELECTOR, "input[name='section_count']")
 
     GENERATE_BTN = (
-        By.CSS_SELECTOR,
-        "button[type='submit'][form='tool-factory-create_pptx']",
+        By.XPATH,
+        "//button[@type='submit'][@form='tool-factory-create_pptx']"
+        "[not(ancestor::div[@role='dialog'])]",
+    )
+    REGEN_CONFIRM_BTN = (
+        By.XPATH,
+        "//div[@role='dialog']//button[@type='submit'][@form='tool-factory-create_pptx']",
+    )
+    REGEN_CANCEL_BTN = (
+        By.XPATH,
+        "//div[@role='dialog']//button[@type='button' and normalize-space()='취소']",
     )
 
     DEEP_RESEARCH_INPUT  = (By.CSS_SELECTOR, "input[name='simple_mode']")
@@ -154,12 +163,41 @@ class PPTPage(BaseToolPage):
     def click_generate(self):
         btn = self.wait.until(EC.element_to_be_clickable(self.GENERATE_BTN))
         self.js_click(btn)
+        try:
+            confirm = self.wait.until(EC.element_to_be_clickable(self.REGEN_CONFIRM_BTN))
+            self.js_click(confirm)
+        except Exception:
+            pass
+
+    def click_generate_and_cancel(self):
+        try:
+            btn = self.wait.until(EC.element_to_be_clickable(self.GENERATE_BTN))
+            self.js_click(btn)
+            cancel = self.wait.until(EC.element_to_be_clickable(self.REGEN_CANCEL_BTN))
+            self.js_click(cancel)
+            return True
+        except Exception:
+            return False
 
     def wait_for_generation(self, timeout: int = 120) -> bool:
         try:
             WebDriverWait(self.driver, timeout).until(
                 EC.visibility_of_element_located(self.SUCCESS_MESSAGE)
             )
+            return True
+        except Exception:
+            return False
+
+    def wait_for_regeneration(self, timeout: int = 120) -> bool:
+        wait = WebDriverWait(self.driver, timeout)
+        try:
+            try:
+                old = self.driver.find_element(*self.SUCCESS_MESSAGE)
+                if old.is_displayed():
+                    wait.until(EC.invisibility_of_element_located(self.SUCCESS_MESSAGE))
+            except Exception:
+                pass
+            wait.until(EC.visibility_of_element_located(self.SUCCESS_MESSAGE))
             return True
         except Exception:
             return False

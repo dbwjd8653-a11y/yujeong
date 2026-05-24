@@ -58,6 +58,10 @@ class LessonPlanPage(BaseToolPage):
         By.XPATH,
         "//div[@role='dialog']//button[@type='submit'][@form='tool-factory-syllabus_generation']",
     )
+    REGEN_CANCEL_BTN = (
+        By.XPATH,
+        "//div[@role='dialog']//button[@type='button' and normalize-space()='취소']",
+    )
     SUCCESS_MESSAGE = (
         By.XPATH,
         "//div[@role='tabpanel'][@data-panel='output']"
@@ -201,6 +205,16 @@ class LessonPlanPage(BaseToolPage):
             self.js_click(confirm)
         except Exception:
             pass
+
+    def click_generate_and_cancel(self):
+        try:
+            btn = self.wait.until(EC.element_to_be_clickable(self.GENERATE_BTN))
+            self.js_click(btn)
+            cancel = self.wait.until(EC.element_to_be_clickable(self.REGEN_CANCEL_BTN))
+            self.js_click(cancel)
+            return True
+        except Exception:
+            return False
 
     def wait_for_generation(self, timeout: int = 60) -> bool:
         try:
