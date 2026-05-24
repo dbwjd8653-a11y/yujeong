@@ -146,6 +146,7 @@ class LessonPlanPage(BaseToolPage):
             file_path = os.path.join(self.get_current_path(), file_path)
         file_input.send_keys(file_path)
 
+
     def enter_comment(self, comment):
         if not comment:
             return
@@ -166,28 +167,12 @@ class LessonPlanPage(BaseToolPage):
         except Exception:
             return False
 
-    @staticmethod
-    def _pick_different(options, current):
-        for opt in options:
-            if opt != current:
-                return opt
-        return options[0]
-
-    def regen_with_different_values(self):
-        cur_school  = self.driver.find_element(*self.SCHOOL_LEVEL_INPUT).get_attribute("value")
-        cur_grade   = self.driver.find_element(*self.GRADE_INPUT).get_attribute("value")
-        cur_subject = self.driver.find_element(*self.SUBJECT_INPUT_HIDDEN).get_attribute("value")
-        cur_period  = self.driver.find_element(*self.PERIOD_INPUT).get_attribute("value")
-
-        new_school  = self._pick_different(["초등학교", "중학교", "고등학교"], cur_school)
-        new_grade   = self._pick_different(["1학년", "2학년", "3학년"], cur_grade)
-        new_subject = self._pick_different(["국어", "영어", "수학", "사회", "과학"], cur_subject)
-        new_period  = self._pick_different(["1", "2", "3", "4"], cur_period)
-
-        self.select_school_level(new_school)
-        self.select_grade(new_grade)
-        self.select_subject(new_subject)
-        self.select_period(new_period)
+    def regen_with_random_values(self):
+        import random
+        self.select_school_level(random.choice(["초등학교", "중학교", "고등학교"]))
+        self.select_grade(random.choice(["1학년", "2학년", "3학년"]))
+        self.select_subject(random.choice(["국어", "영어", "수학", "사회", "과학"]))
+        self.select_period(random.choice(["1", "2", "3", "4"]))
         self.select_generation_method("basic")
 
     # ========== 생성 버튼 및 결과 대기 ==========
