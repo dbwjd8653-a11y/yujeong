@@ -50,8 +50,13 @@ class LessonPlanPage(BaseToolPage):
     COMMENT_TEXTAREA = (By.CSS_SELECTOR, "textarea[name='comment']")
 
     GENERATE_BTN = (
-        By.CSS_SELECTOR,
-        "button[type='submit'][form='tool-factory-syllabus_generation']",
+        By.XPATH,
+        "//button[@type='submit'][@form='tool-factory-syllabus_generation']"
+        "[not(ancestor::div[@role='dialog'])]",
+    )
+    REGEN_CONFIRM_BTN = (
+        By.XPATH,
+        "//div[@role='dialog']//button[@type='submit'][@form='tool-factory-syllabus_generation']",
     )
     SUCCESS_MESSAGE = (
         By.XPATH,
@@ -145,6 +150,10 @@ class LessonPlanPage(BaseToolPage):
         if not os.path.isabs(file_path):
             file_path = os.path.join(self.get_current_path(), file_path)
         file_input.send_keys(file_path)
+        filename = os.path.basename(file_path)
+        self.wait.until(EC.presence_of_element_located(
+            (By.XPATH, f"//*[contains(text(), '{filename}')]")
+        ))
 
 
     def enter_comment(self, comment):
@@ -187,6 +196,11 @@ class LessonPlanPage(BaseToolPage):
     def click_generate(self):
         btn = self.wait.until(EC.element_to_be_clickable(self.GENERATE_BTN))
         self.js_click(btn)
+        try:
+            confirm = self.wait.until(EC.element_to_be_clickable(self.REGEN_CONFIRM_BTN))
+            self.js_click(confirm)
+        except Exception:
+            pass
 
     def wait_for_generation(self, timeout: int = 60) -> bool:
         try:
@@ -194,6 +208,21 @@ class LessonPlanPage(BaseToolPage):
             WebDriverWait(self.driver, timeout).until(
                 EC.visibility_of_element_located(self.SUCCESS_MESSAGE)
             )
+            return True
+        except Exception:
+            return False
+
+    def wait_for_regeneration(self, timeout: int = 60) -> bool:
+        from selenium.webdriver.support.ui import WebDriverWait
+        wait = WebDriverWait(self.driver, timeout)
+        try:
+            try:
+                old = self.driver.find_element(*self.SUCCESS_MESSAGE)
+                if old.is_displayed():
+                    wait.until(EC.invisibility_of_element_located(self.SUCCESS_MESSAGE))
+            except Exception:
+                pass
+            wait.until(EC.visibility_of_element_located(self.SUCCESS_MESSAGE))
             return True
         except Exception:
             return False

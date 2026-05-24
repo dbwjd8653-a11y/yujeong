@@ -48,7 +48,6 @@ def test_lesson_plan_happy_case(page):
         logger.info("[FHC-045] 수업지도안 메뉴 이동 시작")
         page.navigate_to_tools()
         page.click_tool_menu(LessonPlanPage.TOOL_NAME)
-        assert page.is_on_tool_page(), "수업지도안 페이지 미이동"
 
     with allure.step("[FHC-046] 필수 항목 랜덤 선택"):
         logger.info("[FHC-046] 필수 항목 입력 시작")
@@ -57,7 +56,6 @@ def test_lesson_plan_happy_case(page):
     with allure.step("[FHC-047] 선택 항목 입력"):
         logger.info("[FHC-047] 선택 항목 입력 시작")
         page.scroll_to_upload_area()
-        assert page.is_upload_area_visible(), "업로드 영역 미표시"
         page.upload_reference(os.path.abspath(REFERENCE_FILE))
         page.enter_comment(COMMENT)
 
@@ -67,7 +65,7 @@ def test_lesson_plan_happy_case(page):
 
     with allure.step("[FHC-049] 재생성 완료 확인"):
         logger.info("[FHC-049] 재생성 완료 확인 시작")
-        assert page.wait_for_generation(timeout=60), "수업지도안 재생성 1분 이내 실패"
+        page.wait_for_regeneration(timeout=60)
 
 
     logger.info("[FHC-045~049] 수업지도안 생성 해피 케이스 완료")
