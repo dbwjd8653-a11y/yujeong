@@ -1,8 +1,9 @@
 # config/browser_factory.py
 # 브라우저 드라이버 생성 팩토리
 
-import logging
+import os
 import shutil
+from functools import lru_cache
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.firefox.service import Service as FirefoxService
@@ -10,21 +11,43 @@ from webdriver_manager.firefox import GeckoDriverManager
 
 from config.settings import DEFAULT_WAIT, DOWNLOAD_DIR
 
-def get_firefox_path() -> str:
-    path = shutil.which("firefox")
-    print("firefox path is ", path)
-    return path
 
+@lru_cache(maxsize=1)
+def _firefox_path() -> str | None:
+    path = shutil.which("firefox")
+    if path:
+        return path
+    if os.name == "nt":  # Windows
+        candidates = [
+            os.path.join(os.environ.get("PROGRAMFILES", r"C:\Program Files"), "Mozilla Firefox", "firefox.exe"),
+            os.path.join(os.environ.get("PROGRAMFILES(X86)", r"C:\Program Files (x86)"), "Mozilla Firefox", "firefox.exe"),
+        ]
+    elif os.path.isdir("/Applications"):  # macOS
+        candidates = ["/Applications/Firefox.app/Contents/MacOS/firefox"]
+    else:  # Linux
+        candidates = ["/usr/bin/firefox", "/usr/local/bin/firefox"]
+    for candidate in candidates:
+        if os.path.isfile(candidate):
+            return candidate
+    return None
+
+
+@lru_cache(maxsize=1)
 def _gecko_path() -> str:
     return GeckoDriverManager().install()
 
 
+def _base_opts() -> FirefoxOptions:
+    opts = FirefoxOptions()
+    path = _firefox_path()
+    if path:
+        opts.binary_location = path
+    return opts
+
+
 def make_firefox_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Firefox:
     """파일 다운로드 설정이 포함된 Firefox 드라이버 생성"""
-    opts = FirefoxOptions()
-    firefox_path = get_firefox_path()
-    if firefox_path:
-        opts.binary_location = firefox_path
+    opts = _base_opts()
     opts.set_preference("browser.download.folderList", 2)
     opts.set_preference("browser.download.dir", download_dir)
     opts.set_preference("browser.download.useDownloadDir", True)
@@ -33,24 +56,13 @@ def make_firefox_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Firefox:
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,"
         "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     )
-    driver = webdriver.Firefox(
-        service=FirefoxService(_gecko_path()),
-        options=opts,
-    )
+    driver = webdriver.Firefox(service=FirefoxService(_gecko_path()), options=opts)
     driver.implicitly_wait(DEFAULT_WAIT)
     return driver
 
 
 def make_simple_firefox_driver() -> webdriver.Firefox:
     """다운로드 설정 없는 기본 Firefox 드라이버 생성"""
-    try:
-        opts = FirefoxOptions()
-        firefox_path = get_firefox_path()
-        if firefox_path:
-            opts.binary_location = firefox_path
-        driver = webdriver.Firefox(service=FirefoxService(_gecko_path()), options=opts)
-        driver.implicitly_wait(DEFAULT_WAIT)
-        return driver
-    except Exception:
-        logging.exception("❌ Firefox Driver 생성 실패")
-        raise
+    driver = webdriver.Firefox(service=FirefoxService(_gecko_path()), options=_base_opts())
+    driver.implicitly_wait(DEFAULT_WAIT)
+    return driver
