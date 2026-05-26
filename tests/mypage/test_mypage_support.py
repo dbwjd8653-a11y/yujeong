@@ -43,9 +43,9 @@ def test_FHC_093_customer_service_ai(mypage):
       2. 'Start a chat' 영역 클릭
     기대: 설정된 AI 답변이 표시된다
     """
-    with allure.step("r: 고객 센터 페이지 이동"):
+    with allure.step("[FHC-093] 고객 센터 페이지 이동 후 'Start a chat' 클릭"):
         mypage.navigate_to_support()
-    with allure.step("g: 'Start a chat' 클릭 → AI 답변 표시 확인"):
         mypage.click_start_chat()
+    with allure.step("[FHC-093] AI 답변 표시 확인"):
         assert mypage.is_chat_ai_displayed(), \
             "'Start a chat' 클릭 후 AI 답변이 표시되지 않았습니다"

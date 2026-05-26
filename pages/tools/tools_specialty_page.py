@@ -18,10 +18,10 @@ class SpecialtyPage(BaseToolPage):
 
     GRADE_COMBOBOX = (
         By.XPATH,
-        "//label[contains(text(),'학년') or contains(text(),'Grade')]/following-sibling::div//div[@role='combobox']",
+        "//input[@name='grade']/preceding-sibling::div[@role='combobox']",
     )
     SUBJECT_INPUT = (By.CSS_SELECTOR, "input[placeholder*='과목'], input[placeholder*='Subject']")
-    UNIT_INPUT    = (By.CSS_SELECTOR, "input[placeholder*='단원'], input[placeholder*='Unit']")
+    UNIT_INPUT    = (By.CSS_SELECTOR, "input[name='unit']")
 
     # 키워드 모달 — 학습 태도 아코디언
     STUDY_ATTITUDE_ACCORDION = (
@@ -44,7 +44,7 @@ class SpecialtyPage(BaseToolPage):
         self.wait.until(EC.element_to_be_clickable(self.GRADE_COMBOBOX)).click()
         self.wait.until(
             EC.element_to_be_clickable(
-                (By.XPATH, f"//li[@role='option' and normalize-space(text())='{grade}']")
+                (By.XPATH, f"//li[@role='option' and @data-value='{grade}']")
             )
         ).click()
         self.wait_backdrop_gone()

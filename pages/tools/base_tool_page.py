@@ -6,6 +6,7 @@ import glob
 import os
 import time
 
+from selenium.webdriver.common.action_chains import ActionChains
 from config.selenium_imports import By, EC, WebDriverWait, TimeoutException
 
 from pages.base_page import BasePage
@@ -34,10 +35,10 @@ class BaseToolPage(BasePage):
 
     SCHOOL_COMBOBOX = (
         By.XPATH,
-        "//label[contains(text(),'학교급') or contains(text(),'School')]/following-sibling::div//div[@role='combobox']",
+        "//input[@name='school_level']/preceding-sibling::div[@role='combobox']",
     )
 
-    NEXT_BUTTON    = (By.XPATH, "//button[not(@disabled) and (text()='다음으로' or text()='Next')]")
+    NEXT_BUTTON    = (By.CSS_SELECTOR, "button[form='student_evaluation'], button[form='student_record_generation']")
     MODIFY_BUTTON  = (By.XPATH, "//*[@role='dialog']//button[contains(text(),'수정하기') or contains(text(),'Modify') or contains(text(),'Edit')]")
 
     STUDENT_TAB    = (By.XPATH, "//*[contains(text(),'학생 정보 입력 및 생성') or contains(text(),'Student Info')]")
@@ -73,7 +74,8 @@ class BaseToolPage(BasePage):
     DOWNLOAD_CONFIRM_BUTTON = (
         By.XPATH,
         "//div[contains(@class,'MuiDialogActions-root')]//button"
-        "[normalize-space(text())='다운받기' or normalize-space(text())='Download']",
+        "[contains(normalize-space(text()),'다운') or contains(normalize-space(text()),'Download')"
+        " or contains(normalize-space(text()),'받기') or contains(normalize-space(text()),'확인')]",
     )
 
     # LNB 햄버거 메뉴 / 도구 탭
@@ -184,7 +186,7 @@ class BaseToolPage(BasePage):
         self.wait.until(EC.element_to_be_clickable(self.SCHOOL_COMBOBOX)).click()
         self.wait.until(
             EC.element_to_be_clickable(
-                (By.XPATH, f"//li[@role='option' and normalize-space(text())='{school_level}']")
+                (By.XPATH, f"//li[@role='option' and @data-value='{school_level}']")
             )
         ).click()
         self.wait_backdrop_gone()
@@ -405,47 +407,54 @@ class BaseToolPage(BasePage):
 
     def download_result(self, download_dir: str, browser: str = "firefox"):
         """생성 결과 받기 버튼 클릭 후 xlsx 다운로드 완료 대기"""
-        self.logger.info(f"생성 결과 받기 버튼 활성화 대기 중 (최대 120초)...")
-        self.wait.until(EC.presence_of_element_located(self.RESULT_BUTTON))
-        deadline_btn = time.time() + 120
-        result_btn = None
-        while time.time() < deadline_btn:
-            time.sleep(1)
-            btn = self.driver.find_element(*self.RESULT_BUTTON)
-            if btn.is_enabled():
-                result_btn = btn
-                self.logger.info("생성 결과 받기 버튼 활성화 확인")
-                break
-        else:
+        self.logger.info("생성 결과 받기 버튼 활성화 대기 중 (최대 120초)...")
+        try:
+            result_btn = WebDriverWait(self.driver, 120).until(
+                EC.element_to_be_clickable(self.RESULT_BUTTON)
+            )
+        except Exception:
             self.logger.warning("생성 결과 받기 버튼 활성화 타임아웃 (120초 초과)")
             return False
 
-        existing_xlsx = set(glob.glob(os.path.join(download_dir, "*.xlsx")))
-        self.js_click(result_btn)
-        self.logger.info("생성 결과 받기 버튼 클릭 완료")
+        # 클릭 전 xlsx 파일별 수정 시간 스냅샷 (신규 파일 + 덮어쓰기 모두 감지)
+        before_mtime = {}
+        for f in glob.glob(os.path.join(download_dir, "*.xlsx")):
+            try:
+                before_mtime[f] = os.path.getmtime(f)
+            except OSError:
+                pass
 
-        # 확인 모달 → '다운받기' 버튼 클릭
+        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", result_btn)
+        ActionChains(self.driver).move_to_element(result_btn).click().perform()
+        self.logger.info("생성 결과 받기 버튼 클릭 완료")
+        click_time = time.time()
+
+        # 확인 모달 → '다운받기' 버튼 클릭 (모달 없을 경우 3초 후 바로 다운로드 진행)
         try:
-            confirm_btn = WebDriverWait(self.driver, 5).until(
+            confirm_btn = WebDriverWait(self.driver, 3).until(
                 EC.element_to_be_clickable(self.DOWNLOAD_CONFIRM_BUTTON)
             )
-            self.js_click(confirm_btn)
+            ActionChains(self.driver).move_to_element(confirm_btn).click().perform()
             self.logger.info("'다운받기' 확인 버튼 클릭 완료")
         except Exception:
             self.logger.info("확인 모달 없음 → 바로 다운로드 진행")
 
         # 다운로드 완료 대기 (최대 90초)
+        # 신규 파일 OR 기존 파일 덮어쓰기(mtime 변경) 모두 감지
         self.logger.info("파일 다운로드 대기 중...")
-        temp_ext = "*.part" if browser.lower() == "firefox" else "*.crdownload"
         deadline = time.time() + 90
         while time.time() < deadline:
             time.sleep(1)
-            current_xlsx = set(glob.glob(os.path.join(download_dir, "*.xlsx")))
-            new_files = current_xlsx - existing_xlsx
-            temp_files = glob.glob(os.path.join(download_dir, temp_ext))
-            if new_files and not temp_files:
-                self.logger.info(f"다운로드 완료: {list(new_files)[0]}")
-                return True
+            for f in glob.glob(os.path.join(download_dir, "*.xlsx")):
+                if os.path.exists(f + ".part"):
+                    continue
+                try:
+                    mtime = os.path.getmtime(f)
+                except OSError:
+                    continue
+                if f not in before_mtime or mtime > click_time:
+                    self.logger.info(f"다운로드 완료: {f}")
+                    return True
         self.logger.warning("다운로드 타임아웃 (90초 초과)")
         return False
 
