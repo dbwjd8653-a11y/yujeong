@@ -67,8 +67,10 @@ def test_FHC_054_056_quiz_happy_path(quiz):
 
     with allure.step("[FHC-056] 생성 시작(스피너) 확인"):
         assert quiz.is_generating(), "생성이 시작되지 않았습니다"
+        print(1)
 
     with allure.step("[FHC-056] 생성 완료 확인 (최대 2분)"):
         assert quiz.is_generated(timeout=120), "2분 이내 퀴즈 생성 실패"
+        print(2)
 
     logger.info("[FHC-054] 퀴즈 생성 해피패스 완료")

@@ -493,24 +493,31 @@ class BaseToolPage(BasePage):
 
     def is_generated(self, timeout=DEFAULT_WAIT):
         """
-        AI 생성 완료 확인 (최초 생성 및 재생성 모두 대응)
-
-        단계:
-          1. 기존 체크 아이콘이 있으면 사라질 때까지 대기 (재생성 케이스)
-          2. 로딩 스피너 사라짐 대기
-          3. 완료 체크 아이콘 표시 대기
+        AI 생성 완료 확인 — 버튼이 '다시 생성' + 활성화 상태가 될 때까지 대기
+        생성 중엔 버튼이 disabled, 완료 후 enabled로 전환
         """
+        if self.GENERATE_BTN is None:
+            raise NotImplementedError(f"{self.__class__.__name__}에 GENERATE_BTN이 정의되지 않았습니다")
+
+        deadline = time.time() + timeout
+
+        def secs_left():
+            return max(1, deadline - time.time())
+
+        # 생성 시작(버튼 비활성화) 대기
         try:
-            WebDriverWait(self.driver, SHORT_WAIT).until(
-                EC.visibility_of_element_located(self.CHECK_ICON)
-            )
-            WebDriverWait(self.driver, timeout).until(
-                EC.invisibility_of_element_located(self.CHECK_ICON)
+            WebDriverWait(self.driver, SHORT_WAIT).until_not(
+                EC.element_to_be_clickable(self.GENERATE_BTN)
             )
         except TimeoutException:
             pass
-        self.wait_until_invisible(self.SPINNER, timeout)
-        result = WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(self.CHECK_ICON)
-        )
-        return result.is_displayed()
+
+        # 생성 완료(버튼 활성 + "다시 생성") 대기 — 300ms 간격으로 빠르게 폴링
+        def btn_complete(d):
+            try:
+                btn = d.find_element(*self.GENERATE_BTN)
+                return btn.is_enabled() and "다시 생성" in btn.text
+            except Exception:
+                return False
+
+        return bool(WebDriverWait(self.driver, secs_left(), poll_frequency=0.3).until(btn_complete))
