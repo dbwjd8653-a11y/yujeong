@@ -1,6 +1,6 @@
 # pages/mypage/mypage_support_page.py
 # 마이페이지 > 고객 센터 전용 Page 클래스
-# FHC-089(고객 센터 AI)
+# FHC-093(고객 센터 AI)
 
 import time
 
