@@ -43,18 +43,18 @@ def test_FHC_072_token_limit_disable(settings_member):
     """
     [FHC-072] 토큰 한도 토글 비활성화 테스트
 
-    전제: 로그인 완료 상태 (관리자 계정), 구성원 관리 탭 이동 완료
+    전제: 헬피챗 접속, 로그인 완료 (관리자 계정), 오른쪽 상단 톱니바퀴 '설정' 클릭 > '설정' 클릭,
+          '구성원 관리' 탭 클릭, '토큰 한도' 토글 활성화
     단계:
-      1. '구성원 관리' 탭 클릭
-      2. '구성원 토큰 관리'에서 '토큰 한도' 토글 비활성화
-      3. 왼쪽 하단에 '저장' 버튼 클릭
-      4. '토큰 한도가 저장되었습니다.' 알림창 활성화
+      1. '구성원 토큰 관리'에서 '토큰 한도' 토글 비활성화
+      2. 왼쪽 하단에 '저장' 버튼 클릭
+      3. '토큰 한도가 저장되었습니다.' 알림창 활성화
     기대: '토큰 한도가 저장되었습니다.' 알림창 활성화됨
     """
     logger.info("[FHC-072] 토큰 한도 토글 비활성화 시작")
+    settings_member.set_token_limit_toggle(activate=True)
+    settings_member.set_token_limit_toggle(activate=False)
     toggle = settings_member.get_toggle()
-    settings_member.ensure_toggle_enabled(toggle)
-    settings_member.click_toggle(toggle)
     assert not settings_member.is_toggle_checked(toggle), "토큰 한도 토글 비활성화 실패"
     settings_member.save_and_verify_toast()
     logger.info("[FHC-072] 토큰 한도 토글 비활성화 완료")
@@ -67,19 +67,19 @@ def test_FHC_073_token_limit_enable(settings_member):
     """
     [FHC-073] 토큰 한도 토글 활성화 테스트
 
-    전제: test_FHC_072 이어서 토큰 한도 토글 비활성화 상태
+    전제: 헬피챗 접속, 로그인 완료 (관리자 계정), 오른쪽 상단 톱니바퀴 '설정' 클릭 > '설정' 클릭,
+          '구성원 관리' 탭 클릭, '토큰 한도' 토글 비활성화
     단계:
-      1. '구성원 관리' 탭 클릭
-      2. '구성원 토큰 관리'에서 '토큰 한도' 토글 활성화
-      3. 왼쪽 하단에 '저장' 버튼 클릭
-      4. '토큰 한도가 저장되었습니다.' 알림창 활성화
+      1. '구성원 토큰 관리'에서 '토큰 한도' 토글 활성화
+      2. 왼쪽 하단에 '저장' 버튼 클릭
+      3. '토큰 한도가 저장되었습니다.' 알림창 활성화
     기대: '토큰 한도가 저장되었습니다.' 알림창 활성화됨
     """
     logger.info("[FHC-073] 토큰 한도 토글 활성화 시작")
+    settings_member.set_token_limit_toggle(activate=False)
+    settings_member.set_token_limit_toggle(activate=True)
     toggle = settings_member.get_toggle()
-    settings_member.click_toggle(toggle)
     assert settings_member.is_toggle_checked(toggle), "토큰 한도 토글 활성화 실패"
-    settings_member.set_global_token("10")
     settings_member.save_and_verify_toast()
     logger.info("[FHC-073] 토큰 한도 토글 활성화 완료")
 

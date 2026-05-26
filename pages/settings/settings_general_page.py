@@ -14,7 +14,7 @@ class SettingsPage:
         self.wait = wait
 
     def navigate_to_settings(self):
-        self.driver.find_element(*self._GEAR_BTN).click()
+        self.wait.until(EC.element_to_be_clickable(self._GEAR_BTN)).click()
         self.wait.until(EC.element_to_be_clickable(self._SETTINGS_MENU_ITEM)).click()
         self.wait.until(EC.url_contains(self._ADMIN_URL))
         close_token_banner(self.driver, self.wait)
