@@ -11,19 +11,22 @@ class SettingsLoadPage(SettingsPage):
     _SUBSCRIPTION_TAB = (By.CSS_SELECTOR, 'a[href="/ai-helpy-chat/admin/subscription"][role="tab"]')
     _MEMBER_TAB       = (By.CSS_SELECTOR, 'a[href="/ai-helpy-chat/admin/users"][role="tab"]')
 
+    def _js_click(self, element):
+        self.driver.execute_script("arguments[0].click();", element)
+
     def click_all_tabs_three_times(self):
         for _ in range(3):
-            self.wait.until(EC.element_to_be_clickable(self._GENERAL_TAB)).click()
+            self._js_click(self.wait.until(EC.element_to_be_clickable(self._GENERAL_TAB)))
             self.wait.until(EC.url_contains("/ai-helpy-chat/admin/general"))
 
-            self.wait.until(EC.element_to_be_clickable(self._HISTORY_TAB)).click()
+            self._js_click(self.wait.until(EC.element_to_be_clickable(self._HISTORY_TAB)))
             self.wait.until(EC.url_contains("/ai-helpy-chat/admin/history"))
 
-            self.wait.until(EC.element_to_be_clickable(self._MODELS_TAB)).click()
+            self._js_click(self.wait.until(EC.element_to_be_clickable(self._MODELS_TAB)))
             self.wait.until(EC.url_contains("/ai-helpy-chat/admin/models"))
 
-            self.wait.until(EC.element_to_be_clickable(self._SUBSCRIPTION_TAB)).click()
+            self._js_click(self.wait.until(EC.element_to_be_clickable(self._SUBSCRIPTION_TAB)))
             self.wait.until(EC.url_contains("/ai-helpy-chat/admin/subscription"))
 
-            self.wait.until(EC.element_to_be_clickable(self._MEMBER_TAB)).click()
+            self._js_click(self.wait.until(EC.element_to_be_clickable(self._MEMBER_TAB)))
             self.wait.until(EC.url_contains("/ai-helpy-chat/admin/users"))

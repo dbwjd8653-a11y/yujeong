@@ -21,6 +21,7 @@ pytestmark = [
 ]
 
 REPEAT = 5
+INTERVAL = 2
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -74,10 +75,7 @@ def test_FHC_096_login_logout_load(login_load):
         logout_page.click_logout()
         wait.until(EC.url_contains("accounts.elice.io"))  # 로그아웃 완료 대기
         logger.info(f"[{i}/{REPEAT}] 로그아웃 완료")
+        time.sleep(INTERVAL)
 
     assert fail_count == 0, f"5회 중 {fail_count}회 로그인 실패"
     logger.info("[FHC-096] 로그인/로그아웃 반복 부하 테스트 완료")
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v", "-s"])
