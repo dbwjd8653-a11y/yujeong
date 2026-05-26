@@ -1,4 +1,4 @@
-from config.selenium_imports import By, EC
+from config.selenium_imports import By, EC, WebDriverWait
 
 from selenium.webdriver.common.keys import Keys
 
@@ -14,7 +14,14 @@ class SettingsModelPage(SettingsPage):
     _TOAST_ALERT = (By.ID, 'notistack-snackbar')
 
     def navigate_to_models_tab(self):
-        self.wait.until(EC.element_to_be_clickable(self._MODELS_TAB)).click()
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.invisibility_of_element_located(self._TOAST_ALERT)
+            )
+        except Exception:
+            pass
+        tab = self.wait.until(EC.element_to_be_clickable(self._MODELS_TAB))
+        self.driver.execute_script("arguments[0].click();", tab)
         self.wait.until(EC.url_contains("/ai-helpy-chat/admin/models"))
         self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'li.MuiListItem-root')))
 
