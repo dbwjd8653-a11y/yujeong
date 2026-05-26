@@ -17,7 +17,7 @@ from pages.tools.tools_ppt_page import PPTPage
 from pages.agents.agents_page import AgentsPage
 from pages.agents.agents_detail_page import AgentDetailPage
 from pages.mypage.mypage_page import MyPage as MyPageBase
-from pages.mypage.mypage_profile_page import MyPage as MyPageProfile
+from pages.mypage.mypage_profile_page import MyPageProfilePage
 from pages.mypage.mypage_account_page import MyPage05
 from pages.mypage.mypage_withdraw_page import MyPage06
 from pages.mypage.mypage_organization_page import MyPage07
