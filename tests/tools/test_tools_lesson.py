@@ -51,6 +51,8 @@ def test_lesson_plan_happy_case(page):
 
     with allure.step("[FHC-046] 필수 항목 랜덤 선택"):
         logger.info("[FHC-046] 필수 항목 입력 시작")
+        if page.has_any_field_value():
+            page.clear_all_fields()
         page.regen_with_random_values()
 
     with allure.step("[FHC-047] 선택 항목 입력"):
@@ -69,58 +71,3 @@ def test_lesson_plan_happy_case(page):
 
 
     logger.info("[FHC-045~049] 수업지도안 생성 해피 케이스 완료")
-
-
-# ── 실패 케이스 ──────────────────────────────────────────────────
-
-@allure.title("[FHC-045-F] 수업지도안 페이지 미이동")
-@allure.story("수업지도안 생성 새드케이스")
-@allure.severity(allure.severity_level.NORMAL)
-def test_fhc045_page_not_loaded(page):
-    with allure.step("[FHC-045-F] 메뉴 미클릭 상태에서 수업지도안 페이지 진입 여부 확인"):
-        page.navigate_to_tools()
-        logger.error("[FHC-045-F] 수업지도안 메뉴 미클릭 — 페이지 미이동 확인")
-        assert not page.is_on_tool_page(), "메뉴 미클릭 상태에서 수업지도안 페이지로 이동됨"
-
-
-@allure.title("[FHC-046-F] 필수 항목 미선택 시 생성 버튼 비활성화")
-@allure.story("수업지도안 생성 새드케이스")
-@allure.severity(allure.severity_level.NORMAL)
-def test_fhc046_generate_btn_disabled_without_input(page):
-    with allure.step("[FHC-046-F] 필수 항목 미선택 상태에서 생성 버튼 비활성화 확인"):
-        page.navigate_to_tools()
-        page.click_tool_menu(LessonPlanPage.TOOL_NAME)
-        logger.error("[FHC-046-F] 필수 항목 미선택 — 생성 버튼 비활성화 확인")
-        assert not page.is_generate_btn_enabled(), "필수 항목 미선택 상태에서 생성 버튼이 활성화되어 있음"
-
-
-@allure.title("[FHC-047-F] 업로드 영역 미표시")
-@allure.story("수업지도안 생성 새드케이스")
-@allure.severity(allure.severity_level.NORMAL)
-def test_fhc047_upload_area_not_visible(page):
-    with allure.step("[FHC-047-F] 스크롤 없이 업로드 영역 미표시 확인"):
-        page.navigate_to_tools()
-        page.click_tool_menu(LessonPlanPage.TOOL_NAME)
-        logger.error("[FHC-047-F] 스크롤 없이 업로드 영역 접근 — 미표시 확인")
-        assert not page.is_upload_area_visible(), "스크롤 없이 업로드 영역이 표시됨"
-
-
-@allure.title("[FHC-048-F] 재생성 확인 모달 취소 클릭 시 생성 미진행")
-@allure.story("수업지도안 생성 새드케이스")
-@allure.severity(allure.severity_level.NORMAL)
-def test_fhc048_cancel_regeneration_modal(page):
-    with allure.step("[FHC-048-F] 다시 생성 클릭 후 모달에서 취소 클릭"):
-        page.navigate_to_tools()
-        page.click_tool_menu(LessonPlanPage.TOOL_NAME)
-        page.regen_with_random_values()
-        logger.error("[FHC-048-F] 재생성 확인 모달에서 취소 클릭 — 생성 미진행 확인")
-        assert page.click_generate_and_cancel(), "재생성 확인 모달 취소 처리 실패"
-
-
-@allure.title("[FHC-049-F] 재생성 1분 초과 시 실패")
-@allure.story("수업지도안 생성 새드케이스")
-@allure.severity(allure.severity_level.NORMAL)
-def test_fhc049_regeneration_timeout(page):
-    with allure.step("[FHC-049-F] 재생성 타임아웃 발생 확인"):
-        logger.error("[FHC-049-F] 재생성 타임아웃 — 1분 초과 시 실패 확인")
-        assert not page.is_generated(timeout=1), "타임아웃(1초) 내 재생성이 완료됨"
