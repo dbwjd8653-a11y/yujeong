@@ -49,12 +49,14 @@ def test_FHC_080_change_name(mypage):
       3. 새 이름 입력 후 저장
     기대: '저장되었습니다' 메시지 출력 후 이름 변경 적용됨
     """
-    mypage.navigate_to_account()
-    mypage.click_name_edit()
-    mypage.enter_name(NEW_NAME)
-    mypage.save_name()
-    assert mypage.is_save_success_toast_displayed(), \
-        "이름 변경 후 '저장되었습니다' 메시지가 표시되지 않았습니다"
+    with allure.step("r: 계정 관리 페이지 이동"):
+        mypage.navigate_to_account()
+    with allure.step("g: 이름 수정 → 저장 성공 확인"):
+        mypage.click_name_edit()
+        mypage.enter_name(NEW_NAME)
+        mypage.save_name()
+        assert mypage.is_save_success_toast_displayed(), \
+            "이름 변경 후 '저장되었습니다' 메시지가 표시되지 않았습니다"
 
 
 @allure.story("비밀번호 변경")
@@ -72,14 +74,16 @@ def test_FHC_081_change_password(mypage):
       4. 검증 후 원래 비밀번호로 복구
     기대: '저장되었습니다' 메시지 출력 후 비밀번호 변경 적용됨
     """
-    mypage.navigate_to_account()
-    mypage.click_password_edit()
-    mypage.change_password(MAIN_PASSWORD, NEW_PASSWORD)
-    assert mypage.is_save_success_toast_displayed(), \
-        "비밀번호 변경 후 '저장되었습니다' 메시지가 표시되지 않았습니다"
-    mypage.navigate_to_account()
-    mypage.click_password_edit()
-    mypage.change_password(NEW_PASSWORD, MAIN_PASSWORD)
+    with allure.step("r: 계정 관리 페이지 이동"):
+        mypage.navigate_to_account()
+    with allure.step("g: 비밀번호 변경 → 저장 성공 확인 후 원래 비밀번호 복구"):
+        mypage.click_password_edit()
+        mypage.change_password(MAIN_PASSWORD, NEW_PASSWORD)
+        assert mypage.is_save_success_toast_displayed(), \
+            "비밀번호 변경 후 '저장되었습니다' 메시지가 표시되지 않았습니다"
+        mypage.navigate_to_account()
+        mypage.click_password_edit()
+        mypage.change_password(NEW_PASSWORD, MAIN_PASSWORD)
 
 
 @allure.story("프로모션 알림 설정 변경")
@@ -95,14 +99,16 @@ def test_FHC_082_toggle_promotion(mypage):
       2. '프로모션 알림 받기' 클릭
     기대: 프로모션 알림 토글 시 'Saved successfully' 메시지 출력 및 상태 변경됨
     """
-    mypage.navigate_to_account()
-    before = mypage.get_promotion_state()
-    mypage.toggle_promotion()
-    assert mypage.is_saved_successfully_displayed(), \
-        "프로모션 알림 토글 후 'Saved successfully' 메시지가 표시되지 않았습니다"
-    after = mypage.get_promotion_state()
-    assert before != after, \
-        f"프로모션 알림 상태가 변경되지 않았습니다 (전: {before}, 후: {after})"
+    with allure.step("r: 계정 관리 페이지 이동 및 현재 토글 상태 확인"):
+        mypage.navigate_to_account()
+        before = mypage.get_promotion_state()
+    with allure.step("g: 프로모션 알림 토글 → 저장 성공 및 상태 변경 확인"):
+        mypage.toggle_promotion()
+        assert mypage.is_saved_successfully_displayed(), \
+            "프로모션 알림 토글 후 'Saved successfully' 메시지가 표시되지 않았습니다"
+        after = mypage.get_promotion_state()
+        assert before != after, \
+            f"프로모션 알림 상태가 변경되지 않았습니다 (전: {before}, 후: {after})"
 
 
 @allure.story("선호 언어 설정 변경")
@@ -118,7 +124,9 @@ def test_FHC_083_change_language(mypage):
       2. 한국어(ko-KR) 선택
     기대: 언어 변경 및 'Saved successfully' 메시지 출력
     """
-    mypage.navigate_to_account()
-    mypage.change_language("ko-KR")
-    assert mypage.is_saved_successfully_displayed(), \
-        "언어 변경 후 'Saved successfully' 메시지가 표시되지 않았습니다"
+    with allure.step("r: 계정 관리 페이지 이동"):
+        mypage.navigate_to_account()
+    with allure.step("g: 언어 변경 (ko-KR) → 저장 성공 확인"):
+        mypage.change_language("ko-KR")
+        assert mypage.is_saved_successfully_displayed(), \
+            "언어 변경 후 'Saved successfully' 메시지가 표시되지 않았습니다"
