@@ -35,10 +35,10 @@ class BaseToolPage(BasePage):
 
     SCHOOL_COMBOBOX = (
         By.XPATH,
-        "//label[contains(text(),'학교급') or contains(text(),'School')]/following-sibling::div//div[@role='combobox']",
+        "//input[@name='school_level']/preceding-sibling::div[@role='combobox']",
     )
 
-    NEXT_BUTTON    = (By.XPATH, "//button[not(@disabled) and (text()='다음으로' or text()='Next')]")
+    NEXT_BUTTON    = (By.CSS_SELECTOR, "button[form='student_evaluation'], button[form='student_record_generation']")
     MODIFY_BUTTON  = (By.XPATH, "//*[@role='dialog']//button[contains(text(),'수정하기') or contains(text(),'Modify') or contains(text(),'Edit')]")
 
     STUDENT_TAB    = (By.XPATH, "//*[contains(text(),'학생 정보 입력 및 생성') or contains(text(),'Student Info')]")
@@ -186,7 +186,7 @@ class BaseToolPage(BasePage):
         self.wait.until(EC.element_to_be_clickable(self.SCHOOL_COMBOBOX)).click()
         self.wait.until(
             EC.element_to_be_clickable(
-                (By.XPATH, f"//li[@role='option' and normalize-space(text())='{school_level}']")
+                (By.XPATH, f"//li[@role='option' and @data-value='{school_level}']")
             )
         ).click()
         self.wait_backdrop_gone()

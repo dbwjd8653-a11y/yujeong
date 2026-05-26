@@ -41,7 +41,7 @@ def mypage(tools_driver_module):
 
 @allure.title("[FHC-084~086] 계정 탈퇴 해피 케이스")
 @allure.severity(allure.severity_level.CRITICAL)
-def test_withdraw_happy_case(mypage):
+def test_FHC_084_086_withdraw_happy_case(mypage):
     """
     [FHC-084~086] 계정 탈퇴 해피 케이스
 
