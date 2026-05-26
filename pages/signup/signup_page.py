@@ -28,7 +28,6 @@ class SignupPage(BasePage):
     def open(self):
         self.driver.get(self.SIGNUP_URL)
         self.wait.until(EC.url_contains("signup"))
-        self.logger.info("회원가입 페이지 접속 완료")
 
     # ── 요소 조회 (테스트에서 직접 사용) ─────────────────────────────
 
@@ -50,8 +49,8 @@ class SignupPage(BasePage):
     def get_required_checkboxes(self):
         return self.wait.until(EC.presence_of_all_elements_located(self.REQ_CHECKBOXES))
 
-    def get_create_account_button(self):
-        return self.wait.until(EC.element_to_be_clickable(self.CREATE_ACCOUNT_BUTTON))
+    # def get_create_account_button(self):
+    #     return self.wait.until(EC.element_to_be_clickable(self.CREATE_ACCOUNT_BUTTON))
 
     def get_email_error_message(self):
         return self.wait.until(EC.visibility_of_element_located(self.EMAIL_ERROR_MESSAGE))
@@ -63,36 +62,59 @@ class SignupPage(BasePage):
 
     def click_create_account_with_email(self):
         self.wait.until(EC.element_to_be_clickable(self.CREATE_EMAIL_BUTTON)).click()
-        self.logger.info("이메일로 가입하기 버튼 클릭 완료")
-
+        
+    def input_text(self, locator, text):
+        element = self.wait.until(
+            EC.visibility_of_element_located(locator)
+        )
+        element.clear()
+        element.send_keys(text)
+    
     def enter_email(self, email):
-        self.get_email_input().send_keys(email)
-        self.logger.info(f"이메일 입력 완료: {email}")
+        self.input_text(self.EMAIL_INPUT, email)
 
     def enter_password(self, password):
-        self.get_password_input().send_keys(password)
-        self.logger.info("비밀번호 입력 완료")
+        self.input_text(self.PASSWORD_INPUT, password)
 
     def enter_name(self, name):
-        self.get_name_input().send_keys(name)
-        self.logger.info(f"이름 입력 완료: {name}")
+        self.input_text(self.NAME_INPUT, name)  
 
     def click_agree_checkbox(self):
         self.js_click(self.get_agree_checkbox())
-        self.logger.info("전체 동의 체크 완료")
 
     def click_age_checkbox(self):
         self.js_click(self.get_age_checkbox())
-        self.logger.info("만 14세 이상 체크 완료")
 
     def click_required_checkbox(self):
         for cb in self.get_required_checkboxes():
             self.js_click(cb)
-        self.logger.info("필수 약관 체크 완료")
 
     def click_create_account_button(self):
-        self.js_click(self.get_create_account_button())
-        self.logger.info("회원가입 버튼 클릭 완료")
+        self.js_click(
+            self.wait.until(
+                EC.element_to_be_clickable(self.CREATE_ACCOUNT_BUTTON)
+            )
+        )
+
+    # email, pw, 이름 입력하기
+    def fill_signup_form(self, email, password, name):
+        self.enter_email(email)
+        self.enter_password(password)
+        self.enter_name(name)
+
+    # 약관 동의하기
+    def agree_terms(self, agreement_type="all"):
+        if agreement_type == "all":
+            self.click_agree_checkbox()
+
+        elif agreement_type == "required":
+            self.click_age_checkbox()
+            self.click_required_checkbox()
+        else:
+            raise ValueError(
+                f"지원하지 않는 agreement_type: {agreement_type}"
+            )
+
 
     # ── 검증 ──────────────────────────────────────────────────────────
 
