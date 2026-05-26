@@ -97,6 +97,7 @@ class BaseToolPage(BasePage):
     STOP_BTN       = (By.XPATH, "//button[.//*[@data-testid='stopIcon']]")  # 생성 중단 버튼
     SPINNER        = (By.CSS_SELECTOR, "span[role='progressbar']")          # 로딩 스피너
     CHECK_ICON     = (By.CSS_SELECTOR, "[data-testid='circle-checkIcon']")  # 생성 완료 체크 아이콘
+    GENERATE_BTN   = None  # 서브클래스에서 반드시 정의
 
     # ========== 초기화 ==========
 
@@ -479,14 +480,17 @@ class BaseToolPage(BasePage):
                 EC.presence_of_element_located(self.STOP_BTN)
             )
             self.js_click(stop_btn)
-            WebDriverWait(self.driver, DEFAULT_WAIT).until(
-                EC.element_to_be_clickable(self.GENERATE_BTN)
-            )
+            if self.GENERATE_BTN is not None:
+                WebDriverWait(self.driver, DEFAULT_WAIT).until(
+                    EC.element_to_be_clickable(self.GENERATE_BTN)
+                )
         except TimeoutException:
             pass
 
     def get_generate_btn(self):
         """생성 버튼 요소 반환 (활성화 여부 확인용)"""
+        if self.GENERATE_BTN is None:
+            raise NotImplementedError(f"{self.__class__.__name__}에 GENERATE_BTN이 정의되지 않았습니다")
         return self.wait.until(EC.presence_of_element_located(self.GENERATE_BTN))
 
     def assert_generate_btn_enabled(self):
