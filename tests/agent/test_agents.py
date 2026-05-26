@@ -107,5 +107,3 @@ def test_FHC_066_agent_chat_via_button(agents_page, agent_detail_page):
             "AI 답변이 생성되지 않았습니다 (버튼 클릭 방식)"
         assert agent_detail_page.is_lnb_chatroom_visible(), \
             "LNB 메뉴에 대화 내용이 표시되지 않았습니다"
-
-    # TODO: FHC-066 번호 중복 — 팀원과 번호 분리(FHC-067) 또는 통합 상의 후 처리

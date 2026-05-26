@@ -39,7 +39,7 @@ class MyPage07(MyPage):
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.QAPROJECT_LINK))
         )
-        print("qaproject 링크 클릭 완료")
+        self.logger.info("qaproject 링크 클릭 완료")
 
     # ========== FHC-083: 헬프 센터 링크 ==========
 
@@ -47,4 +47,4 @@ class MyPage07(MyPage):
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.HELP_CENTER_LINK))
         )
-        print("헬프 센터 링크 클릭 완료")
+        self.logger.info("헬프 센터 링크 클릭 완료")
