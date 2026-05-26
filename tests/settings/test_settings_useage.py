@@ -51,8 +51,3 @@ def test_FHC_068_navigate_to_history_tab(settings_useage):
     logger.info("[FHC-068] 이용 내역 탭 이동 시작")
     settings_useage.navigate_to_history_tab()
     logger.info("[FHC-068] 이용 내역 탭 이동 완료")
-
-
-if __name__ == "__main__":
-    from tests.settings.settings_main import run
-    run(__file__)

@@ -66,8 +66,3 @@ def test_FHC_075_non_admin_cannot_access_settings(non_admin_login):
     gear_buttons = driver.find_elements(By.CSS_SELECTOR, 'button:has(svg[data-testid="gearIcon"])')
     assert len(gear_buttons) == 0, "비관리자 계정에서 톱니바퀴 버튼이 표시됨"
     logger.info("[FHC-075] 비관리자 계정 설정 접근 불가 확인 완료")
-
-
-if __name__ == "__main__":
-    from tests.settings.settings_main import run
-    run(__file__)

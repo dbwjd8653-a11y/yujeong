@@ -51,8 +51,3 @@ def test_FHC_071_navigate_to_subscription_tab(settings_subscription):
     logger.info("[FHC-071] 구독 관리 탭 이동 시작")
     settings_subscription.navigate_to_subscription_tab()
     logger.info("[FHC-071] 구독 관리 탭 이동 완료")
-
-
-if __name__ == "__main__":
-    from tests.settings.settings_main import run
-    run(__file__)

@@ -47,8 +47,3 @@ def test_FHC_067_navigate_to_settings(settings_general):
     logger.info("[FHC-067] 설정 페이지 이동 시작")
     settings_general.navigate_to_settings()
     logger.info("[FHC-067] 설정 페이지 이동 완료")
-
-
-if __name__ == "__main__":
-    from tests.settings.settings_main import run
-    run(__file__)
