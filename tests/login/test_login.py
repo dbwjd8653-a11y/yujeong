@@ -1,4 +1,4 @@
-# tests/test_login_01.py
+# tests/login/test_login.py
 # 로그인 E2E 테스트 — FHC-006 ~ FHC-013
 
 import logging
@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 pytestmark = [
     allure.epic("Login"),
     allure.feature("로그인"),
+    allure.story("로그인 동작 확인"),
 ]
 
 INPUT_EMAIL_INVALID = "email"
@@ -49,7 +50,7 @@ def login_page_after(login):
     return LoginPage(driver, wait)
 
 
-# ── 테스트 케이스 ──────────────────────────────────────────────────
+# ── 해피패스 ──────────────────────────────────────────────────────
 
 @allure.story("로그인 동작 확인")
 @allure.title("[FHC-006] 로그인 동작 확인 (Happy Path)")
@@ -67,13 +68,20 @@ def test_FHC_006_login_success(login_page_after):
     기대: URL에 'ai-helpy-chat'이 포함된 메인 페이지로 이동
     """
     logger.info("[FHC-006] 로그인 동작 확인 시작")
-    try:
-        login_page_after.agree_and_submit()
-    except TimeoutException:
-        pass
-    assert login_page_after.is_login_success(), "로그인 실패 - 메인 페이지 미진입"
+
+    with allure.step("[FHC-006] 약관 동의 팝업 처리 (최초 로그인 시)"):
+        try:
+            login_page_after.agree_and_submit()
+        except TimeoutException:
+            pass
+
+    with allure.step("[FHC-006] 메인 페이지 이동 확인"):
+        assert login_page_after.is_login_success(), "로그인 실패 - 메인 페이지 미진입"
+
     logger.info("[FHC-006] 로그인 동작 확인 완료")
 
+
+# ── 새드케이스 (해피패스와 독립) ──────────────────────────────────
 
 @allure.story("이메일 유효성 검사")
 @allure.title("[FHC-007] 이메일 유효성 검사")
@@ -88,8 +96,13 @@ def test_FHC_007_invalid_email(login_page):
     기대: '잘못된 이메일 형식입니다.' 오류 메시지 표시
     """
     logger.info("[FHC-007] 이메일 유효성 검사 시작")
-    login_page.enter_email(INPUT_EMAIL_INVALID)
-    assert login_page.is_email_error_displayed(), "이메일 유효성 오류 메시지 미표시"
+
+    with allure.step("[FHC-007] 유효하지 않은 이메일 입력"):
+        login_page.enter_email(INPUT_EMAIL_INVALID)
+
+    with allure.step("[FHC-007] 이메일 유효성 오류 메시지 확인"):
+        assert login_page.is_email_error_displayed(), "이메일 유효성 오류 메시지 미표시"
+
     logger.info("[FHC-007] 이메일 유효성 검사 완료")
 
 
@@ -112,13 +125,18 @@ def test_FHC_008_009_password_validation_and_masking(login_page):
       - 비밀번호 필드 type: 'password' → 'text'로 전환
     """
     logger.info("[FHC-008-009] 비밀번호 유효성 + 마스킹 확인 시작")
-    login_page.enter_email("test@example.com")   # 이메일 유효성은 통과, 비밀번호 에러만 발생
-    login_page.enter_password(INPUT_PWD_INVALID)
-    login_page.click(login_page.LOGIN_BUTTON)  # submit 시도로 유효성 검사 트리거
-    assert login_page.is_pwd_error_displayed(), "비밀번호 유효성 오류 메시지 미표시"
-    assert login_page.is_pwd_masked(), "비밀번호 마스킹 미적용"
-    login_page.toggle_pwd_mask()
-    assert login_page.is_pwd_unmasked(), "비밀번호 마스킹 해제 실패"
+
+    with allure.step("[FHC-008] 비밀번호 유효성 오류 확인"):
+        login_page.enter_email("test@example.com")   # 이메일 유효성은 통과, 비밀번호 에러만 발생
+        login_page.enter_password(INPUT_PWD_INVALID)
+        login_page.click(login_page.LOGIN_BUTTON)  # submit 시도로 유효성 검사 트리거
+        assert login_page.is_pwd_error_displayed(), "비밀번호 유효성 오류 메시지 미표시"
+
+    with allure.step("[FHC-009] 비밀번호 마스킹 및 해제 확인"):
+        assert login_page.is_pwd_masked(), "비밀번호 마스킹 미적용"
+        login_page.toggle_pwd_mask()
+        assert login_page.is_pwd_unmasked(), "비밀번호 마스킹 해제 실패"
+
     logger.info("[FHC-008-009] 비밀번호 유효성 + 마스킹 확인 완료")
 
 
@@ -137,9 +155,14 @@ def test_FHC_010_011_find_password_phone_validation(login_page):
     기대: '잘못된 번호 형식입니다.' 오류 메시지 표시
     """
     logger.info("[FHC-010-011] 비밀번호 찾기 → 전화번호 유효성 검사 시작")
-    login_page.go_to_forgot_password()
-    login_page.enter_phone(INPUT_PHONE_INVALID)
-    assert login_page.is_phone_error_displayed(), "전화번호 유효성 오류 메시지 미표시"
+
+    with allure.step("[FHC-010] 비밀번호 찾기 페이지 이동"):
+        login_page.go_to_forgot_password()
+
+    with allure.step("[FHC-011] 유효하지 않은 전화번호 입력 후 오류 확인"):
+        login_page.enter_phone(INPUT_PHONE_INVALID)
+        assert login_page.is_phone_error_displayed(), "전화번호 유효성 오류 메시지 미표시"
+
     logger.info("[FHC-010-011] 비밀번호 찾기 → 전화번호 유효성 검사 완료")
 
 
@@ -158,11 +181,16 @@ def test_FHC_012_login_lockout(login_page):
     기대: '로그인을 여러 번 잘못 시도하셨습니다. 5분 후 시도해 주세요.' 메시지 표시
     """
     logger.info("[FHC-012] 계정 잠금 확인 시작")
-    login_page.enter_email("test_login1@elice.io")
-    login_page.enter_password("test_login123")
-    for _ in range(6):
-        login_page.click(login_page.LOGIN_BUTTON)
-    assert login_page.is_lockout_msg_displayed(), "계정 잠금 메시지 미표시"
+
+    with allure.step("[FHC-012] 잘못된 자격증명으로 6회 로그인 시도"):
+        login_page.enter_email("test_login1@elice.io")
+        login_page.enter_password("test_login123")
+        for _ in range(6):
+            login_page.click(login_page.LOGIN_BUTTON)
+
+    with allure.step("[FHC-012] 계정 잠금 메시지 확인"):
+        assert login_page.is_lockout_msg_displayed(), "계정 잠금 메시지 미표시"
+
     logger.info("[FHC-012] 계정 잠금 확인 완료")
 
 
@@ -186,12 +214,17 @@ def test_FHC_013_language_reset_after_logout(login_page, login):
     [Bug Report] FB-001
     """
     logger.info("[FHC-013] 언어 초기화 버그 확인 시작")
-    login_page.select_language("ko-KR")
-    driver, wait = login
-    logout_page = LogoutPage(driver, wait)
-    logout_page.click_profile()
-    logout_page.click_logout()
-    current_lang = login_page.get_current_language()
-    logger.info(f"[FHC-013] 로그아웃 후 언어: {current_lang}")
-    assert current_lang == "ko-KR", f"언어가 초기화됨 (현재: {current_lang})"
+
+    with allure.step("[FHC-013] 한국어 설정 후 로그아웃"):
+        login_page.select_language("ko-KR")
+        driver, wait = login
+        logout_page = LogoutPage(driver, wait)
+        logout_page.click_profile()
+        logout_page.click_logout()
+
+    with allure.step("[FHC-013] 로그아웃 후 언어 확인"):
+        current_lang = login_page.get_current_language()
+        logger.info(f"[FHC-013] 로그아웃 후 언어: {current_lang}")
+        assert current_lang == "ko-KR", f"언어가 초기화됨 (현재: {current_lang})"
+
     logger.info("[FHC-013] 언어 초기화 버그 확인 완료")
