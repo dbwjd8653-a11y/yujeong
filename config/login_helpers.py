@@ -30,14 +30,18 @@ def do_login(driver, wait, user: dict = None):
     close_token_banner(driver, wait)
 
 
+_BANNER_BTN = (By.XPATH, "//*[@data-testid='xmark-largeIcon']/ancestor::button[1]")
+
+
 def close_token_banner(driver, wait):
     """토큰 안내 배너가 표시된 경우 닫기 (없으면 무시)"""
     try:
         close_btn = WebDriverWait(driver, SHORT_WAIT).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "//*[@data-testid='xmark-largeIcon']/ancestor::button[1]")
-            )
+            EC.element_to_be_clickable(_BANNER_BTN)
         )
         close_btn.click()
+        WebDriverWait(driver, SHORT_WAIT).until(
+            EC.invisibility_of_element_located(_BANNER_BTN)
+        )
     except Exception:
         pass

@@ -107,8 +107,7 @@ class ChatPage(BasePage):
 
     def open(self):
         """메인 채팅 페이지로 이동"""
-        self.driver.get(self.BASE_URL)
-        self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+        self.go(self.BASE_URL)
         self.logger.info("메인 채팅 페이지 이동 완료")
 
     # ========== LNB 탭 클릭 ==========

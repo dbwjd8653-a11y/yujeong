@@ -25,11 +25,11 @@ def deep(login_module):
     전제: login_module fixture로 로그인 완료 상태
     단계:
       1. login_module에서 (driver, wait) 수신 → DeepPage 생성
-      2. LNB 도구 탭 이동
+      2. 도구 목록 URL 직접 이동
       3. 심층 조사 도구 초기 세팅
     """
     tool = DeepPage(login_module)
-    tool.tools_LNB()
+    tool.navigate_to_tools()
     tool.setup_tool()
     return tool
 
@@ -37,16 +37,33 @@ def deep(login_module):
 @pytest.fixture
 def deep_sad(login):
     """
-    심층 조사 도구 fixture - 새드패스용 (독립 브라우저)
+    심층 조사 도구 fixture - 새드패스용 (독립 브라우저, FHC-061 전용)
 
     전제: login fixture로 로그인 완료 상태 (함수 스코프, 해피패스와 독립)
     단계:
       1. login에서 (driver, wait) 수신 → DeepPage 생성
-      2. LNB 도구 탭 이동
+      2. 도구 목록 URL 직접 이동
       3. 심층 조사 도구 초기 세팅
     """
     tool = DeepPage(login)
-    tool.tools_LNB()
+    tool.navigate_to_tools()
+    tool.setup_tool()
+    return tool
+
+
+@pytest.fixture(scope="module")
+def deep_sad_module(login_module):
+    """
+    심층 조사 도구 fixture - 경계값 새드패스용 (모듈 공유, FHC-062~063)
+
+    전제: login_module fixture로 로그인 완료 상태
+    단계:
+      1. login_module에서 (driver, wait) 수신 → DeepPage 생성
+      2. 도구 목록 URL 직접 이동
+      3. 심층 조사 도구 초기 세팅
+    """
+    tool = DeepPage(login_module)
+    tool.navigate_to_tools()
     tool.setup_tool()
     return tool
 
@@ -58,7 +75,7 @@ def deep_sad(login):
 @allure.severity(allure.severity_level.CRITICAL)
 def test_FHC_057_deep_research_happy_path(deep):
     """
-    [FHC-057] 심층 조사 해피패스 — 생성 시작까지
+    [FHC-057~60] 심층 조사 해피패스 — 생성 시작까지
 
     전제: 로그인 완료 상태
     단계:
@@ -140,7 +157,7 @@ def test_FHC_061_blank_topic_error(deep_sad):
 @allure.story("주제 500자 입력 버튼 활성화 경계값")
 @allure.title("[FHC-062] 주제 500자 입력 → [자동 생성] 버튼 활성화 확인 (경계값)")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_062_topic_500_chars_btn_enabled(deep_sad):
+def test_FHC_062_topic_500_chars_btn_enabled(deep_sad_module):
     """
     [FHC-062] 주제 500자 입력 → [자동 생성] 버튼 활성화 확인 (경계값)
 
@@ -154,10 +171,10 @@ def test_FHC_062_topic_500_chars_btn_enabled(deep_sad):
     logger.info("[FHC-062] 주제 500자 입력 → 버튼 활성화 확인 시작")
 
     with allure.step("[FHC-062] 주제 500자 입력"):
-        deep_sad.enter_text(DeepPage.TOPIC_INPUT, DeepPage.TOPIC_500_CHARS)
+        deep_sad_module.enter_text(DeepPage.TOPIC_INPUT, DeepPage.TOPIC_500_CHARS)
 
     with allure.step("[FHC-062] 생성 버튼 활성화 확인"):
-        deep_sad.assert_generate_btn_enabled()
+        deep_sad_module.assert_generate_btn_enabled()
 
     logger.info("[FHC-062] 주제 500자 입력 → 버튼 활성화 확인 완료")
 
@@ -165,7 +182,7 @@ def test_FHC_062_topic_500_chars_btn_enabled(deep_sad):
 @allure.story("주제 501자 입력 버튼 비활성화 경계값")
 @allure.title("[FHC-063] 주제 501자 입력 → [자동 생성] 버튼 비활성화 확인 (경계값)")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_063_topic_501_chars_btn_disabled(deep_sad):
+def test_FHC_063_topic_501_chars_btn_disabled(deep_sad_module):
     """
     [FHC-063] 주제 501자 입력 → [자동 생성] 버튼 비활성화 확인 (경계값)
 
@@ -177,9 +194,9 @@ def test_FHC_063_topic_501_chars_btn_disabled(deep_sad):
     logger.info("[FHC-063] 주제 501자 입력 → 버튼 비활성화 확인 시작")
 
     with allure.step("[FHC-063] 주제 501자 입력"):
-        deep_sad.enter_text(DeepPage.TOPIC_INPUT, DeepPage.TOPIC_501_CHARS)
+        deep_sad_module.enter_text(DeepPage.TOPIC_INPUT, DeepPage.TOPIC_501_CHARS)
 
     with allure.step("[FHC-063] 생성 버튼 비활성화 확인"):
-        deep_sad.assert_generate_btn_disabled()
+        deep_sad_module.assert_generate_btn_disabled()
 
     logger.info("[FHC-063] 주제 501자 입력 → 버튼 비활성화 확인 완료")

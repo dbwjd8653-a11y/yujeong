@@ -10,8 +10,9 @@ from pages.tools.base_tool_page import BaseToolPage
 
 class QuizPage(BaseToolPage):
 
+    TOOL_NAME = "퀴즈 생성"
+
     # ── Locators ───────────────────────────────────────────────────
-    MENU_ITEM      = (By.XPATH, "//p[text()='퀴즈 생성']")                                               # 퀴즈 생성 메뉴 항목
     TITLE_ELEMENT  = (By.XPATH, "//span[text()='퀴즈 생성']")                                            # 페이지 타이틀
     OPTION_TYPE_DD = "mui-component-select-quiz_configs.0.option_type"                                    # 문제 유형 드롭다운 ID
     DIFFICULTY_DD  = "mui-component-select-quiz_configs.0.difficulty"                                     # 난이도 드롭다운 ID
@@ -29,29 +30,18 @@ class QuizPage(BaseToolPage):
         super().__init__(driver, wait)
 
     def tools_menu(self):
-        target = self.wait.until(EC.element_to_be_clickable(self.MENU_ITEM))
-        self.js_click(target)
+        self.click_tool_menu(self.TOOL_NAME)
 
     def select_option(self, dropdown_id, target_text):
-        """
-        드롭다운 특정 항목 선택
-
-        단계:
-          1. dropdown_id로 드롭다운 버튼 클릭
-          2. 목록 전체 표시 대기
-          3. target_text 일치 항목 클릭
-          4. 목록 닫힘 대기
-        """
-        dropdown = self.wait.until(EC.element_to_be_clickable((By.ID, dropdown_id)))
-        dropdown.click()
-        options = self.wait.until(
-            EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "ul[role='listbox'] li"))
-        )
-        for option in options:
-            if option.text == target_text:
-                self.js_click(option)
-                break
-        self.wait_until_invisible((By.CSS_SELECTOR, "ul[role='listbox']"))
+        """드롭다운 특정 항목 선택"""
+        self.js_click(self.wait.until(EC.element_to_be_clickable((By.ID, dropdown_id))))
+        self.js_click(self.wait.until(
+            EC.element_to_be_clickable((
+                By.XPATH,
+                f"//ul[@role='listbox']//li[normalize-space(text())='{target_text}']",
+            ))
+        ))
+        self.wait_dropdown_closed()
 
     def is_tool_page_displayed(self):
         """퀴즈 생성 페이지 타이틀 표시 여부 검증"""

@@ -10,8 +10,9 @@ from pages.tools.base_tool_page import BaseToolPage
 
 class DeepPage(BaseToolPage):
 
+    TOOL_NAME = "심층 조사"
+
     # ── Locators ───────────────────────────────────────────────────
-    MENU_ITEM       = (By.XPATH, "//p[text()='심층 조사']")                                              # 심층 조사 메뉴 항목
     TITLE_ELEMENT   = (By.XPATH, "//span[text()='심층 조사']")                                           # 페이지 타이틀
     TOPIC_INPUT     = (By.NAME, "topic")                                                                   # 주제 입력 필드
     MESSAGE_INPUT   = (By.NAME, "instructions")                                                            # 지시사항 입력 필드
@@ -32,8 +33,7 @@ class DeepPage(BaseToolPage):
         super().__init__(driver, wait)
 
     def tools_menu(self):
-        target = self.wait.until(EC.element_to_be_clickable(self.MENU_ITEM))
-        self.js_click(target)
+        self.click_tool_menu(self.TOOL_NAME)
 
     def is_tool_page_displayed(self):
         """심층 조사 페이지 타이틀 표시 여부 검증"""
