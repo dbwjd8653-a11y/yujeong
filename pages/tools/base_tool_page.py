@@ -531,12 +531,22 @@ class BaseToolPage(BasePage):
 
     def is_generated(self, timeout=DEFAULT_WAIT):
         """
-        AI 생성 완료 확인
+        AI 생성 완료 확인 (최초 생성 및 재생성 모두 대응)
 
         단계:
-          1. 로딩 스피너 사라짐 대기
-          2. 완료 체크 아이콘 표시 대기
+          1. 기존 체크 아이콘이 있으면 사라질 때까지 대기 (재생성 케이스)
+          2. 로딩 스피너 사라짐 대기
+          3. 완료 체크 아이콘 표시 대기
         """
+        try:
+            WebDriverWait(self.driver, SHORT_WAIT).until(
+                EC.visibility_of_element_located(self.CHECK_ICON)
+            )
+            WebDriverWait(self.driver, timeout).until(
+                EC.invisibility_of_element_located(self.CHECK_ICON)
+            )
+        except TimeoutException:
+            pass
         self.wait_until_invisible(self.SPINNER, timeout)
         result = WebDriverWait(self.driver, timeout).until(
             EC.visibility_of_element_located(self.CHECK_ICON)

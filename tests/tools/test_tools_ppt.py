@@ -65,7 +65,7 @@ def test_ppt_happy_case(ppt):
         logger.info("[FHC-053] 다시 생성 시작")
         ppt.scroll_to_generate_btn()
         ppt.click_generate()
-        ppt.wait_for_regeneration(timeout=120)
+        ppt.is_generated(timeout=120)
 
     with allure.step("[FHC-053] PPT 다운로드"):
         logger.info("[FHC-053] PPT 다운로드 시작")
