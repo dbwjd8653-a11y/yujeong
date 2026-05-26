@@ -1,6 +1,6 @@
 # tests/test_mypage_06.py
 # 마이페이지 > 계정 관리 — 계정 탈퇴 E2E 테스트 — FHC-084 ~ FHC-086
-# ※ FHC-086 계정 탈퇴 후 test_recreate_account_after_withdraw에서 동일 계정으로 재가입하여 복구
+# ※ FHC-086 계정 탈퇴 후 동일 함수 내에서 동일 계정으로 재가입하여 복구
 
 import logging
 import pytest
@@ -50,7 +50,8 @@ def test_FHC_084_086_withdraw_happy_case(mypage):
       1. [FHC-084] 마이페이지 > 계정 관리 → 하단 '계정 탈퇴' 영역 이동
       2. [FHC-085] [탈퇴하기] 버튼 클릭 → 2차 확인 문구 표시
       3. [FHC-086] 탈퇴 확인 텍스트 입력 → 탈퇴 완료
-    기대: 로그인 랜딩 페이지로 이동한다
+      4. [인프라] 탈퇴 후 동일 계정으로 재가입하여 계정 복구
+    기대: 로그인 랜딩 페이지로 이동한다 / 재가입 후 헬피 챗 메인 페이지로 접속된다
     """
     with allure.step("[FHC-084] 계정 탈퇴 영역 확인"):
         logger.info("[FHC-084] 계정 탈퇴 영역 확인 시작")
@@ -72,27 +73,11 @@ def test_FHC_084_086_withdraw_happy_case(mypage):
         assert mypage.is_withdrawal_complete(), \
             "계정 탈퇴 후 로그인 랜딩 페이지로 이동하지 못했습니다"
 
-    logger.info("[FHC-084~086] 계정 탈퇴 해피 케이스 완료")
-
-
-@allure.title("[인프라] 계정 탈퇴 후 재가입")
-@allure.story("탈퇴 후 재가입")
-@allure.severity(allure.severity_level.MINOR)
-def test_recreate_account_after_withdraw(mypage):
-    """
-    [인프라] 계정 생성 (탈퇴 후 재가입)
-
-    전제: FHC-086 계정 탈퇴 후 → 로그인 페이지 상태
-    단계:
-      1. 회원가입 클릭
-      2. 이메일로 가입하기
-      3. 이메일/비밀번호/이름 기입
-      4. 전체 동의 버튼 클릭
-      5. 회원가입 버튼 클릭
-    기대: 회원가입 후 헬피 챗 메인 페이지로 접속된다
-    """
-    with allure.step("[인프라] 재가입 진행"):
+    with allure.step("[인프라] 탈퇴 후 계정 재가입"):
+        logger.info("[인프라] 탈퇴 후 계정 재가입 시작")
         mypage.driver.get(mypage.CHAT_URL)
         mypage.signup(MAIN_EMAIL, MAIN_PASSWORD, MAIN_NAME)
         assert mypage.is_signup_success(), \
             f"탈퇴 후 재가입 시 helpy-chat 메인 페이지로 이동하지 못했습니다 (이메일: {MAIN_EMAIL})"
+
+    logger.info("[FHC-084~086] 계정 탈퇴 및 계정 복구 완료")

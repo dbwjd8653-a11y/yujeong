@@ -156,8 +156,6 @@ def pytest_collection_modifyitems(items):
         m = re.search(r'FHC_(\d+)', item.nodeid)
         if m:
             return int(m.group(1))
-        if 'recreate_account_after_withdraw' in item.nodeid:
-            return 86.5
         return 9999
     items.sort(key=_fhc_key)
 
