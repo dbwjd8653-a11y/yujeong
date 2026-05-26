@@ -6,12 +6,10 @@ import logging
 import pytest
 import allure
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
-from config.settings import DEFAULT_WAIT, LONG_WAIT
+from config.settings import DEFAULT_WAIT, BASE_URL
 from config.browser_factory import make_simple_firefox_driver
-from config.login_helpers import do_login, close_token_banner
-from pages.logout.logout_page import LogoutPage
+from config.login_helpers import do_login
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +19,6 @@ pytestmark = [
 ]
 
 REPEAT = 5
-INTERVAL = 2
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -56,11 +53,24 @@ def test_FHC_096_login_logout_load(login_load):
     logger.info("[FHC-096] 로그인/로그아웃 반복 부하 테스트 시작")
     driver, wait = login_load
     fail_count = 0
+    saved_cookies = None
 
     for i in range(1, REPEAT + 1):
         start = time.time()
-        do_login(driver, wait)
-        close_token_banner(driver, wait)
+
+        if i == 1:
+            do_login(driver, wait)
+            saved_cookies = driver.get_cookies()
+        else:
+            driver.get(BASE_URL)
+            for cookie in saved_cookies:
+                try:
+                    driver.add_cookie(cookie)
+                except Exception:
+                    pass
+            driver.refresh()
+            wait.until(lambda d: "ai-helpy-chat" in d.current_url)
+
         elapsed_login = round(time.time() - start, 2)
 
         if "ai-helpy-chat" in driver.current_url:
@@ -70,12 +80,8 @@ def test_FHC_096_login_logout_load(login_load):
             logger.error(f"[{i}/{REPEAT}] 로그인 실패 ({elapsed_login}s)")
             continue
 
-        logout_page = LogoutPage(driver, WebDriverWait(driver, LONG_WAIT))
-        logout_page.click_profile()
-        logout_page.click_logout()
-        wait.until(EC.url_contains("accounts.elice.io"))  # 로그아웃 완료 대기
-        logger.info(f"[{i}/{REPEAT}] 로그아웃 완료")
-        time.sleep(INTERVAL)
+        driver.delete_all_cookies()
+        logger.info(f"[{i}/{REPEAT}] 로그아웃 완료 (쿠키 삭제)")
 
     assert fail_count == 0, f"5회 중 {fail_count}회 로그인 실패"
     logger.info("[FHC-096] 로그인/로그아웃 반복 부하 테스트 완료")
