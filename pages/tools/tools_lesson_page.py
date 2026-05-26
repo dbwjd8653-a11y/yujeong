@@ -226,17 +226,3 @@ class LessonPlanPage(BaseToolPage):
         except Exception:
             return False
 
-    def wait_for_regeneration(self, timeout: int = 60) -> bool:
-        from selenium.webdriver.support.ui import WebDriverWait
-        wait = WebDriverWait(self.driver, timeout)
-        try:
-            try:
-                old = self.driver.find_element(*self.SUCCESS_MESSAGE)
-                if old.is_displayed():
-                    wait.until(EC.invisibility_of_element_located(self.SUCCESS_MESSAGE))
-            except Exception:
-                pass
-            wait.until(EC.visibility_of_element_located(self.SUCCESS_MESSAGE))
-            return True
-        except Exception:
-            return False

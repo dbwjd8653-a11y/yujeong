@@ -65,7 +65,7 @@ def test_lesson_plan_happy_case(page):
 
     with allure.step("[FHC-049] 재생성 완료 확인"):
         logger.info("[FHC-049] 재생성 완료 확인 시작")
-        page.wait_for_regeneration(timeout=60)
+        page.is_generated(timeout=120)
 
 
     logger.info("[FHC-045~049] 수업지도안 생성 해피 케이스 완료")
@@ -123,4 +123,4 @@ def test_fhc048_cancel_regeneration_modal(page):
 def test_fhc049_regeneration_timeout(page):
     with allure.step("[FHC-049-F] 재생성 타임아웃 발생 확인"):
         logger.error("[FHC-049-F] 재생성 타임아웃 — 1분 초과 시 실패 확인")
-        assert not page.wait_for_regeneration(timeout=1), "타임아웃(1초) 내 재생성이 완료됨"
+        assert not page.is_generated(timeout=1), "타임아웃(1초) 내 재생성이 완료됨"
