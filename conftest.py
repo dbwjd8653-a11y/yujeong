@@ -64,7 +64,8 @@ def pytest_sessionfinish(session, exitstatus):
 def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
-
+    
+    # ── 로그 처리 ─────────────────────────────
     if report.when == "call":
         _logger = logging.getLogger(item.module.__name__)
 
@@ -81,8 +82,17 @@ def pytest_runtest_makereport(item, call):
         elif report.skipped:
             reason = getattr(report, 'wasxfail', None) or str(report.longrepr)
             _logger.warning(f"⚠️  {item.name} | {reason}")
-
+    
+    # ── Jira 처리 ────────────────────────────
     if report.when == "call" and report.failed:
+        jira_enabled = item.config.getoption("--jira")
+
+        if not jira_enabled:
+            return
+        
+        # xfail 제외
+        if hasattr(report, "wasxfail"):
+            return
 
         # ② driver 탐색
         driver = (
@@ -165,6 +175,12 @@ def pytest_addoption(parser):
         action="store_true",
         default=False,
         help="테스트 완료 후 HTML 리포트를 브라우저로 열기",
+    )
+    parser.addoption(
+        "--jira",
+        action="store_true",
+        default=False,
+        help="실패 테스트를 Jira 등록"
     )
 
 

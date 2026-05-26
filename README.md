@@ -7,6 +7,8 @@
 ## slow marker만 실행
 > pytest -m slow 
 
+## Jira Issue Report 생성 (임시)
+> pytest --jira
 
 ## pytest-xdist (pytest 병렬 실행)
 ### pytest-xdist 설치
