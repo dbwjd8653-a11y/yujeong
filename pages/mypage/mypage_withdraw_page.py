@@ -70,7 +70,7 @@ class MyPage06(MyPage):
             else { window.scrollTo(0, document.body.scrollHeight); }
         """)
         time.sleep(0.5)
-        print("탈퇴 영역으로 스크롤 완료")
+        self.logger.info("탈퇴 영역으로 스크롤 완료")
 
     def is_withdraw_area_displayed(self) -> bool:
         """JS로 탈퇴 버튼 존재 여부 확인"""
@@ -106,7 +106,7 @@ class MyPage06(MyPage):
         if result == 'not-found':
             raise Exception("탈퇴 버튼을 찾을 수 없습니다")
         time.sleep(0.5)
-        print(f"탈퇴하기 버튼 클릭 완료 ({result})")
+        self.logger.info(f"탈퇴하기 버튼 클릭 완료 ({result})")
 
     def is_withdraw_confirm_message_displayed(self) -> bool:
         try:
@@ -130,13 +130,13 @@ class MyPage06(MyPage):
         confirm_text = f"Delete {email}"
         input_el.clear()
         input_el.send_keys(confirm_text)
-        print(f"탈퇴 확인 문구 입력 완료: {confirm_text}")
+        self.logger.info(f"탈퇴 확인 문구 입력 완료: {confirm_text}")
 
     def submit_withdraw(self):
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.WITHDRAW_FINAL_BUTTON))
         )
-        print("최종 탈퇴 제출 완료")
+        self.logger.info("최종 탈퇴 제출 완료")
 
     def is_withdrawal_complete(self) -> bool:
         try:
@@ -162,12 +162,12 @@ class MyPage06(MyPage):
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.SIGNUP_LINK))
         )
-        print("Create account 링크 클릭 완료")
+        self.logger.info("Create account 링크 클릭 완료")
 
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.EMAIL_SIGNUP_BUTTON))
         )
-        print("이메일로 가입하기 클릭 완료")
+        self.logger.info("이메일로 가입하기 클릭 완료")
 
         email_input = self.wait.until(EC.visibility_of_element_located(self.SIGNUP_EMAIL_INPUT))
         email_input.clear()
@@ -186,12 +186,12 @@ class MyPage06(MyPage):
         )
         self.driver.execute_script("arguments[0].click();", agree_checkbox)
         time.sleep(0.3)
-        print("전체 동의 클릭 완료")
+        self.logger.info("전체 동의 클릭 완료")
 
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.SIGNUP_SUBMIT))
         )
-        print(f"회원가입 제출 완료: {email}")
+        self.logger.info(f"회원가입 제출 완료: {email}")
         time.sleep(2)
 
     def is_signup_success(self) -> bool:

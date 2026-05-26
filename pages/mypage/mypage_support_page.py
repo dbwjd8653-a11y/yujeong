@@ -26,7 +26,7 @@ class MyPage09(MyPage):
                 EC.element_to_be_clickable(self.START_CHAT_BUTTON)
             )
             self.js_click(btn)
-            print("Start a chat 버튼 클릭 완료 (main frame)")
+            self.logger.info("Start a chat 버튼 클릭 완료 (main frame)")
             return
         except Exception:
             pass
@@ -48,7 +48,7 @@ class MyPage09(MyPage):
                         )
                         self.js_click(btn)
                         self.driver.switch_to.default_content()
-                        print("Start a chat 버튼 클릭 완료 (iframe)")
+                        self.logger.info("Start a chat 버튼 클릭 완료 (iframe)")
                         return
                     except Exception:
                         self.driver.switch_to.default_content()
@@ -65,7 +65,7 @@ class MyPage09(MyPage):
         """)
         if result == 'channelIO-api':
             time.sleep(1)
-            print("Start a chat: ChannelIO API로 채팅 열기 완료")
+            self.logger.info("Start a chat: ChannelIO API로 채팅 열기 완료")
         else:
             raise Exception("고객 센터 채팅 버튼을 찾을 수 없습니다")
 

@@ -36,7 +36,7 @@ class MyPage08(MyPage):
             )
         )
         avatar_btn.click()
-        print("accounts.elice.io 아바타 버튼 클릭 완료")
+        self.logger.info("accounts.elice.io 아바타 버튼 클릭 완료")
         time.sleep(0.8)  # MUI 드롭다운 렌더링 대기
 
         # 로그아웃 menuitem 클릭 (normalize-space로 중첩 텍스트 포함)
@@ -52,7 +52,7 @@ class MyPage08(MyPage):
         )
         before_url = self.driver.current_url
         logout_item.click()
-        print("로그아웃 메뉴 클릭 완료")
+        self.logger.info("로그아웃 메뉴 클릭 완료")
         time.sleep(1.5)  # 리다이렉트 완료 대기
 
         # URL이 members 페이지를 벗어나거나 signin/login 포함 시 완료
@@ -62,7 +62,7 @@ class MyPage08(MyPage):
                 and "members" not in d.current_url
             )
         )
-        print(f"로그아웃 완료 -> {self.driver.current_url}")
+        self.logger.info(f"로그아웃 완료 -> {self.driver.current_url}")
 
     # ========== FHC-087: 로그인 페이지 언어 확인 ==========
 

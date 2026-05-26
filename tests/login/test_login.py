@@ -5,8 +5,6 @@ import logging
 import pytest
 import allure
 
-from config.selenium_imports import TimeoutException
-
 from pages.login.login_page import LoginPage
 from pages.logout.logout_page import LogoutPage
 from config.settings import LOGIN_URL, TEST_USER
@@ -22,6 +20,8 @@ pytestmark = [
 INPUT_EMAIL_INVALID = "email"
 INPUT_PWD_INVALID   = "1234"
 INPUT_PHONE_INVALID = "123456478"
+INPUT_EMAIL_LOCKOUT = "test_login1@elice.io"
+INPUT_PWD_LOCKOUT   = "test_login123"
 
 
 # ── fixtures ───────────────────────────────────────────────────────
@@ -70,10 +70,8 @@ def test_FHC_006_login_success(login_page_after):
     logger.info("[FHC-006] 로그인 동작 확인 시작")
 
     with allure.step("[FHC-006] 약관 동의 팝업 처리 (최초 로그인 시)"):
-        try:
+        if login_page_after.is_terms_popup_displayed():
             login_page_after.agree_and_submit()
-        except TimeoutException:
-            pass
 
     with allure.step("[FHC-006] 메인 페이지 이동 확인"):
         assert login_page_after.is_login_success(), "로그인 실패 - 메인 페이지 미진입"
@@ -183,8 +181,8 @@ def test_FHC_012_login_lockout(login_page):
     logger.info("[FHC-012] 계정 잠금 확인 시작")
 
     with allure.step("[FHC-012] 잘못된 자격증명으로 6회 로그인 시도"):
-        login_page.enter_email("test_login1@elice.io")
-        login_page.enter_password("test_login123")
+        login_page.enter_email(INPUT_EMAIL_LOCKOUT)
+        login_page.enter_password(INPUT_PWD_LOCKOUT)
         for _ in range(6):
             login_page.click(login_page.LOGIN_BUTTON)
 
