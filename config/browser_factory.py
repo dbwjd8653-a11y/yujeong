@@ -51,10 +51,16 @@ def make_firefox_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Firefox:
     opts.set_preference("browser.download.folderList", 2)
     opts.set_preference("browser.download.dir", download_dir)
     opts.set_preference("browser.download.useDownloadDir", True)
+    opts.set_preference("browser.download.alwaysOpenPanel", False)
+    opts.set_preference("browser.helperApps.alwaysAsk.force", False)
     opts.set_preference(
         "browser.helperApps.neverAsk.saveToDisk",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,"
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation,"
+        "application/octet-stream,"
+        "application/zip,"
+        "binary/octet-stream,"
+        "application/x-download",
     )
     driver = webdriver.Firefox(service=FirefoxService(_gecko_path()), options=opts)
     driver.implicitly_wait(DEFAULT_WAIT)

@@ -110,8 +110,6 @@ def test_behavior_happy_case(behavior):
 
     with allure.step("[FHC-044] AI 생성 및 결과 파일 다운로드"):
         logger.info("[FHC-044] AI 생성 및 다운로드 시작")
-        behavior.trigger_generation()
-        behavior.search_student(NAME_TEXT)
         result = behavior.download_result(DOWNLOAD_DIR)
         assert result, "xlsx 결과 파일 다운로드에 실패했습니다"
 

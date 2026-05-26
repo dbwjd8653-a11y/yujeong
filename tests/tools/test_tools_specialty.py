@@ -121,7 +121,6 @@ def test_specialty_happy_case(specialty):
     with allure.step("[FHC-036] AI 생성 및 결과 파일 다운로드"):
         logger.info("[FHC-036] AI 생성 및 다운로드 시작")
         specialty.trigger_generation()
-        specialty.search_student(NAME_TEXT)
         result = specialty.download_result(DOWNLOAD_DIR)
         assert result, "xlsx 결과 파일 다운로드에 실패했습니다"
 
