@@ -78,8 +78,3 @@ def test_FHC_070_deactivate_model(settings_model):
     toast = settings_model.get_toast_message()
     assert toast == "모델이 비활성화되었습니다.", f"알림창 메시지 불일치: '{toast}'"
     logger.info("[FHC-070] 활성화 모델 비활성화 완료")
-
-
-if __name__ == "__main__":
-    from tests.settings.settings_main import run
-    run(__file__)

@@ -109,8 +109,3 @@ def test_FHC_074_member_no_limit(settings_member):
     time.sleep(2)
     settings_member.save_and_verify_toast()
     logger.info("[FHC-074] 무제한 토큰 멤버 선택 완료")
-
-
-if __name__ == "__main__":
-    from tests.settings.settings_main import run
-    run(__file__)
