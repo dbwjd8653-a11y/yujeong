@@ -7,7 +7,7 @@ from config.selenium_imports import By, EC
 from pages.base_page import BasePage
 
 
-class MyPage(BasePage):
+class MyPageProfilePage(BasePage):
 
     # ── Locators ──────────────────────────────────────────────────────
 
@@ -61,18 +61,31 @@ class MyPage(BasePage):
         return self.wait.until(EC.element_to_be_clickable(self.REMOVE_PROFILE_IMAGE_MENU))
 
     def get_profile_image_edit_button(self):
-        return self.wait.until(EC.presence_of_element_located(self.PROFILE_IMAGE_EDIT_BUTTON))
+        return self.wait.until(EC.element_to_be_clickable(self.PROFILE_IMAGE_EDIT_BUTTON))
 
     # ── 액션 ──────────────────────────────────────────────────────────
 
+    def is_save_success_message_displayed(self):
+        msg = self.get_save_success_message()
+
+        return (
+            msg.is_displayed()
+            and (
+                "저장되었습니다" in msg.text
+                or "Saved successfully" in msg.text
+            )
+        )
+
+    # 프로필 버튼 클릭
     def click_profile_button(self):
         self.js_click(self.get_profile_button())
-        self.logger.info("프로필 버튼 클릭 완료")
 
+    # 계정 관리 메뉴 클릭
     def click_account_management(self):
         self.js_click(self.get_account_management_menu())
-        self.logger.info("계정 관리 메뉴 클릭 완료")
 
+    # 계정 관리 페이지 새 탭 이동
+    # 프로필 클릭 - 메뉴 클릭 - window switching
     def move_to_account_management(self):
         current_window = self.driver.current_window_handle
         self.click_profile_button()
@@ -82,19 +95,39 @@ class MyPage(BasePage):
             if window != current_window:
                 self.driver.switch_to.window(window)
                 break
-        self.logger.info("계정 관리 페이지 새 탭 이동 완료")
 
+    # 프로필 이미지 수정 버튼 클릭
     def click_profile_image_edit_button(self):
         button = self.get_profile_image_edit_button()
         self.driver.execute_script("arguments[0].scrollIntoView(true);", button)
         self.js_click(button)
-        self.logger.info("프로필 이미지 수정 버튼 클릭 완료")
 
+    # 프로필 이미지 업로드
     def upload_profile_image(self, image_path):
         absolute_path = str(Path(image_path).resolve())
         self.get_file_input().send_keys(absolute_path)
-        self.logger.info(f"프로필 이미지 업로드 완료: {absolute_path}")
 
+    # 프로필 이미지 제거 (low-level action)
     def click_remove_profile_image_menu(self):
         self.js_click(self.get_remove_profile_image_menu())
-        self.logger.info("프로필 이미지 제거 완료")
+
+    # 프로필 이미지 제거 scenario action
+    def remove_profile_image(self):
+        self.click_profile_image_edit_button()
+        self.click_remove_profile_image_menu()
+
+    # 성공 메시지 확인 - 함수화
+    def is_save_success_message_displayed(self):
+
+        msg = self.get_save_success_message()
+
+        return (
+            msg.is_displayed()
+            and (
+                "저장되었습니다" in msg.text
+                or "Saved successfully" in msg.text
+            )
+        )
+    def get_save_success_message_text(self):
+
+        return self.get_save_success_message().text

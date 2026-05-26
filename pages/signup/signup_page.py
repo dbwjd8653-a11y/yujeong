@@ -60,9 +60,12 @@ class SignupPage(BasePage):
 
     # ── 액션 ──────────────────────────────────────────────────────────
 
+    # 회원가입 페이지 이동
     def click_create_account_with_email(self):
         self.wait.until(EC.element_to_be_clickable(self.CREATE_EMAIL_BUTTON)).click()
-        
+    
+    # input_text 함수: locator 입력을 함수화
+    # locator 자체를 입력 -> 입력 필드에 텍스트 입력을 동작 함수 생성
     def input_text(self, locator, text):
         element = self.wait.until(
             EC.visibility_of_element_located(locator)
@@ -70,6 +73,7 @@ class SignupPage(BasePage):
         element.clear()
         element.send_keys(text)
     
+    # email, pw, name 입력
     def enter_email(self, email):
         self.input_text(self.EMAIL_INPUT, email)
 
@@ -79,16 +83,20 @@ class SignupPage(BasePage):
     def enter_name(self, name):
         self.input_text(self.NAME_INPUT, name)  
 
+    # 전체 동의 체크박스 클릭
     def click_agree_checkbox(self):
         self.js_click(self.get_agree_checkbox())
 
+    # 14세 이상 동의 체크박스 클릭ㄱ
     def click_age_checkbox(self):
         self.js_click(self.get_age_checkbox())
 
+    # 필수 항목만 클릭
     def click_required_checkbox(self):
         for cb in self.get_required_checkboxes():
             self.js_click(cb)
 
+    # create account 버튼 클릭
     def click_create_account_button(self):
         self.js_click(
             self.wait.until(
@@ -96,7 +104,7 @@ class SignupPage(BasePage):
             )
         )
 
-    # email, pw, 이름 입력하기
+    # signup 항목 입력 함수 (email, pw, name)
     def fill_signup_form(self, email, password, name):
         self.enter_email(email)
         self.enter_password(password)
