@@ -1,12 +1,8 @@
-# pages/agents/agent_detail_page.py
+# pages/agents/agents_detail_page.py
 # 에이전트 상세 페이지 및 대화 페이지 Page Object
 # FHC-059, FHC-060 에서 사용
 
-import time
-
 from config.selenium_imports import By, EC, WebDriverWait
-
-from selenium.webdriver.common.keys import Keys
 
 from pages.base_page import BasePage
 
@@ -78,25 +74,6 @@ class AgentDetailPage(BasePage):
         self.js_click(btn)
         self.logger.info(f"퀵 리플라이 버튼 클릭: '{btn_text}'")
         return btn_text
-
-    # ========== 대화 — 직접 입력 방식 (FHC-060) ==========
-
-    def send_text_message(self, message: str):
-        """채팅창에 텍스트 직접 입력 후 전송 (Enter 키)"""
-        chat_input = self.wait.until(
-            EC.visibility_of_element_located(self.CHAT_INPUT)
-        )
-        self.js_input(chat_input, message)
-        time.sleep(0.3)
-
-        # 전송 버튼 클릭 시도 → 실패하면 Enter 키
-        try:
-            send_btn = self.driver.find_element(*self.SEND_BUTTON)
-            self.js_click(send_btn)
-            self.logger.info(f"전송 버튼 클릭 (메시지: '{message}')")
-        except Exception:
-            chat_input.send_keys(Keys.RETURN)
-            self.logger.info(f"Enter 키로 전송 (메시지: '{message}')")
 
     # ========== AI 응답 대기 (FHC-060) ==========
 
