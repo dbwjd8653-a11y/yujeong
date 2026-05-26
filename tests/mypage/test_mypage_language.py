@@ -45,14 +45,14 @@ def test_FHC_090_language_setting(mypage):
     기대: 선택한 언어로 변경된다 ('Saved successfully' 메시지 출력)
         ※ 현재 언어와 무관하게 저장이 일어나도록 ko-KR 먼저 변경 후 en-US로 변경
     """
-    with allure.step("r: 언어 설정 페이지 이동 및 드롭다운 표시 확인"):
+    with allure.step("[FHC-090] 언어 설정 페이지 이동 및 언어 변경 (ko-KR → en-US)"):
         mypage.navigate_to_language()
         assert mypage.is_language_setting_displayed(), \
             "언어 설정 드롭다운이 표시되지 않았습니다"
-    with allure.step("g: 언어 변경 (ko-KR → en-US) → 저장 성공 확인"):
         mypage.change_language("ko-KR")
         time.sleep(1)
         mypage.change_language("en-US")
+    with allure.step("[FHC-090] 저장 성공 확인 후 한국어 복구"):
         assert mypage.is_saved_successfully_displayed(), \
             "언어 변경 후 'Saved successfully' 메시지가 표시되지 않았습니다"
         mypage.change_language("ko-KR")
@@ -73,11 +73,11 @@ def test_FHC_091_logout_shows_language_login_page(mypage):
     기대: 로그아웃 후 설정한 언어(한국어)의 로그인 페이지로 이동한다
         ※ 로그인 페이지가 영어로 표시되면 Fail
     """
-    with allure.step("r: 언어 설정 페이지에서 한국어 선택"):
+    with allure.step("[FHC-091] 언어 설정 페이지에서 한국어 선택 후 로그아웃"):
         mypage.navigate_to_language()
         mypage.change_language("ko-KR")
-    with allure.step("g: 로그아웃 → 로그인 페이지가 한국어로 표시 확인"):
         mypage.logout_via_profile_menu()
+    with allure.step("[FHC-091] 로그인 페이지 언어 확인 (한국어 유지 여부)"):
         is_english = mypage.is_login_page_in_english()
         mypage.login()
         assert not is_english, \
@@ -98,11 +98,11 @@ def test_FHC_092_language_maintained_after_relogin(mypage):
       3. 재로그인
     기대: 재로그인 후 설정한 언어(한국어)가 유지된다
     """
-    with allure.step("r: 언어 설정 페이지에서 한국어 선택 후 로그아웃"):
+    with allure.step("[FHC-092] 한국어 선택 후 로그아웃"):
         mypage.navigate_to_language()
         mypage.change_language("ko-KR")
         mypage.logout_via_profile_menu()
-    with allure.step("g: 재로그인 → 언어 유지 확인 (ko-KR)"):
+    with allure.step("[FHC-092] 재로그인 후 언어 유지 확인 (ko-KR)"):
         mypage.login()
         assert mypage.is_language_maintained("ko-KR"), \
             "재로그인 후 언어 설정이 한국어(ko-KR)로 유지되지 않았습니다"
