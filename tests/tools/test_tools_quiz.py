@@ -25,11 +25,11 @@ def quiz(login_module):
     전제: login_module fixture로 로그인 완료 상태
     단계:
       1. login_module에서 (driver, wait) 수신 → QuizPage 생성
-      2. LNB 도구 탭 이동
+      2. 도구 목록 URL 직접 이동
       3. 퀴즈 생성 도구 초기 세팅
     """
     tool = QuizPage(login_module)
-    tool.tools_LNB()
+    tool.navigate_to_tools()
     tool.setup_tool()
     return tool
 
