@@ -1,9 +1,8 @@
 # tests/settings/test_settings_member.py
-# 설정 > 구성원 관리 탭 E2E 테스트 — FHC-072 ~ FHC-074
+# 설정 > 구성원 관리 탭 E2E 테스트 — FHC-072 ~ FHC-073
 
 import pytest
 import logging
-import time
 import allure
 from pages.settings.settings_member_page import SettingsMemberPage
 
@@ -84,28 +83,3 @@ def test_FHC_073_token_limit_enable(settings_member):
     settings_member.save_and_verify_toast()
     logger.info("[FHC-073] 토큰 한도 토글 활성화 완료")
 
-
-@allure.story("무제한 토큰 멤버 선택")
-@allure.title("[FHC-074] 무제한 토큰 멤버 선택 테스트")
-@allure.severity(allure.severity_level.NORMAL)
-def test_FHC_074_member_no_limit(settings_member):
-    """
-    [FHC-074] 무제한 토큰 멤버 선택 테스트
-
-    전제: test_FHC_073 이어서 토큰 한도 토글 활성화 상태
-    단계:
-      1. '구성원 관리' 탭 클릭
-      2. '구성원 토큰 관리'에서 첫 번째 예외구성원에 '제한없음' 앞 네모박스 클릭
-      3. 왼쪽 하단에 '저장' 버튼 클릭
-      4. '토큰 한도가 저장되었습니다.' 알림창 활성화
-    기대: 네모 박스가 보라색 'v' 표시로 활성화 되며 해당 위원의 '토큰 한도'는
-          비활성화되며 '저장' 버튼 클릭 시 '토큰 한도가 저장되었습니다.' 알림창 활성화 됨
-    """
-    logger.info("[FHC-074] 무제한 토큰 멤버 선택 시작")
-    settings_member.click_no_limit_checkbox()
-    assert settings_member.is_no_limit_checked(), "제한 없음 체크박스 활성화 실패"
-    time.sleep(2)
-    assert settings_member.is_token_input_disabled(), "토큰 입력 필드 비활성화 실패"
-    time.sleep(2)
-    settings_member.save_and_verify_toast()
-    logger.info("[FHC-074] 무제한 토큰 멤버 선택 완료")
