@@ -25,7 +25,16 @@ class SettingsModelPage(SettingsPage):
         self.wait.until(EC.url_contains("/ai-helpy-chat/admin/models"))
         self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'li.MuiListItem-root')))
 
+    def _wait_toast_gone(self):
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.invisibility_of_element_located(self._TOAST_ALERT)
+            )
+        except Exception:
+            pass
+
     def activate_disabled_model(self):
+        self._wait_toast_gone()
         checkboxes = self.driver.find_elements(By.CSS_SELECTOR, 'input[type="checkbox"]')
         for checkbox in checkboxes:
             if not checkbox.is_selected():
@@ -41,6 +50,7 @@ class SettingsModelPage(SettingsPage):
         return None
 
     def deactivate_active_model(self):
+        self._wait_toast_gone()
         checkboxes = self.driver.find_elements(By.CSS_SELECTOR, 'input[type="checkbox"]')
         for checkbox in reversed(checkboxes):
             if checkbox.is_selected():
