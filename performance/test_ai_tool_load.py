@@ -19,7 +19,8 @@ pytestmark = [
     allure.feature("AI 도구 부하 테스트"),
 ]
 
-REPEAT      = 3
+REPEAT       = 3
+INTERVAL     = 1
 SCHOOL_LEVEL = "중학교"
 STUDENT_NAME = "테스트학생"
 REQUEST_TEXT = ""
@@ -54,7 +55,7 @@ def test_FHC_097_ai_tool_load(ai_tool_load):
       4. 생성 요청 3회 연속 실행
       5. 각 생성 완료 여부 및 시간 확인
     기대: 3회 연속 생성 요청 모두 완료, 결과 파일 정상 다운로드
-    관련 TC: FHC-037, FHC-038, FHC-042, FHC-043, FHC-044
+    관련 TC: FHC-037, FHC-042, FHC-043, FHC-044
     """
     logger.info("[FHC-097] AI 도구 연속 생성 부하 테스트 시작")
     driver, wait = ai_tool_load
@@ -66,6 +67,7 @@ def test_FHC_097_ai_tool_load(ai_tool_load):
     page.navigate_to_tools()
     page.click_tool_menu(page.TOOL_NAME)
     page.reset_inputs()
+    page.search_student("")
     page.click_class_info_tab()
     page.select_school_level(SCHOOL_LEVEL)
     page.click_next()
@@ -102,10 +104,7 @@ def test_FHC_097_ai_tool_load(ai_tool_load):
         else:
             fail_count += 1
             logger.error(f"[{i}/{REPEAT}] 다운로드 실패 ({elapsed}s)")
+        time.sleep(INTERVAL)
 
     assert fail_count == 0, f"3회 중 {fail_count}회 생성 실패"
     logger.info("[FHC-097] AI 도구 연속 생성 부하 테스트 완료")
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v", "-s"])

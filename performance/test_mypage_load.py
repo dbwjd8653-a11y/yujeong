@@ -15,6 +15,7 @@ pytestmark = [
 ]
 
 REPEAT = 3
+INTERVAL = 1
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -41,7 +42,7 @@ def test_FHC_098_mypage_tab_load(mypage_load):
       1. 헬피챗 사이트 접속
       2. 로그인
       3. 마이페이지 진입
-      4. 프로필 → 계정 → 언어 → 지원 탭 순차 클릭 (3번 반복)
+      4. 계정 → 내 기관 → 언어 → 지원 탭 순차 클릭 (3번 반복)
       5. 각 탭 전환 시 페이지 정상 표시 확인
     기대: 탭 전환 시 오류 없이 콘텐츠 정상 표시, 로딩 실패 없음
     관련 TC: FHC-076, FHC-077, FHC-083, FHC-090, FHC-093
@@ -65,10 +66,7 @@ def test_FHC_098_mypage_tab_load(mypage_load):
         except Exception as e:
             fail_count += 1
             logger.error(f"[{i}/{REPEAT}] 탭 전환 오류: {e}")
+        time.sleep(INTERVAL)
 
     assert fail_count == 0, f"3회 중 {fail_count}회 탭 전환 실패"
     logger.info("[FHC-098] 마이페이지 탭 반복 이동 부하 테스트 완료")
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v", "-s"])

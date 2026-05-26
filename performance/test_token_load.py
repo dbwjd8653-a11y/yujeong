@@ -15,6 +15,7 @@ pytestmark = [
 ]
 
 REPEAT = 5
+INTERVAL = 1
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -60,10 +61,7 @@ def test_FHC_099_token_page_load(token_load):
         else:
             fail_count += 1
             logger.error(f"[{i}/{REPEAT}] 토큰 테이블 미표시 ({elapsed}s)")
+        time.sleep(INTERVAL)
 
     assert fail_count == 0, f"5회 중 {fail_count}회 데이터 미표시"
     logger.info("[FHC-099] 토큰 사용량 반복 조회 부하 테스트 완료")
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v", "-s"])

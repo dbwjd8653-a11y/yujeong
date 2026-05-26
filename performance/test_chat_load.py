@@ -15,6 +15,7 @@ pytestmark = [
 ]
 
 REPEAT = 10
+INTERVAL = 1
 TEST_MESSAGE = "안녕하세요"
 
 
@@ -64,10 +65,7 @@ def test_FHC_095_chat_load(chat_load):
         else:
             fail_count += 1
             logger.error(f"[{i}/{REPEAT}] 응답 수신 실패 ({elapsed}s)")
+        time.sleep(INTERVAL)
 
     assert fail_count == 0, f"10회 중 {fail_count}회 응답 수신 실패"
     logger.info("[FHC-095] 채팅 연속 전송 부하 테스트 완료")
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v", "-s"])
