@@ -59,8 +59,6 @@ def test_behavior_happy_case(behavior):
     """
     with allure.step("[FHC-037] 도구 목록 표시 확인"):
         logger.info("[FHC-037] 도구 목록 표시 확인 시작")
-        with allure.step("r: 로그인 완료 상태"):
-            pass
         with allure.step("g: 도구 페이지로 이동 → 도구 카드 목록 표시 확인"):
             behavior.navigate_to_tools()
             assert behavior.is_tools_list_displayed(), \
@@ -68,8 +66,6 @@ def test_behavior_happy_case(behavior):
 
     with allure.step("[FHC-038] '행동특성 및 종합의견' 도구 선택"):
         logger.info("[FHC-038] 행동특성 및 종합의견 도구 선택 시작")
-        with allure.step("r: 도구 목록 페이지 상태"):
-            pass
         with allure.step("g: 행동특성 및 종합의견 클릭 → 도구 상세 페이지 이동 확인"):
             behavior.click_tool_menu(BehaviorPage.TOOL_NAME)
             assert behavior.is_on_tool_page(), \
@@ -77,8 +73,6 @@ def test_behavior_happy_case(behavior):
 
     with allure.step("[FHC-039] 입력 내역 초기화"):
         logger.info("[FHC-039] 입력 내역 초기화 시작")
-        with allure.step("r: 행동특성 및 종합의견 도구 페이지 상태"):
-            pass
         with allure.step("g: 초기화 클릭 → 수업 정보 입력 탭 표시 확인"):
             behavior.reset_inputs()
             assert behavior.is_class_info_tab_visible(), \
@@ -86,8 +80,6 @@ def test_behavior_happy_case(behavior):
 
     with allure.step("[FHC-040] 수업 정보 입력 탭 이동 및 학교급 선택"):
         logger.info("[FHC-040] 수업 정보 입력 탭 이동 및 학교급 선택 시작")
-        with allure.step("r: 초기화 완료 상태"):
-            pass
         with allure.step("g: 수업 정보 탭 클릭 및 학교급 선택 → 다음으로 버튼 활성화 확인"):
             behavior.click_class_info_tab()
             assert behavior.is_school_level_combobox_visible(), \
@@ -98,8 +90,6 @@ def test_behavior_happy_case(behavior):
 
     with allure.step("[FHC-041] '다음으로' 버튼 클릭 → 학생 정보 화면 이동"):
         logger.info("[FHC-041] 다음으로 버튼 클릭 시작")
-        with allure.step("r: 수업 정보(학교급) 입력 완료 상태"):
-            pass
         with allure.step("g: 다음으로 클릭 → 학생 정보 입력 화면 이동 확인"):
             behavior.click_next()
             behavior.handle_modify_modal()
@@ -108,8 +98,6 @@ def test_behavior_happy_case(behavior):
 
     with allure.step("[FHC-042] 학생 이름 입력"):
         logger.info("[FHC-042] 학생 이름 입력 시작")
-        with allure.step("r: 학생 정보 입력 화면 상태"):
-            pass
         with allure.step("g: 학생 이름 입력 → 이름 반영 확인"):
             behavior.ensure_student_row_exists()
             behavior.enter_student_name(NAME_TEXT)
@@ -118,8 +106,6 @@ def test_behavior_happy_case(behavior):
 
     with allure.step("[FHC-043] 인성·태도 키워드 선택 및 저장"):
         logger.info("[FHC-043] 인성·태도 키워드 선택 및 저장 시작")
-        with allure.step("r: 학생 이름 입력 완료 상태"):
-            pass
         with allure.step("g: 키워드 선택 및 저장 → 생성 결과 받기 버튼 표시 확인"):
             behavior.open_keyword_modal()
             behavior.select_character_keyword()
@@ -131,8 +117,6 @@ def test_behavior_happy_case(behavior):
 
     with allure.step("[FHC-044] AI 생성 및 결과 파일 다운로드"):
         logger.info("[FHC-044] AI 생성 및 다운로드 시작")
-        with allure.step("r: 키워드 저장 완료 상태"):
-            pass
         with allure.step("g: AI 생성 트리거 → xlsx 파일 다운로드 확인"):
             behavior.trigger_generation()
             behavior.search_student(NAME_TEXT)

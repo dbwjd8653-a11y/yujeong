@@ -54,8 +54,6 @@ def test_withdraw_happy_case(mypage):
     """
     with allure.step("[FHC-084] 계정 탈퇴 영역 확인"):
         logger.info("[FHC-084] 계정 탈퇴 영역 확인 시작")
-        with allure.step("r: 로그인 완료 상태"):
-            pass
         with allure.step("g: 계정 관리 → 탈퇴 영역 스크롤 → 탈퇴 버튼 표시 확인"):
             mypage.navigate_to_account()
             mypage.scroll_to_withdraw_area()
@@ -64,8 +62,6 @@ def test_withdraw_happy_case(mypage):
 
     with allure.step("[FHC-085] 계정 탈퇴 2차 확인 문구"):
         logger.info("[FHC-085] 계정 탈퇴 2차 확인 문구 시작")
-        with allure.step("r: 계정 탈퇴 영역 확인 완료 상태"):
-            pass
         with allure.step("g: 탈퇴하기 클릭 → 2차 확인 문구 표시 확인"):
             mypage.click_withdraw_button()
             assert mypage.is_withdraw_confirm_message_displayed(), \
@@ -73,8 +69,6 @@ def test_withdraw_happy_case(mypage):
 
     with allure.step("[FHC-086] 계정 탈퇴"):
         logger.info("[FHC-086] 계정 탈퇴 시작")
-        with allure.step("r: 2차 확인 문구 표시 상태"):
-            pass
         with allure.step("g: 탈퇴 확인 텍스트 입력 → 탈퇴 완료 → 로그인 페이지 이동 확인"):
             mypage.enter_withdraw_confirm_text(MAIN_EMAIL)
             mypage.submit_withdraw()

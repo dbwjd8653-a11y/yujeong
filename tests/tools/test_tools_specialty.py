@@ -63,8 +63,6 @@ def test_specialty_happy_case(specialty):
     """
     with allure.step("[FHC-028] 도구 목록 표시 확인"):
         logger.info("[FHC-028] 도구 목록 표시 확인 시작")
-        with allure.step("r: 로그인 완료 상태"):
-            pass
         with allure.step("g: 도구 페이지로 이동 → 도구 카드 목록 표시 확인"):
             specialty.navigate_to_tools()
             assert specialty.is_tools_list_displayed(), \
@@ -72,8 +70,6 @@ def test_specialty_happy_case(specialty):
 
     with allure.step("[FHC-029] '세부 특기사항' 도구 선택"):
         logger.info("[FHC-029] 세부 특기사항 도구 선택 시작")
-        with allure.step("r: 도구 목록 페이지 상태"):
-            pass
         with allure.step("g: 세부 특기사항 클릭 → 도구 상세 페이지 이동 확인"):
             specialty.click_tool_menu(SpecialtyPage.TOOL_NAME)
             assert specialty.is_on_tool_page(), \
@@ -81,8 +77,6 @@ def test_specialty_happy_case(specialty):
 
     with allure.step("[FHC-030] 입력 내역 초기화"):
         logger.info("[FHC-030] 입력 내역 초기화 시작")
-        with allure.step("r: 세부 특기사항 도구 페이지 상태"):
-            pass
         with allure.step("g: 초기화 클릭 → 수업 정보 입력 탭 표시 확인"):
             specialty.reset_inputs()
             assert specialty.is_class_info_tab_visible(), \
@@ -90,8 +84,6 @@ def test_specialty_happy_case(specialty):
 
     with allure.step("[FHC-031] 수업 정보 입력 탭 이동"):
         logger.info("[FHC-031] 수업 정보 입력 탭 이동 시작")
-        with allure.step("r: 초기화 완료 상태"):
-            pass
         with allure.step("g: 수업 정보 입력 탭 클릭 → 학교급 콤보박스 표시 확인"):
             specialty.click_class_info_tab()
             assert specialty.is_school_level_combobox_visible(), \
@@ -99,8 +91,6 @@ def test_specialty_happy_case(specialty):
 
     with allure.step("[FHC-032] 수업 정보 입력 (학교급 / 학년 / 과목 / 단원)"):
         logger.info("[FHC-032] 수업 정보 입력 시작")
-        with allure.step("r: 수업 정보 입력 탭 활성화 상태"):
-            pass
         with allure.step("g: 학교급 / 학년 / 과목 / 단원 입력 → 다음으로 버튼 활성화 확인"):
             specialty.select_school_level(SCHOOL_LEVEL)
             specialty.select_grade(GRADE)
@@ -111,8 +101,6 @@ def test_specialty_happy_case(specialty):
 
     with allure.step("[FHC-033] '다음으로' 버튼 클릭 → 학생 정보 화면 이동"):
         logger.info("[FHC-033] 다음으로 버튼 클릭 시작")
-        with allure.step("r: 수업 정보 입력 완료 상태"):
-            pass
         with allure.step("g: 다음으로 클릭 → 학생 정보 입력 화면 이동 확인"):
             specialty.click_next()
             specialty.handle_modify_modal()
@@ -121,8 +109,6 @@ def test_specialty_happy_case(specialty):
 
     with allure.step("[FHC-034] 학생 이름 입력"):
         logger.info("[FHC-034] 학생 이름 입력 시작")
-        with allure.step("r: 학생 정보 입력 화면 상태"):
-            pass
         with allure.step("g: 학생 이름 입력 → 이름 반영 확인"):
             specialty.ensure_student_row_exists()
             specialty.enter_student_name(NAME_TEXT)
@@ -131,8 +117,6 @@ def test_specialty_happy_case(specialty):
 
     with allure.step("[FHC-035] 학습 태도 키워드 선택 및 저장"):
         logger.info("[FHC-035] 학습 태도 키워드 선택 및 저장 시작")
-        with allure.step("r: 학생 이름 입력 완료 상태"):
-            pass
         with allure.step("g: 키워드 선택 및 저장 → 생성 결과 받기 버튼 표시 확인"):
             specialty.open_keyword_modal()
             specialty.select_study_attitude_keyword()
@@ -144,8 +128,6 @@ def test_specialty_happy_case(specialty):
 
     with allure.step("[FHC-036] AI 생성 및 결과 파일 다운로드"):
         logger.info("[FHC-036] AI 생성 및 다운로드 시작")
-        with allure.step("r: 키워드 저장 완료 상태"):
-            pass
         with allure.step("g: AI 생성 트리거 → xlsx 파일 다운로드 확인"):
             specialty.trigger_generation()
             specialty.search_student(NAME_TEXT)

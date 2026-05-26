@@ -13,8 +13,6 @@ pytestmark = [
     allure.feature("에이전트 탐색"),
 ]
 
-TEST_MESSAGE = "안녕하세요, 간단히 소개해 주세요."
-
 
 # ── fixtures ───────────────────────────────────────────────────────
 
@@ -111,21 +109,3 @@ def test_FHC_066_agent_chat_via_button(agents_page, agent_detail_page):
             "LNB 메뉴에 대화 내용이 표시되지 않았습니다"
 
     # TODO: FHC-066 번호 중복 — 팀원과 번호 분리(FHC-067) 또는 통합 상의 후 처리
-    # def test_FHC_066_agent_chat_via_text_input(agents_page, agent_detail_page):
-    #     """
-    #     [FHC-066] 에이전트 대화창 확인 — 텍스트 직접 입력 방식
-    #
-    #     전제: 로그인 한 상태, '에이전트 탐색' 페이지 > 에이전트 클릭
-    #     단계:
-    #       1. 채팅창에 텍스트 직접 입력 후 전송
-    #     기대:
-    #       1. 적절한 AI 답변이 생성된다
-    #       2. LNB 메뉴에 대화 내용이 표시된다
-    #     """
-    #     agents_page.open()
-    #     agents_page.click_first_agent()
-    #     agent_detail_page.send_text_message(TEST_MESSAGE)
-    #     assert agent_detail_page.wait_for_ai_response(), \
-    #         "AI 답변이 생성되지 않았습니다 (직접 입력 방식)"
-    #     assert agent_detail_page.is_lnb_chatroom_visible(), \
-    #         "LNB 메뉴에 대화 내용이 표시되지 않았습니다"
