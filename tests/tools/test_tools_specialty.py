@@ -1,16 +1,19 @@
 # tests/test_tools_01.py
 # '세부 특기사항' 도구 E2E 테스트 — FHC-028 ~ FHC-036
 
+import logging
 import pytest
 import allure
 
 from pages.tools.tools_specialty_page import SpecialtyPage
-
 from config.settings import DOWNLOAD_DIR
+
+logger = logging.getLogger(__name__)
 
 pytestmark = [
     allure.epic("Tools"),
     allure.feature("세부 특기사항"),
+    allure.story("세부 특기사항 생성 해피 케이스"),
 ]
 
 SCHOOL_LEVEL  = "중학교"
@@ -39,169 +42,96 @@ def specialty(tools_driver_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
-@allure.story("도구 목록 표시 확인")
-@allure.title("[FHC-028] 도구 목록 표시 확인")
+@allure.title("[FHC-028~036] 세부 특기사항 생성 해피 케이스")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_028_tools_list_displayed(specialty):
+def test_specialty_happy_case(specialty):
     """
-    [FHC-028] 도구 목록 표시 확인
+    [FHC-028~036] 세부 특기사항 생성 해피 케이스
 
-    전제: 로그인 한 상태
+    전제: 로그인 완료 상태
     단계:
-      1. LNB 또는 직접 URL로 도구(Tools) 페이지 이동
-    기대: 도구 카드 목록이 표시된다
+      1. [FHC-028] LNB 또는 직접 URL로 도구(Tools) 페이지 이동
+      2. [FHC-029] '세부 특기사항' 도구 클릭
+      3. [FHC-030] 입력 내역 초기화
+      4. [FHC-031] '수업 정보 입력' 탭 클릭
+      5. [FHC-032] 학교급 / 학년 / 과목 / 단원 입력
+      6. [FHC-033] '다음으로' 버튼 클릭 → 학생 정보 화면 이동
+      7. [FHC-034] 학생 이름 입력
+      8. [FHC-035] 학습 태도 키워드 선택 및 저장
+      9. [FHC-036] AI 생성 및 결과 파일 다운로드
+    기대: 전체 시나리오 정상 완료
     """
-    specialty.navigate_to_tools()
-    assert specialty.is_tools_list_displayed(), \
-        "도구 목록 페이지에 도구 카드가 표시되지 않았습니다"
+    with allure.step("[FHC-028] 도구 목록 표시 확인"):
+        logger.info("[FHC-028] 도구 목록 표시 확인 시작")
+        with allure.step("g: 도구 페이지로 이동 → 도구 카드 목록 표시 확인"):
+            specialty.navigate_to_tools()
+            assert specialty.is_tools_list_displayed(), \
+                "도구 목록 페이지에 도구 카드가 표시되지 않았습니다"
 
+    with allure.step("[FHC-029] '세부 특기사항' 도구 선택"):
+        logger.info("[FHC-029] 세부 특기사항 도구 선택 시작")
+        with allure.step("g: 세부 특기사항 클릭 → 도구 상세 페이지 이동 확인"):
+            specialty.click_tool_menu(SpecialtyPage.TOOL_NAME)
+            assert specialty.is_on_tool_page(), \
+                "세부 특기사항 도구 페이지로 이동하지 못했습니다"
 
-@allure.story("세부 특기사항 도구 선택")
-@allure.title("[FHC-029] '세부 특기사항' 도구 선택")
-@allure.severity(allure.severity_level.NORMAL)
-def test_FHC_029_navigate_to_specialty(specialty):
-    """
-    [FHC-029] '세부 특기사항' 도구 선택
+    with allure.step("[FHC-030] 입력 내역 초기화"):
+        logger.info("[FHC-030] 입력 내역 초기화 시작")
+        with allure.step("g: 초기화 클릭 → 수업 정보 입력 탭 표시 확인"):
+            specialty.reset_inputs()
+            assert specialty.is_class_info_tab_visible(), \
+                "초기화 완료 후 수업 정보 입력 탭이 표시되지 않았습니다"
 
-    전제: 도구 목록 페이지
-    단계:
-      1. '세부 특기사항' 도구 클릭
-    기대: 세부 특기사항 도구 상세 페이지로 이동한다
-    """
-    specialty.click_tool_menu(SpecialtyPage.TOOL_NAME)
-    assert specialty.is_on_tool_page(), \
-        "세부 특기사항 도구 페이지로 이동하지 못했습니다"
+    with allure.step("[FHC-031] 수업 정보 입력 탭 이동"):
+        logger.info("[FHC-031] 수업 정보 입력 탭 이동 시작")
+        with allure.step("g: 수업 정보 입력 탭 클릭 → 학교급 콤보박스 표시 확인"):
+            specialty.click_class_info_tab()
+            assert specialty.is_school_level_combobox_visible(), \
+                "수업 정보 입력 화면(학교급 콤보박스)이 표시되지 않았습니다"
 
+    with allure.step("[FHC-032] 수업 정보 입력 (학교급 / 학년 / 과목 / 단원)"):
+        logger.info("[FHC-032] 수업 정보 입력 시작")
+        with allure.step("g: 학교급 / 학년 / 과목 / 단원 입력 → 다음으로 버튼 활성화 확인"):
+            specialty.select_school_level(SCHOOL_LEVEL)
+            specialty.select_grade(GRADE)
+            specialty.enter_subject(SUBJECT)
+            specialty.enter_unit(UNIT)
+            assert specialty.is_next_button_enabled(), \
+                "수업 정보 입력 완료 후 '다음으로' 버튼이 활성화되지 않았습니다"
 
-@allure.story("입력 내역 초기화")
-@allure.title("[FHC-030] 입력 내역 초기화")
-@allure.severity(allure.severity_level.NORMAL)
-def test_FHC_030_reset_inputs(specialty):
-    """
-    [FHC-030] 입력 내역 초기화
+    with allure.step("[FHC-033] '다음으로' 버튼 클릭 → 학생 정보 화면 이동"):
+        logger.info("[FHC-033] 다음으로 버튼 클릭 시작")
+        with allure.step("g: 다음으로 클릭 → 학생 정보 입력 화면 이동 확인"):
+            specialty.click_next()
+            specialty.handle_modify_modal()
+            assert specialty.is_student_tab_visible(), \
+                "학생 정보 입력 화면으로 이동하지 못했습니다"
 
-    전제: 세부 특기사항 도구 페이지
-    단계:
-      1. '입력 내역 초기화' 버튼 클릭
-      2. 확인 모달에서 '초기화 하기' 클릭
-    기대: 이전 입력값이 초기화되고 수업 정보 탭이 표시된다
-    """
-    specialty.reset_inputs()
-    assert specialty.is_class_info_tab_visible(), \
-        "초기화 완료 후 수업 정보 입력 탭이 표시되지 않았습니다"
+    with allure.step("[FHC-034] 학생 이름 입력"):
+        logger.info("[FHC-034] 학생 이름 입력 시작")
+        with allure.step("g: 학생 이름 입력 → 이름 반영 확인"):
+            specialty.ensure_student_row_exists()
+            specialty.enter_student_name(NAME_TEXT)
+            assert specialty.is_student_name_entered(NAME_TEXT), \
+                f"학생 이름 '{NAME_TEXT}'이 입력 필드에 반영되지 않았습니다"
 
+    with allure.step("[FHC-035] 학습 태도 키워드 선택 및 저장"):
+        logger.info("[FHC-035] 학습 태도 키워드 선택 및 저장 시작")
+        with allure.step("g: 키워드 선택 및 저장 → 생성 결과 받기 버튼 표시 확인"):
+            specialty.open_keyword_modal()
+            specialty.select_study_attitude_keyword()
+            specialty.save_keyword_modal()
+            if REQUEST_TEXT:
+                specialty.enter_request_text(REQUEST_TEXT)
+            assert specialty.is_result_button_visible(), \
+                "키워드 저장 후 '생성 결과 받기' 버튼이 표시되지 않았습니다"
 
-@allure.story("수업 정보 입력 탭 이동")
-@allure.title("[FHC-031] 수업 정보 입력 탭 이동")
-@allure.severity(allure.severity_level.NORMAL)
-def test_FHC_031_class_info_tab(specialty):
-    """
-    [FHC-031] 수업 정보 입력 탭 이동
+    with allure.step("[FHC-036] AI 생성 및 결과 파일 다운로드"):
+        logger.info("[FHC-036] AI 생성 및 다운로드 시작")
+        with allure.step("g: AI 생성 트리거 → xlsx 파일 다운로드 확인"):
+            specialty.trigger_generation()
+            specialty.search_student(NAME_TEXT)
+            result = specialty.download_result(DOWNLOAD_DIR)
+            assert result, "xlsx 결과 파일 다운로드에 실패했습니다"
 
-    전제: 세부 특기사항 도구 페이지, 초기화 완료
-    단계:
-      1. '수업 정보 입력' 탭 클릭
-    기대: 학교급 선택 콤보박스를 포함한 수업 정보 입력 화면이 표시된다
-    """
-    specialty.click_class_info_tab()
-    assert specialty.is_school_level_combobox_visible(), \
-        "수업 정보 입력 화면(학교급 콤보박스)이 표시되지 않았습니다"
-
-
-@allure.story("수업 정보 입력")
-@allure.title("[FHC-032] 수업 정보 입력 (학교급 / 학년 / 과목 / 단원)")
-@allure.severity(allure.severity_level.NORMAL)
-def test_FHC_032_fill_class_info(specialty):
-    """
-    [FHC-032] 수업 정보 입력 (학교급 / 학년 / 과목 / 단원)
-
-    전제: 수업 정보 입력 탭 활성화 상태
-    단계:
-      1. 학교급 / 학년 / 과목 / 단원 순서로 입력
-    기대: 모든 항목이 입력되어 '다음으로' 버튼이 활성화된다
-    """
-    specialty.select_school_level(SCHOOL_LEVEL)
-    specialty.select_grade(GRADE)
-    specialty.enter_subject(SUBJECT)
-    specialty.enter_unit(UNIT)
-    assert specialty.is_next_button_enabled(), \
-        "수업 정보 입력 완료 후 '다음으로' 버튼이 활성화되지 않았습니다"
-
-
-@allure.story("다음으로 버튼 클릭 학생 정보 화면 이동")
-@allure.title("[FHC-033] '다음으로' 버튼 클릭 → 학생 정보 화면 이동")
-@allure.severity(allure.severity_level.NORMAL)
-def test_FHC_033_click_next_to_student(specialty):
-    """
-    [FHC-033] '다음으로' 버튼 클릭 → 학생 정보 화면 이동
-
-    전제: 수업 정보 입력 완료
-    단계:
-      1. '다음으로' 버튼 클릭 (수정 모달 발생 시 '수정하기' 처리)
-    기대: 학생 정보 입력 화면으로 이동한다
-    """
-    specialty.click_next()
-    specialty.handle_modify_modal()
-    assert specialty.is_student_tab_visible(), \
-        "학생 정보 입력 화면으로 이동하지 못했습니다"
-
-
-@allure.story("학생 이름 입력")
-@allure.title("[FHC-034] 학생 이름 입력")
-@allure.severity(allure.severity_level.NORMAL)
-def test_FHC_034_enter_student_name(specialty):
-    """
-    [FHC-034] 학생 이름 입력
-
-    전제: 학생 정보 입력 화면
-    단계:
-      1. 학생 이름 입력 행에 이름 입력
-    기대: 입력한 이름이 반영된다
-    """
-    specialty.ensure_student_row_exists()
-    specialty.enter_student_name(NAME_TEXT)
-    assert specialty.is_student_name_entered(NAME_TEXT), \
-        f"학생 이름 '{NAME_TEXT}'이 입력 필드에 반영되지 않았습니다"
-
-
-@allure.story("학습 태도 키워드 선택 및 저장")
-@allure.title("[FHC-035] 학습 태도 키워드 선택 및 저장")
-@allure.severity(allure.severity_level.NORMAL)
-def test_FHC_035_select_and_save_keyword(specialty):
-    """
-    [FHC-035] 학습 태도 키워드 선택 및 저장
-
-    전제: 학생 이름 입력 완료
-    단계:
-      1. 키워드 버튼 클릭
-      2. 학습 태도 아코디언 → '수업 집중도 높음' 선택
-      3. 저장
-    기대: 키워드가 저장되고 '생성 결과 받기' 버튼이 표시된다
-    """
-    specialty.open_keyword_modal()
-    specialty.select_study_attitude_keyword()
-    specialty.save_keyword_modal()
-    if REQUEST_TEXT:
-        specialty.enter_request_text(REQUEST_TEXT)
-    assert specialty.is_result_button_visible(), \
-        "키워드 저장 후 '생성 결과 받기' 버튼이 표시되지 않았습니다"
-
-
-@allure.story("AI 생성 및 결과 파일 다운로드")
-@allure.title("[FHC-036] AI 생성 및 결과 파일 다운로드")
-@allure.severity(allure.severity_level.NORMAL)
-def test_FHC_036_generate_and_download(specialty):
-    """
-    [FHC-036] AI 생성 및 결과 파일 다운로드
-
-    전제: 키워드 저장 완료
-    단계:
-      1. '+ 학생 추가' 버튼으로 AI 생성 트리거
-      2. 학생 검색
-      3. '생성 결과 받기' 클릭
-    기대: xlsx 결과 파일이 정상적으로 다운로드된다
-    """
-    specialty.trigger_generation()
-    specialty.search_student(NAME_TEXT)
-    result = specialty.download_result(DOWNLOAD_DIR)
-    assert result, "xlsx 결과 파일 다운로드에 실패했습니다"
+    logger.info("[FHC-028~036] 세부 특기사항 생성 해피 케이스 완료")
