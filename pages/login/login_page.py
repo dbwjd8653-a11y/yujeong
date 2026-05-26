@@ -42,6 +42,16 @@ class LoginPage(BasePage):
     def __init__(self, driver, wait):
         super().__init__(driver, wait)
 
+    def is_terms_popup_displayed(self):
+        """약관 동의 팝업(체크박스) 표시 여부 확인 (3초 이내)"""
+        try:
+            WebDriverWait(self.driver, 3).until(
+                EC.presence_of_element_located(self.AGREE_ALL_CHECKBOX)
+            )
+            return True
+        except TimeoutException:
+            return False
+
     def agree_and_submit(self):
         """
         [최초 로그인 약관 동의 및 제출]
