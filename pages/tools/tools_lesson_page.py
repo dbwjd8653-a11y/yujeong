@@ -173,6 +173,24 @@ class LessonPlanPage(BaseToolPage):
 
     # ========== 이전 결과 감지 및 재입력 ==========
 
+    def has_any_field_value(self) -> bool:
+        """직접 입력 가능한 필드에 값이 있으면 True (콤보박스 제외)"""
+        try:
+            el = self.driver.find_element(*self.TOPIC_INPUT)
+            if el.get_attribute("value"):
+                return True
+        except Exception:
+            pass
+        return False
+
+    def clear_all_fields(self):
+        """직접 입력 가능한 필드(텍스트 입력)만 초기화 (콤보박스는 regen_with_random_values에서 덮어씀)"""
+        try:
+            inp = self.driver.find_element(*self.TOPIC_INPUT)
+            inp.clear()
+        except Exception:
+            pass
+
     def has_previous_result(self):
         try:
             msg = self.driver.find_element(*self.SUCCESS_MESSAGE)
