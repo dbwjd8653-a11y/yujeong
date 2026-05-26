@@ -64,15 +64,12 @@ def test_FHC_070_deactivate_model(settings_model):
     """
     [FHC-070] 활성화 모델 비활성화 토글 작동 테스트
 
-    전제: 헬피챗 접속, 로그인 완료 (관리자 계정), 오른쪽 상단 톱니바퀴 '설정' 클릭 > '설정' 클릭
+    전제: FHC-069 완료 후 모델 설정 탭 유지 상태 (활성화된 모델 존재)
     단계:
-      1. '모델 설정' 클릭
-      2. 활성화 되어 있는 모델 하나를 비활성화 시킴
+      1. 활성화 되어 있는 모델 하나를 비활성화 시킴
     기대: '모델이 비활성화되었습니다.' 알림창 활성화 됨
     """
     logger.info("[FHC-070] 활성화 모델 비활성화 시작")
-    settings_model.navigate_to_settings()
-    settings_model.navigate_to_models_tab()
     model_name = settings_model.deactivate_active_model()
     assert model_name is not None, "활성화된 모델이 없음"
     toast = settings_model.get_toast_message()
