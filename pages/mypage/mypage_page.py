@@ -98,7 +98,9 @@ class MyPage(BasePage):
         """고객 센터: 계정 페이지 이동 후 JS로 ChannelTalk 위젯 열기 (언어 무관)"""
         self.driver.get(self.ACCOUNT_URL)
         self.wait.until(EC.url_contains("members"))
-        time.sleep(2)
+        WebDriverWait(self.driver, 5).until(
+            lambda d: d.execute_script("return typeof window.ChannelIO === 'function'")
+        )
         result = self.driver.execute_script("""
             if (window.ChannelIO) {
                 window.ChannelIO('showMessenger');

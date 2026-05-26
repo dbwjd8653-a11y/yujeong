@@ -15,7 +15,6 @@ pytestmark = [
 ]
 
 REPEAT = 3
-INTERVAL = 1
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -66,7 +65,6 @@ def test_FHC_098_mypage_tab_load(mypage_load):
         except Exception as e:
             fail_count += 1
             logger.error(f"[{i}/{REPEAT}] 탭 전환 오류: {e}")
-        time.sleep(INTERVAL)
 
     assert fail_count == 0, f"3회 중 {fail_count}회 탭 전환 실패"
     logger.info("[FHC-098] 마이페이지 탭 반복 이동 부하 테스트 완료")

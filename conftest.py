@@ -153,7 +153,11 @@ def pytest_runtest_makereport(item, call):
 def pytest_collection_modifyitems(items):
     """FHC_NNN 번호 기준으로 전체 테스트를 오름차순 정렬"""
     def _fhc_key(item):
-        m = re.search(r'FHC_(\d+)', item.nodeid)
+        m = re.search(r'FHC[_-](\d+)', item.nodeid)
+        if m:
+            return int(m.group(1))
+        doc = getattr(item.function, '__doc__', '') or ''
+        m = re.search(r'FHC[_-](\d+)', doc)
         if m:
             return int(m.group(1))
         return 9999

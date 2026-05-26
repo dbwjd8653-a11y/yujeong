@@ -425,17 +425,16 @@ class BaseToolPage(BasePage):
             except OSError:
                 pass
 
-        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", result_btn)
-        ActionChains(self.driver).move_to_element(result_btn).click().perform()
+        self.js_click(result_btn)
         self.logger.info("생성 결과 받기 버튼 클릭 완료")
         click_time = time.time()
 
-        # 확인 모달 → '다운받기' 버튼 클릭 (모달 없을 경우 3초 후 바로 다운로드 진행)
+        # 확인 모달 → '다운받기' 버튼 클릭 (모달 없을 경우 1초 후 바로 다운로드 진행)
         try:
-            confirm_btn = WebDriverWait(self.driver, 3).until(
+            confirm_btn = WebDriverWait(self.driver, 1).until(
                 EC.element_to_be_clickable(self.DOWNLOAD_CONFIRM_BUTTON)
             )
-            ActionChains(self.driver).move_to_element(confirm_btn).click().perform()
+            self.js_click(confirm_btn)
             self.logger.info("'다운받기' 확인 버튼 클릭 완료")
         except Exception:
             self.logger.info("확인 모달 없음 → 바로 다운로드 진행")
@@ -445,7 +444,7 @@ class BaseToolPage(BasePage):
         self.logger.info("파일 다운로드 대기 중...")
         deadline = time.time() + 90
         while time.time() < deadline:
-            time.sleep(1)
+            time.sleep(0.5)
             for f in glob.glob(os.path.join(download_dir, "*.xlsx")):
                 if os.path.exists(f + ".part"):
                     continue
