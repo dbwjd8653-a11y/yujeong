@@ -73,7 +73,7 @@ def deep_sad_module(login_module):
 @allure.story("심층 조사 해피패스")
 @allure.title("[FHC-057] 심층 조사 메뉴 → 입력 → 생성 시작 확인 (Happy Path)")
 @allure.severity(allure.severity_level.CRITICAL)
-def test_FHC_057_deep_research_happy_path(deep):
+def test_deep_research_happy_path(deep):
     """
     [FHC-057~60] 심층 조사 해피패스 — 생성 시작까지
 
@@ -108,7 +108,7 @@ def test_FHC_057_deep_research_happy_path(deep):
 @allure.story("심층 조사 해피패스")
 @allure.title("[FHC-057a] 심층 조사 생성 완료 확인 (slow)")
 @allure.severity(allure.severity_level.CRITICAL)
-def test_FHC_057a_deep_research_is_generated(deep):
+def test_deep_research_is_generated(deep):
     """
     [FHC-057a] 심층 조사 생성 완료 확인 (최대 10분) — test_FHC_057 이후 실행
 
@@ -130,7 +130,7 @@ def test_FHC_057a_deep_research_is_generated(deep):
 @allure.story("주제 공백 입력 오류 메시지")
 @allure.title("[FHC-061] 주제 공백 입력 시 오류 메시지 확인")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_061_blank_topic_error(deep_sad):
+def test_blank_topic_error(deep_sad):
     """
     [FHC-061] 주제 공백 입력 시 오류 메시지 확인
 
@@ -157,7 +157,7 @@ def test_FHC_061_blank_topic_error(deep_sad):
 @allure.story("주제 500자 입력 버튼 활성화 경계값")
 @allure.title("[FHC-062] 주제 500자 입력 → [자동 생성] 버튼 활성화 확인 (경계값)")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_062_topic_500_chars_btn_enabled(deep_sad_module):
+def test_topic_500_chars_btn_enabled(deep_sad_module):
     """
     [FHC-062] 주제 500자 입력 → [자동 생성] 버튼 활성화 확인 (경계값)
 
@@ -182,7 +182,7 @@ def test_FHC_062_topic_500_chars_btn_enabled(deep_sad_module):
 @allure.story("주제 501자 입력 버튼 비활성화 경계값")
 @allure.title("[FHC-063] 주제 501자 입력 → [자동 생성] 버튼 비활성화 확인 (경계값)")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_063_topic_501_chars_btn_disabled(deep_sad_module):
+def test_topic_501_chars_btn_disabled(deep_sad_module):
     """
     [FHC-063] 주제 501자 입력 → [자동 생성] 버튼 비활성화 확인 (경계값)
 

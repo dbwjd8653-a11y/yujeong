@@ -40,9 +40,9 @@ def quiz(login_module):
 @allure.story("퀴즈 생성 해피패스")
 @allure.title("[FHC-054] 퀴즈 생성 메뉴 → 입력 → 생성 → 완료 (Happy Path)")
 @allure.severity(allure.severity_level.CRITICAL)
-def test_FHC_054_056_quiz_happy_path(quiz):
+def test_quiz_happy_path(quiz):
     """
-    [FHC-054~6] 퀴즈 생성 해피패스 (FHC-054 ~ FHC-056 통합)
+    [FHC-054~56] 퀴즈 생성 해피패스 (FHC-054 ~ FHC-056 통합)
 
     전제: 로그인 완료 상태
     단계:

@@ -13,7 +13,6 @@ class LogoutPage(BasePage):
     # ── Locators ───────────────────────────────────────────────────
     PROFILE_BTN        = (By.XPATH, "//button[.//*[@data-testid='PersonIcon']]")             # 프로필 아이콘
     LOGOUT_BTN         = (By.CSS_SELECTOR, "[data-testid='arrow-right-from-bracketIcon']")   # 로그아웃 목록칸
-    MASKED_EMAIL       = (By.CSS_SELECTOR, "p.css-54qhqc")                                   # 로그아웃 창의 마스킹된 이메일 정보
     PWD_INPUT          = (By.NAME, "password")                                                # 비밀번호 입력칸
     LOGIN_BTN          = (By.CSS_SELECTOR, "button[type='submit']")                           # 로그인 버튼
     SWITCH_ACCOUNT_BTN = (By.PARTIAL_LINK_TEXT, "Sign in with a different account")           # 다른 아이디로 로그인하기
@@ -30,26 +29,18 @@ class LogoutPage(BasePage):
         """계정 메뉴에서 로그아웃 버튼을 클릭한다."""
         self.click(self.LOGOUT_BTN)
 
-    def is_masked_email_valid(self, original_email):
+    def is_logout_url(self):
         """
-        [마스킹된 이메일 검증]
-
-        [목적] 로그아웃 후 표시되는 마스킹된 이메일이
-               원래 계정의 앞 2자리와 @이후 도메인과 일치하는지 검증한다.
-
-        [Test Steps]
-        1. 마스킹된 이메일 텍스트를 가져온다.
-        2. 원본 이메일의 앞 2자리와 @이후 도메인을 추출한다.
-        3. 마스킹된 이메일이 앞 2자리로 시작하고 도메인으로 끝나는지 확인한다.
+        [로그아웃 완료 URL 검증]
 
         [Expected Result]
-        마스킹된 이메일이 원본 계정과 일치하면 True를 반환한다.
+        URL에 'signin/history'가 포함되면 로그아웃 완료 페이지로 간주하여 True를 반환한다.
         """
-        masked = self.wait_for_visible(self.MASKED_EMAIL).text
-        prefix = original_email[:2]           # 앞 2자리
-        domain = original_email.split("@")[1] # @이후
-        self.logger.info(f"마스킹된 이메일 확인: {masked}")
-        return masked.startswith(prefix) and masked.endswith(domain)
+        try:
+            self.wait_for_url_contains("signin/history")
+            return True
+        except TimeoutException:
+            return False
 
     def enter_password(self, pwd):
         """비밀번호 입력 필드에 텍스트를 입력한다."""

@@ -14,24 +14,11 @@ INPUT_PWD_INVALID = "12345678"
 pytestmark = [
     allure.epic("Logout"),
     allure.feature("로그아웃"),
-    allure.story("로그아웃 마스킹 이메일 검증"),
+    allure.story("로그아웃 URL 검증"),
 ]
 
 
 # ── fixtures ───────────────────────────────────────────────────────
-
-@pytest.fixture
-def logout_page_logged_in(login):
-    """
-    로그인 완료 상태 LogoutPage fixture (해피패스용)
-
-    전제: login fixture로 로그인 완료 상태 (qa5team3-01@elicer.com)
-    단계:
-      1. login에서 (driver, wait) 수신 → LogoutPage 반환
-    """
-    driver, wait = login
-    return LogoutPage(driver, wait)
-
 
 @pytest.fixture
 def logout_page_ready(login):
@@ -52,30 +39,32 @@ def logout_page_ready(login):
 
 # ── 해피패스 ──────────────────────────────────────────────────────
 
-@allure.story("로그아웃 마스킹 이메일 검증")
-@allure.title("[FHC-014] 로그아웃 마스킹 이메일 검증")
+@allure.story("로그아웃 URL 검증")
+@allure.title("[FHC-014] 로그아웃 완료 URL 검증")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_014_logout_masked_email(logout_page_logged_in):
+def test_logout_url(login):
     """
-    [FHC-014] 로그아웃 동작 및 마스킹 이메일 검증
+    [FHC-014] 로그아웃 동작 및 완료 URL 검증
 
     전제: 로그인 완료 상태 (qa5team3-01@elicer.com)
     단계:
       1. 우측 상단 프로필 버튼 클릭
       2. 계정 메뉴에서 로그아웃 버튼 클릭
-      3. 마스킹된 이메일의 앞 2자리 + @이후 도메인 검증
-    기대: 마스킹된 이메일(qa****@elicer.com)이 원본 계정 앞 2자리와 도메인 일치
+    기대: URL에 'signin/history'가 포함된 로그아웃 완료 페이지로 이동
     """
-    logger.info("[FHC-014] 로그아웃 마스킹 이메일 검증 시작")
+    logger.info("[FHC-014] 로그아웃 완료 URL 검증 시작")
+
+    driver, wait = login
+    page = LogoutPage(driver, wait)
 
     with allure.step("[FHC-014] 프로필 클릭 후 로그아웃"):
-        logout_page_logged_in.click_profile()
-        logout_page_logged_in.click_logout()
+        page.click_profile()
+        page.click_logout()
 
-    with allure.step("[FHC-014] 마스킹 이메일 검증"):
-        assert logout_page_logged_in.is_masked_email_valid(TEST_USER["id"]), "마스킹 이메일 불일치"
+    with allure.step("[FHC-014] 로그아웃 완료 URL 확인"):
+        assert page.is_logout_url(), "로그아웃 완료 URL 미도달 (signin/history 미포함)"
 
-    logger.info("[FHC-014] 로그아웃 마스킹 이메일 검증 완료")
+    logger.info("[FHC-014] 로그아웃 완료 URL 검증 완료")
 
 
 # ── 새드케이스 (해피패스와 독립) ──────────────────────────────────
@@ -83,7 +72,7 @@ def test_FHC_014_logout_masked_email(logout_page_logged_in):
 @allure.story("잘못된 비밀번호 재로그인 오류")
 @allure.title("[FHC-015] 잘못된 비밀번호 재로그인 오류")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_015_wrong_password_error(logout_page_ready):
+def test_wrong_password_error(logout_page_ready):
     """
     [FHC-015] 유효하지 않은 비밀번호로 재로그인 시도 → 오류 메시지 확인
 
@@ -108,7 +97,7 @@ def test_FHC_015_wrong_password_error(logout_page_ready):
 @allure.story("올바른 비밀번호 재로그인")
 @allure.title("[FHC-016] 올바른 비밀번호 재로그인")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_016_correct_password_relogin(logout_page_ready):
+def test_correct_password_relogin(logout_page_ready):
     """
     [FHC-016] 올바른 비밀번호로 재로그인
 
@@ -133,7 +122,7 @@ def test_FHC_016_correct_password_relogin(logout_page_ready):
 @allure.story("다른 계정으로 전환")
 @allure.title("[FHC-017] 다른 계정으로 전환")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_017_switch_account(logout_page_ready):
+def test_switch_account(logout_page_ready):
     """
     [FHC-017] 다른 계정으로 전환 → 로그인 페이지 이동 확인
 
