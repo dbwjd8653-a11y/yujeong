@@ -5,6 +5,7 @@ import pytest
 import allure
 
 from pages.chat.chat_page import ChatPage
+from config.login_helpers import close_token_banner
 
 TEST_MESSAGE   = "오늘 마실 차를 추천해 주세요"
 SEARCH_KEYWORD = "오늘"
@@ -64,6 +65,7 @@ def test_ai_chat_response(chat):
       1. 메시지 입력 후 전송
     기대: 적절한 AI 답변이 생성된다
     """
+    close_token_banner(chat.driver, chat.wait)
     chat.send_message(TEST_MESSAGE)
     assert chat.wait_for_ai_response(), \
         "메시지 전송 후 AI 답변이 생성되지 않았습니다"

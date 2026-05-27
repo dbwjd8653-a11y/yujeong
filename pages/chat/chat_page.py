@@ -181,6 +181,7 @@ class ChatPage(BasePage):
                 EC.presence_of_element_located(self.RESPONSE_CONTENT)
             )
             self.logger.info("AI 응답 생성 확인")
+
             return True
         except Exception:
             self.logger.warning("AI 응답 대기 타임아웃")
