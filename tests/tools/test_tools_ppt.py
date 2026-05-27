@@ -44,6 +44,8 @@ def test_ppt_happy_case(ppt):
       2. [FHC-050] 필수 항목(주제) 입력 → [자동 생성] 버튼 활성화 확인
       3. [FHC-051] 선택 항목(지시사항, 슬라이드 수, 섹션 수) 추가 입력 → 버튼 활성화 유지 확인
       4. [FHC-052] 심층조사 모드 토글 OFF 전환 확인
+         - OFF 상태이면 ON으로 전환 (상태 보장)
+         - '심층조사 모드' 토글 버튼 클릭 → OFF 전환 확인
       5. [FHC-053] 자동 생성 버튼 클릭 → 2분 이내 생성 완료 확인
       6. [FHC-054] PPT 다운로드
     기대: 생성 및 다운로드 모두 정상 완료
@@ -67,9 +69,10 @@ def test_ppt_happy_case(ppt):
         assert ppt.is_generate_btn_enabled(), "선택 항목 입력 후 [자동 생성] 버튼 비활성화"
 
     with allure.step("[FHC-052] 심층조사 모드 토글 OFF 전환 확인"):
-        logger.info("[FHC-052] 심층조사 모드 토글 확인 시작")
         if not ppt.is_deep_research_on():
+            logger.info("[FHC-052] 심층조사 모드 OFF 상태 → ON으로 전환 (상태 보장)")
             ppt.click_deep_research_toggle()
+        logger.info("[FHC-052] 심층조사 모드 ON → OFF 전환 클릭")
         ppt.click_deep_research_toggle()
         assert not ppt.is_deep_research_on(), "심층조사 모드가 OFF로 전환되지 않음"
 

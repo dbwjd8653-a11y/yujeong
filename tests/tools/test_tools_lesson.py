@@ -52,8 +52,6 @@ def test_lesson_plan_happy_case(page):
 
     with allure.step("[FHC-046] 필수 항목 선택"):
         logger.info("[FHC-046] 필수 항목 입력 시작")
-        if page.has_any_field_value():
-            page.clear_all_fields()
         page.regen_with_random_values()
         assert page.is_generate_btn_enabled(), "필수 항목 선택 후 [수업지도안 생성] 버튼 비활성화"
 

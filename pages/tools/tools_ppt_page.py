@@ -164,14 +164,5 @@ class PPTPage(BaseToolPage):
         except Exception:
             return False
 
-    def click_generate_and_cancel(self):
-        try:
-            btn = self.wait.until(EC.element_to_be_clickable(self.GENERATE_BTN))
-            self.js_click(btn)
-            cancel = self.wait.until(EC.element_to_be_clickable(self.REGEN_CANCEL_BTN))
-            self.js_click(cancel)
-            return True
-        except Exception:
-            return False
 
 
