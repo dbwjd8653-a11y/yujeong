@@ -1,8 +1,11 @@
+import logging
 import os
 import random
 
 from config.selenium_imports import By, EC
 from pages.tools.base_tool_page import BaseToolPage
+
+logger = logging.getLogger(__name__)
 
 
 class LessonPlanPage(BaseToolPage):
