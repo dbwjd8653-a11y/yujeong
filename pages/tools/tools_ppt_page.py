@@ -57,6 +57,9 @@ class PPTPage(BaseToolPage):
         "SECTION_COUNT_INPUT",
     ]
 
+    def tools_menu(self):
+        self.click_tool_menu(self.TOOL_NAME)
+
     # ========== 입력 필드 사전 체크 / 초기화 ==========
 
     def has_any_field_value(self):
