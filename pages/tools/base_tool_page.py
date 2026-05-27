@@ -100,6 +100,7 @@ class BaseToolPage(BasePage):
     CHECK_ICON        = (By.CSS_SELECTOR, "[data-testid='circle-checkIcon']")  # 생성 완료 체크 아이콘
     GENERATE_BTN      = None  # 서브클래스에서 반드시 정의
     REGEN_CONFIRM_BTN = None  # 서브클래스에서 정의 시 해당 로케이터 사용, None이면 텍스트 기반 폴백
+    SUCCESS_MESSAGE   = None  # 서브클래스에서 정의 시 is_generated() 완료 지표로 사용, None이면 CHECK_ICON 사용
 
     # ========== 초기화 / 로그인 ==========
 
@@ -482,26 +483,33 @@ class BaseToolPage(BasePage):
         except TimeoutException:
             return False
 
-    def is_generated(self, timeout=DEFAULT_WAIT):
+    def is_generated(self, timeout=DEFAULT_WAIT) -> bool:
         """
         AI 생성 완료 확인 (최초 생성 및 재생성 모두 대응)
 
-        단계:
-          1. 기존 체크 아이콘이 있으면 사라질 때까지 대기 (재생성 케이스)
-          2. 로딩 스피너 사라짐 대기
-          3. 완료 체크 아이콘 표시 대기
+        SUCCESS_MESSAGE가 정의된 서브클래스(PPT·수업지도안 등)는 SUCCESS_MESSAGE를,
+        None인 경우(세부특기·행동특성 등)는 CHECK_ICON을 완료 지표로 사용한다.
+        각 단계가 timeout 예산을 공유해 재생성 후 timeout 이내 완료 여부를 측정한다.
         """
+        completion = self.SUCCESS_MESSAGE if self.SUCCESS_MESSAGE is not None else self.CHECK_ICON
+        deadline = time.time() + timeout
+
+        def secs_left():
+            return max(1, deadline - time.time())
+
         try:
             WebDriverWait(self.driver, SHORT_WAIT).until(
-                EC.visibility_of_element_located(self.CHECK_ICON)
+                EC.visibility_of_element_located(completion)
             )
-            WebDriverWait(self.driver, timeout).until(
-                EC.invisibility_of_element_located(self.CHECK_ICON)
+            WebDriverWait(self.driver, secs_left()).until(
+                EC.invisibility_of_element_located(completion)
             )
         except TimeoutException:
             pass
-        self.wait_until_invisible(self.SPINNER, timeout)
-        result = WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located(self.CHECK_ICON)
+        WebDriverWait(self.driver, secs_left()).until(
+            EC.invisibility_of_element_located(self.SPINNER)
+        )
+        result = WebDriverWait(self.driver, secs_left()).until(
+            EC.visibility_of_element_located(completion)
         )
         return result.is_displayed()

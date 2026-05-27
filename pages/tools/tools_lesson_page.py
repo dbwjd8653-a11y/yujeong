@@ -1,9 +1,6 @@
 import os
-import time
 
-from config.selenium_imports import By, EC, WebDriverWait, TimeoutException
-
-from config.settings import SHORT_WAIT
+from config.selenium_imports import By, EC
 from pages.tools.base_tool_page import BaseToolPage
 
 
@@ -232,44 +229,4 @@ class LessonPlanPage(BaseToolPage):
         except Exception:
             return False
 
-    def is_generated(self, timeout=120) -> bool:
-        """
-        수업지도안 생성 완료 확인
-
-        timeout은 이 메서드 진입 시점부터의 총 예산으로 사용.
-        각 대기 단계가 남은 시간을 공유해 '다시 생성' 클릭 후 timeout 이내 완료 여부를 측정한다.
-
-        - SPINNER: MuiLinearProgress-indeterminate (완료 후 determinate로 교체되어 잔류)
-        - 완료 지표: SUCCESS_MESSAGE (circle-checkIcon은 페이지 내 중복 존재)
-        """
-        deadline = time.time() + timeout
-
-        def secs_left():
-            return max(1, deadline - time.time())
-
-        try:
-            WebDriverWait(self.driver, SHORT_WAIT).until(
-                EC.visibility_of_element_located(self.SUCCESS_MESSAGE)
-            )
-            WebDriverWait(self.driver, secs_left()).until(
-                EC.invisibility_of_element_located(self.SUCCESS_MESSAGE)
-            )
-        except TimeoutException:
-            pass
-        WebDriverWait(self.driver, secs_left()).until(
-            EC.invisibility_of_element_located(self.SPINNER)
-        )
-        result = WebDriverWait(self.driver, secs_left()).until(
-            EC.visibility_of_element_located(self.SUCCESS_MESSAGE)
-        )
-        return result.is_displayed()
-
-    def wait_for_generation(self, timeout: int = 60) -> bool:
-        try:
-            WebDriverWait(self.driver, timeout).until(
-                EC.visibility_of_element_located(self.SUCCESS_MESSAGE)
-            )
-            return True
-        except Exception:
-            return False
 
