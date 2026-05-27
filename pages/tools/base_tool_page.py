@@ -100,6 +100,7 @@ class BaseToolPage(BasePage):
     CHECK_ICON        = (By.CSS_SELECTOR, "[data-testid='circle-checkIcon']")  # 생성 완료 체크 아이콘
     GENERATE_BTN      = None  # 서브클래스에서 반드시 정의
     REGEN_CONFIRM_BTN = None  # 서브클래스에서 정의 시 해당 로케이터 사용, None이면 텍스트 기반 폴백
+    SUCCESS_MESSAGE   = None  # 서브클래스에서 정의 시 is_generated() 완료 지표로 사용, None이면 CHECK_ICON 사용
 
     # ========== 초기화 / 로그인 ==========
 
@@ -115,11 +116,9 @@ class BaseToolPage(BasePage):
         submit.click()
         self.wait.until(EC.staleness_of(submit))
         # 리다이렉트가 qaproject로 완전히 완료될 때까지 추가 대기
-        WebDriverWait(self.driver, 10).until(
-            EC.url_contains("qaproject.elice.io")
-        )
+        self.wait.until(EC.url_contains("qaproject.elice.io"))
         # LNB 링크가 렌더링될 때까지 대기 — 세션 쿠키 완전히 설정된 후에만 나타남
-        WebDriverWait(self.driver, 10).until(
+        self.wait.until(
             EC.presence_of_element_located(
                 (By.XPATH, "//a[contains(@href,'ai-helpy-chat')]")
             )
@@ -482,33 +481,33 @@ class BaseToolPage(BasePage):
         except TimeoutException:
             return False
 
-    def is_generated(self, timeout=DEFAULT_WAIT):
+    def is_generated(self, timeout=DEFAULT_WAIT) -> bool:
         """
-        AI 생성 완료 확인 — 버튼이 '다시 생성' + 활성화 상태가 될 때까지 대기
-        생성 중엔 버튼이 disabled, 완료 후 enabled로 전환
-        """
-        if self.GENERATE_BTN is None:
-            raise NotImplementedError(f"{self.__class__.__name__}에 GENERATE_BTN이 정의되지 않았습니다")
+        AI 생성 완료 확인 (최초 생성 및 재생성 모두 대응)
 
+        SUCCESS_MESSAGE가 정의된 서브클래스(PPT·수업지도안 등)는 SUCCESS_MESSAGE를,
+        None인 경우(세부특기·행동특성 등)는 CHECK_ICON을 완료 지표로 사용한다.
+        각 단계가 timeout 예산을 공유해 재생성 후 timeout 이내 완료 여부를 측정한다.
+        """
+        completion = self.SUCCESS_MESSAGE if self.SUCCESS_MESSAGE is not None else self.CHECK_ICON
         deadline = time.time() + timeout
 
         def secs_left():
             return max(1, deadline - time.time())
 
-        # 생성 시작(버튼 비활성화) 대기
         try:
-            WebDriverWait(self.driver, SHORT_WAIT).until_not(
-                EC.element_to_be_clickable(self.GENERATE_BTN)
+            WebDriverWait(self.driver, SHORT_WAIT).until(
+                EC.visibility_of_element_located(completion)
+            )
+            WebDriverWait(self.driver, secs_left()).until(
+                EC.invisibility_of_element_located(completion)
             )
         except TimeoutException:
             pass
-
-        # 생성 완료(버튼 활성 + "다시 생성") 대기 — 300ms 간격으로 빠르게 폴링
-        def btn_complete(d):
-            try:
-                btn = d.find_element(*self.GENERATE_BTN)
-                return btn.is_enabled() and "다시 생성" in btn.text
-            except Exception:
-                return False
-
-        return bool(WebDriverWait(self.driver, secs_left(), poll_frequency=0.3).until(btn_complete))
+        WebDriverWait(self.driver, secs_left()).until(
+            EC.invisibility_of_element_located(self.SPINNER)
+        )
+        result = WebDriverWait(self.driver, secs_left()).until(
+            EC.visibility_of_element_located(completion)
+        )
+        return result.is_displayed()
