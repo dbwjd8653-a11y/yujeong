@@ -4,7 +4,7 @@
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
-from config.settings import DEFAULT_WAIT, DOWNLOAD_DIR
+from config.settings import DOWNLOAD_DIR
 
 
 def _base_opts() -> FirefoxOptions:
@@ -28,13 +28,9 @@ def make_firefox_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Firefox:
         "binary/octet-stream,"
         "application/x-download",
     )
-    driver = webdriver.Firefox(options=opts)
-    driver.implicitly_wait(DEFAULT_WAIT)
-    return driver
+    return webdriver.Firefox(options=opts)
 
 
 def make_simple_firefox_driver() -> webdriver.Firefox:
     """다운로드 설정 없는 기본 Firefox 드라이버 생성"""
-    driver = webdriver.Firefox(options=_base_opts())
-    driver.implicitly_wait(DEFAULT_WAIT)
-    return driver
+    return webdriver.Firefox(options=_base_opts())
