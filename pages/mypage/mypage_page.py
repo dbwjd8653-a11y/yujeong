@@ -55,24 +55,13 @@ class MyPage(BasePage):
 
     def login(self, email: str = None, password: str = None):
         """qaproject SSO 로그인 (기본: MAIN_EMAIL/MAIN_PASSWORD)"""
-        from config.settings import LOGIN_URL
-        email    = email    or self.MAIN_EMAIL
-        password = password or self.MAIN_PASSWORD
-
-        self.driver.get(LOGIN_URL)
-        self.wait.until(EC.presence_of_element_located(self.EMAIL_INPUT))
-        self.driver.find_element(*self.EMAIL_INPUT).send_keys(email)
-        self.driver.find_element(*self.PASSWORD_INPUT).send_keys(password)
-        submit = self.driver.find_element(*self.SUBMIT_BUTTON)
-        submit.click()
-        self.wait.until(EC.staleness_of(submit))
-        WebDriverWait(self.driver, 30).until(EC.url_contains("qaproject.elice.io"))
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(
-                (By.XPATH, "//a[contains(@href,'ai-helpy-chat')]")
-            )
-        )
-        self.logger.info(f"로그인 성공: {email}")
+        from config.login_helpers import do_login
+        user = {
+            "id": email or self.MAIN_EMAIL,
+            "pw": password or self.MAIN_PASSWORD,
+        }
+        do_login(self.driver, self.wait, user)
+        self.logger.info(f"로그인 성공: {user['id']}")
 
     # ========== 페이지 이동 ==========
 
