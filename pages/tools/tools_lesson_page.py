@@ -66,12 +66,6 @@ class LessonPlanPage(BaseToolPage):
         By.XPATH,
         "//div[@role='dialog']//button[@type='button' and normalize-space()='취소']",
     )
-    SUCCESS_MESSAGE = (
-        By.XPATH,
-        "//div[@role='tabpanel'][@data-panel='output']"
-        "//p[contains(., '입력하신 내용 기반으로 수업 지도안을 생성했습니다')]",
-    )
-
     def tools_menu(self):
         self.click_tool_menu(self.TOOL_NAME)
 

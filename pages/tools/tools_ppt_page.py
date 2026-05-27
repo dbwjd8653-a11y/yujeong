@@ -40,11 +40,6 @@ class PPTPage(BaseToolPage):
         By.XPATH,
         "//input[@name='simple_mode']/ancestor::span[contains(@class,'MuiSwitch-root')]",
     )
-    SUCCESS_MESSAGE = (
-        By.XPATH,
-        "//div[@role='tabpanel'][@data-panel='output']"
-        "//p[contains(., '입력하신 내용 기반으로 PPT를 생성했습니다')]",
-    )
     DOWNLOAD_BTN = (
         By.XPATH,
         "//a[contains(., '생성 결과 다운받기')]",
