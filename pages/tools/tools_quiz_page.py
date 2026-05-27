@@ -34,13 +34,14 @@ class QuizPage(BaseToolPage):
 
     def select_option(self, dropdown_id, target_text):
         """드롭다운 특정 항목 선택"""
-        self.js_click(self.wait.until(EC.element_to_be_clickable((By.ID, dropdown_id))))
-        self.js_click(self.wait.until(
-            EC.element_to_be_clickable((
-                By.XPATH,
-                f"//ul[@role='listbox']//li[normalize-space(text())='{target_text}']",
-            ))
-        ))
+        self.wait.until(EC.element_to_be_clickable((By.ID, dropdown_id))).click()
+        options = self.wait.until(
+            EC.visibility_of_all_elements_located((By.CSS_SELECTOR, "ul[role='listbox'] li"))
+        )
+        for option in options:
+            if option.text == target_text:
+                self.js_click(option)
+                break
         self.wait_dropdown_closed()
 
     def is_tool_page_displayed(self):

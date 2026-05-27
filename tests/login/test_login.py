@@ -39,23 +39,12 @@ def login_page(driver, wait):
     return LoginPage(driver, wait)
 
 
-@pytest.fixture
-def login_page_after(login):
-    """
-    로그인 완료 상태 LoginPage fixture
-
-    전제: conftest login fixture로 로그인 완료 상태
-    """
-    driver, wait = login
-    return LoginPage(driver, wait)
-
-
 # ── 해피패스 ──────────────────────────────────────────────────────
 
 @allure.story("로그인 동작 확인")
 @allure.title("[FHC-006] 로그인 동작 확인 (Happy Path)")
 @allure.severity(allure.severity_level.CRITICAL)
-def test_FHC_006_login_success(login_page_after):
+def test_login_success(login):
     """
     [FHC-006] 로그인 동작 확인 (Happy Path)
 
@@ -69,12 +58,15 @@ def test_FHC_006_login_success(login_page_after):
     """
     logger.info("[FHC-006] 로그인 동작 확인 시작")
 
+    driver, wait = login
+    page = LoginPage(driver, wait)
+
     with allure.step("[FHC-006] 약관 동의 팝업 처리 (최초 로그인 시)"):
-        if login_page_after.is_terms_popup_displayed():
-            login_page_after.agree_and_submit()
+        if page.is_terms_popup_displayed():
+            page.agree_and_submit()
 
     with allure.step("[FHC-006] 메인 페이지 이동 확인"):
-        assert login_page_after.is_login_success(), "로그인 실패 - 메인 페이지 미진입"
+        assert page.is_login_success(), "로그인 실패 - 메인 페이지 미진입"
 
     logger.info("[FHC-006] 로그인 동작 확인 완료")
 
@@ -84,7 +76,7 @@ def test_FHC_006_login_success(login_page_after):
 @allure.story("이메일 유효성 검사")
 @allure.title("[FHC-007] 이메일 유효성 검사")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_007_invalid_email(login_page):
+def test_invalid_email(login_page):
     """
     [FHC-007] 이메일 유효성 검사
 
@@ -107,7 +99,7 @@ def test_FHC_007_invalid_email(login_page):
 @allure.story("비밀번호 유효성 + 마스킹 확인")
 @allure.title("[FHC-008~009] 비밀번호 유효성 검사 + 마스킹 확인")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_008_009_password_validation_and_masking(login_page):
+def test_password_validation_and_masking(login_page):
     """
     [FHC-008~009] 비밀번호 유효성 검사 + 마스킹 확인
 
@@ -141,7 +133,7 @@ def test_FHC_008_009_password_validation_and_masking(login_page):
 @allure.story("비밀번호 찾기 전화번호 유효성")
 @allure.title("[FHC-010~011] 비밀번호 찾기 전화번호 유효성 검사")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_010_011_find_password_phone_validation(login_page):
+def test_find_password_phone_validation(login_page):
     """
     [FHC-010~011] 비밀번호 찾기 → 휴대폰 번호 유효성 검사
 
@@ -167,7 +159,7 @@ def test_FHC_010_011_find_password_phone_validation(login_page):
 @allure.story("로그인 5회 실패 계정 잠금")
 @allure.title("[FHC-012] 로그인 5회 실패 계정 잠금")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_012_login_lockout(login_page):
+def test_login_lockout(login_page):
     """
     [FHC-012] 로그인 5회 이상 실패 → 계정 잠금 확인
 
@@ -196,7 +188,7 @@ def test_FHC_012_login_lockout(login_page):
 @allure.story("언어 변경 후 로그인 페이지 언어 확인")
 @allure.title("[FHC-013] 언어 변경 후 로그아웃 로그인 페이지 언어")
 @allure.severity(allure.severity_level.MINOR)
-def test_FHC_013_language_reset_after_logout(login_page, login):
+def test_language_reset_after_logout(login_page, login):
     """
     [FHC-013] 언어 변경 후 로그아웃 시 로그인 페이지 언어 확인
 
