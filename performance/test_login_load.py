@@ -36,7 +36,7 @@ def login_load():
 @allure.story("로그인 로그아웃 반복 부하 테스트")
 @allure.title("[FHC-096] 로그인/로그아웃 반복 부하 테스트")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_096_login_logout_load(login_load):
+def test_login_logout_load(login_load):
     """
     [FHC-096] 로그인/로그아웃 반복 부하 테스트
 

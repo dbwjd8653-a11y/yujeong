@@ -34,7 +34,7 @@ def chat_load(login_module):
 @allure.story("채팅 메시지 연속 전송 부하 테스트")
 @allure.title("[FHC-095] 채팅 메시지 연속 전송 부하 테스트")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_095_chat_load(chat_load):
+def test_chat_load(chat_load):
     """
     [FHC-095] 채팅 메시지 연속 전송 부하 테스트
 
