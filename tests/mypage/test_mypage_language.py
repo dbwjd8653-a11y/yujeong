@@ -34,7 +34,7 @@ def mypage(tools_driver_module):
 @allure.story("언어 변경 국가 설정")
 @allure.title("[FHC-090] 언어 변경 국가 설정")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_090_language_setting(mypage):
+def test_language_setting(mypage):
     """
     [FHC-090] 언어 변경 국가 설정
 
@@ -62,7 +62,7 @@ def test_FHC_090_language_setting(mypage):
 @allure.story("언어 변경 후 로그아웃 로그인 페이지 언어")
 @allure.title("[FHC-091] 언어 변경 후 로그아웃 로그인 페이지 언어")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_091_logout_shows_language_login_page(mypage):
+def test_logout_shows_language_login_page(mypage):
     """
     [FHC-091] 언어 변경 후 로그아웃 시 로그인 페이지 언어 확인
 
@@ -87,7 +87,7 @@ def test_FHC_091_logout_shows_language_login_page(mypage):
 @allure.story("언어 변경 후 재로그인 언어 유지")
 @allure.title("[FHC-092] 언어 변경 후 재로그인 언어 유지")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_092_language_maintained_after_relogin(mypage):
+def test_language_maintained_after_relogin(mypage):
     """
     [FHC-092] 언어 변경 후 재로그인 시 언어 유지
 

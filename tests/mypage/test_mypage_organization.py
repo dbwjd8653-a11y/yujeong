@@ -33,7 +33,7 @@ def mypage(tools_driver_module):
 @allure.story("내 기관 UI 및 정보 표시")
 @allure.title("[FHC-087] 내 기관 클릭 시 UI 및 정보 표시")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_087_org_info_displayed(mypage):
+def test_org_info_displayed(mypage):
     """
     [FHC-087] 내 기관 클릭 시 UI 및 정보 표시
 
@@ -54,7 +54,7 @@ def test_FHC_087_org_info_displayed(mypage):
 @allure.story("qa프로젝트 페이지 하이퍼링크 작동")
 @allure.title("[FHC-088] qa프로젝트 페이지 하이퍼링크 작동")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_088_qaproject_link(mypage):
+def test_qaproject_link(mypage):
     """
     [FHC-088] qa프로젝트 페이지 하이퍼링크 작동
 
@@ -79,7 +79,7 @@ def test_FHC_088_qaproject_link(mypage):
 @allure.story("헬프 센터 하이퍼링크 작동")
 @allure.title("[FHC-089] 헬프 센터 하이퍼링크 작동")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_089_help_center_link(mypage):
+def test_help_center_link(mypage):
     """
     [FHC-089] 헬프 센터 하이퍼링크 작동
 

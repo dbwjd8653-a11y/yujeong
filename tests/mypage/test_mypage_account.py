@@ -38,7 +38,7 @@ def mypage(tools_driver_module):
 @allure.story("이름 변경")
 @allure.title("[FHC-080] 이름 변경")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_080_change_name(mypage):
+def test_change_name(mypage):
     """
     [FHC-080] 이름 변경
 
@@ -62,7 +62,7 @@ def test_FHC_080_change_name(mypage):
 @allure.story("비밀번호 변경")
 @allure.title("[FHC-081] 비밀번호 변경")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_081_change_password(mypage):
+def test_change_password(mypage):
     """
     [FHC-081] 비밀번호 변경
 
@@ -89,7 +89,7 @@ def test_FHC_081_change_password(mypage):
 @allure.story("프로모션 알림 설정 변경")
 @allure.title("[FHC-082] 프로모션 알림 설정 변경")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_082_toggle_promotion(mypage):
+def test_toggle_promotion(mypage):
     """
     [FHC-082] 프로모션 알림 설정 변경
 
@@ -114,7 +114,7 @@ def test_FHC_082_toggle_promotion(mypage):
 @allure.story("선호 언어 설정 변경")
 @allure.title("[FHC-083] 선호 언어 설정 변경")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_083_change_language(mypage):
+def test_change_language(mypage):
     """
     [FHC-083] 선호 언어 설정 변경
 
