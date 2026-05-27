@@ -41,6 +41,10 @@ class MyPage06(MyPage):
     )
 
     # ========== Locators — FHC-080: 회원가입 ==========
+    EMAIL_SIGNUP_BUTTON   = (By.XPATH,
+        "//button[contains(normalize-space(),'이메일로 가입하기')"
+        " or contains(normalize-space(),'Create account with email')]"
+    )
     SIGNUP_EMAIL_INPUT    = (By.CSS_SELECTOR, "input[name='loginId']")
     SIGNUP_PASSWORD_INPUT = (By.CSS_SELECTOR, "input[autocomplete='new-password']")
     SIGNUP_NAME_INPUT     = (By.CSS_SELECTOR, "input[name='fullname']")
@@ -157,10 +161,17 @@ class MyPage06(MyPage):
     # ========== FHC-080: 재가입 ==========
 
     def signup(self, email: str, password: str, name: str):
-        """SIGNUP_FORM_URL 직접 이동 → 폼 입력 → 제출 (org=qaproject 포함)"""
-        self.driver.get(self.SIGNUP_FORM_URL)
+        """방법 선택 페이지 이동 → 이메일로 가입하기 → 폼 입력 → 제출 (org=qaproject 포함)"""
+        from config.settings import SIGNUP_URL
+        self.driver.get(SIGNUP_URL)
+        WebDriverWait(self.driver, 10).until(EC.url_contains("signup/method"))
+        self.logger.info("회원가입 방법 선택 페이지 이동 완료")
+
+        self.js_click(
+            self.wait.until(EC.element_to_be_clickable(self.EMAIL_SIGNUP_BUTTON))
+        )
         WebDriverWait(self.driver, 10).until(EC.url_contains("signup/form"))
-        self.logger.info("회원가입 폼 직접 이동 완료")
+        self.logger.info("이메일로 가입하기 클릭 완료")
 
         email_input = self.wait.until(EC.visibility_of_element_located(self.SIGNUP_EMAIL_INPUT))
         email_input.clear()
