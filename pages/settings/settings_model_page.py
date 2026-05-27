@@ -7,6 +7,7 @@ class SettingsModelPage(SettingsPage):
 
     _MODELS_TAB = (By.CSS_SELECTOR, 'a[href="/ai-helpy-chat/admin/models"][role="tab"]')
     _TOAST_ALERT = (By.ID, 'notistack-snackbar')
+    _TOGGLE     = (By.CSS_SELECTOR, 'input.MuiSwitch-input[type="checkbox"]')
 
     def navigate_to_models_tab(self):
         self._wait_toast_gone()
@@ -26,8 +27,6 @@ class SettingsModelPage(SettingsPage):
             self.wait_until_invisible(self._TOAST_ALERT, 5)
         except Exception:
             pass
-
-    _TOGGLE = (By.CSS_SELECTOR, 'input.MuiSwitch-input[type="checkbox"]')
 
     def activate_disabled_model(self):
         self._wait_toast_gone()
