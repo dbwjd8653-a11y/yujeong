@@ -6,7 +6,6 @@ import glob
 import os
 import time
 
-from selenium.webdriver.common.action_chains import ActionChains
 from config.selenium_imports import By, EC, WebDriverWait, TimeoutException
 
 from pages.base_page import BasePage
@@ -96,10 +95,11 @@ class BaseToolPage(BasePage):
         " and not(contains(@class,'MuiTableRow-footer'))]",
     )
 
-    STOP_BTN       = (By.XPATH, "//button[.//*[@data-testid='stopIcon']]")  # 생성 중단 버튼
-    SPINNER        = (By.CSS_SELECTOR, "span[role='progressbar']")          # 로딩 스피너
-    CHECK_ICON     = (By.CSS_SELECTOR, "[data-testid='circle-checkIcon']")  # 생성 완료 체크 아이콘
-    GENERATE_BTN   = None  # 서브클래스에서 반드시 정의
+    STOP_BTN          = (By.XPATH, "//button[.//*[@data-testid='stopIcon']]")  # 생성 중단 버튼
+    SPINNER           = (By.CSS_SELECTOR, "span[role='progressbar']")          # 로딩 스피너
+    CHECK_ICON        = (By.CSS_SELECTOR, "[data-testid='circle-checkIcon']")  # 생성 완료 체크 아이콘
+    GENERATE_BTN      = None  # 서브클래스에서 반드시 정의
+    REGEN_CONFIRM_BTN = None  # 서브클래스에서 정의 시 해당 로케이터 사용, None이면 텍스트 기반 폴백
 
     # ========== 초기화 / 로그인 ==========
 
@@ -461,26 +461,18 @@ class BaseToolPage(BasePage):
         assert not btn.is_enabled(), "버튼이 활성화 상태입니다 (비활성화 예상)"
 
     def click_generate(self):
-        """
-        생성 버튼 클릭
-
-        단계:
-          1. 생성 버튼 확인
-          2. 비활성화 상태이면 활성화까지 대기
-          3. 버튼 텍스트 확인
-          4. 버튼 클릭
-          5. '다시 생성' 버튼인 경우 확인 팝업에서 '다시 생성' 클릭
-        """
-        btn = self.get_generate_btn()
-        if not btn.is_enabled():
-            btn = self.wait.until(EC.element_to_be_clickable(self.GENERATE_BTN))
-        btn_text = btn.text
+        btn = self.wait.until(EC.element_to_be_clickable(self.GENERATE_BTN))
         self.js_click(btn)
-        if btn_text == '다시 생성':
-            popup_btn = WebDriverWait(self.driver, DEFAULT_WAIT).until(
-                EC.element_to_be_clickable((By.XPATH, "//div[@role='dialog']//button[text()='다시 생성']"))
+        confirm_locator = self.REGEN_CONFIRM_BTN or (
+            By.XPATH, "//div[@role='dialog']//button[text()='다시 생성']"
+        )
+        try:
+            confirm = WebDriverWait(self.driver, DEFAULT_WAIT).until(
+                EC.element_to_be_clickable(confirm_locator)
             )
-            self.js_click(popup_btn)
+            self.js_click(confirm)
+        except Exception:
+            pass
 
     def is_generating(self):
         """로딩 스피너 표시 여부 → AI 생성 시작 확인"""
