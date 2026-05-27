@@ -66,7 +66,6 @@ class BaseToolPage(BasePage):
     )
     KEYWORD_SAVE   = (By.XPATH, "//*[@role='dialog']//button[text()='저장' or text()='Save']")
 
-    SEARCH_INPUT   = (By.XPATH, "//input[contains(@placeholder,'학생 이름 검색') or contains(@placeholder,'Search student') or contains(@placeholder,'검색')]")
     RESULT_BUTTON  = (By.XPATH, "//button[contains(text(),'생성 결과 받기') or contains(text(),'Get Result') or contains(text(),'Download Result')]")
 
     # '생성 결과 받기' 클릭 후 확인 모달의 '다운받기' 버튼
@@ -146,7 +145,6 @@ class BaseToolPage(BasePage):
         self.js_click(tool_btn)
         self.wait.until(EC.url_contains("ai-helpy-chat/tools/"))
         self.logger.info(f"'{tool_name}' 클릭 완료")
-        close_token_banner(self.driver, self.wait)
 
     def setup_tool(self):
         """도구 메뉴 진입 후 생성 중이면 중단 (서브클래스의 tools_menu() 사용)"""
@@ -328,12 +326,6 @@ class BaseToolPage(BasePage):
             self.wait.until(EC.element_to_be_clickable(self.ADD_STUDENT_BUTTON))
         )
         self.logger.info("학생 추가 버튼 클릭 완료 (생성 트리거)")
-
-    def search_student(self, name: str):
-        search_input = self.wait.until(EC.visibility_of_element_located(self.SEARCH_INPUT))
-        search_input.clear()
-        search_input.send_keys(name)
-        self.logger.info(f"학생 이름 검색 입력 완료: {name}")
 
     def download_result(self, download_dir: str, browser: str = "firefox"):
         """생성 결과 받기 버튼 클릭 후 xlsx 다운로드 완료 대기"""

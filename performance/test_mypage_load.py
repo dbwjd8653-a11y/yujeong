@@ -1,5 +1,5 @@
 # tests/performance/test_mypage_load.py
-# 마이페이지 탭 반복 이동 부하 테스트 — FHC-098
+# 마이페이지 탭 반복 이동 부하 테스트 — FHC-097
 
 import time
 import logging
@@ -30,11 +30,11 @@ def mypage_load(login_module):
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
 @allure.story("마이페이지 탭 반복 이동 부하 테스트")
-@allure.title("[FHC-098] 마이페이지 탭 반복 이동 부하 테스트")
+@allure.title("[FHC-097] 마이페이지 탭 반복 이동 부하 테스트")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_098_mypage_tab_load(mypage_load):
+def test_mypage_tab_load(mypage_load):
     """
-    [FHC-098] 마이페이지 탭 반복 이동 부하 테스트
+    [FHC-097] 마이페이지 탭 반복 이동 부하 테스트
 
     전제: 헬피챗 접속, 로그인 완료 (일반 계정)
     단계:
@@ -46,7 +46,7 @@ def test_FHC_098_mypage_tab_load(mypage_load):
     기대: 탭 전환 시 오류 없이 콘텐츠 정상 표시, 로딩 실패 없음
     관련 TC: FHC-076, FHC-077, FHC-083, FHC-090, FHC-093
     """
-    logger.info("[FHC-098] 마이페이지 탭 반복 이동 부하 테스트 시작")
+    logger.info("[FHC-097] 마이페이지 탭 반복 이동 부하 테스트 시작")
     driver, wait = mypage_load
     page = MyPage(driver)
     fail_count = 0
@@ -67,4 +67,4 @@ def test_FHC_098_mypage_tab_load(mypage_load):
             logger.error(f"[{i}/{REPEAT}] 탭 전환 오류: {e}")
 
     assert fail_count == 0, f"3회 중 {fail_count}회 탭 전환 실패"
-    logger.info("[FHC-098] 마이페이지 탭 반복 이동 부하 테스트 완료")
+    logger.info("[FHC-097] 마이페이지 탭 반복 이동 부하 테스트 완료")

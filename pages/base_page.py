@@ -5,7 +5,6 @@ import logging
 import time
 
 from config.selenium_imports import By, EC, WebDriverWait
-from config.login_helpers import close_token_banner
 
 class BasePage:
 
@@ -20,9 +19,7 @@ class BasePage:
     # ========== 네비게이션 ==========
 
     def go(self, url):
-        """URL 이동 후 토큰 배너 자동 닫기"""
         self.driver.get(url)
-        close_token_banner(self.driver, self.wait)
 
     # ========== 클릭 유틸리티 ==========
 

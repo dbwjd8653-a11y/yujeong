@@ -37,7 +37,7 @@ def settings_load(login_module):
 @allure.story("설정 탭 부하 테스트")
 @allure.title("[FHC-094] 설정 탭 부하 테스트")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_094_tab_load(settings_load):
+def test_tab_load(settings_load):
     """
     [FHC-094] 설정 탭 부하 테스트
 
