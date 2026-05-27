@@ -1,4 +1,4 @@
-from config.selenium_imports import By, EC
+from config.selenium_imports import By, EC, WebDriverWait
 
 from pages.settings.settings_general_page import SettingsPage
 
@@ -17,21 +17,29 @@ class SettingsModelPage(SettingsPage):
 
     def _wait_toast_gone(self):
         try:
+            WebDriverWait(self.driver, 3).until(
+                EC.visibility_of_element_located(self._TOAST_ALERT)
+            )
+        except Exception:
+            return
+        try:
             self.wait_until_invisible(self._TOAST_ALERT, 5)
         except Exception:
             pass
 
+    _TOGGLE = (By.CSS_SELECTOR, 'input.MuiSwitch-input[type="checkbox"]')
+
     def activate_disabled_model(self):
         self._wait_toast_gone()
-        checkboxes = self.driver.find_elements(By.CSS_SELECTOR, 'input[type="checkbox"]')
-        for checkbox in checkboxes:
-            if not checkbox.is_selected():
+        self.wait.until(EC.presence_of_element_located(self._TOGGLE))
+        toggles = self.driver.find_elements(*self._TOGGLE)
+        for toggle in toggles:
+            if not self.driver.execute_script("return arguments[0].checked", toggle):
                 try:
-                    list_item = checkbox.find_element(By.XPATH, './ancestor::li[contains(@class,"MuiListItem")]')
-                    name_el = list_item.find_element(By.CSS_SELECTOR, 'span.MuiListItemText-primary')
-                    model_name = name_el.text
-                    self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
-                    self.js_click(checkbox)
+                    list_item = toggle.find_element(By.XPATH, './ancestor::li[contains(@class,"MuiListItem")]')
+                    model_name = list_item.find_element(By.CSS_SELECTOR, 'span.MuiListItemText-primary').text
+                    self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", toggle)
+                    self.js_click(toggle)
                     return model_name
                 except Exception:
                     continue
@@ -39,15 +47,15 @@ class SettingsModelPage(SettingsPage):
 
     def deactivate_active_model(self):
         self._wait_toast_gone()
-        checkboxes = self.driver.find_elements(By.CSS_SELECTOR, 'input[type="checkbox"]')
-        for checkbox in reversed(checkboxes):
-            if checkbox.is_selected():
+        self.wait.until(EC.presence_of_element_located(self._TOGGLE))
+        toggles = self.driver.find_elements(*self._TOGGLE)
+        for toggle in reversed(toggles):
+            if self.driver.execute_script("return arguments[0].checked", toggle):
                 try:
-                    list_item = checkbox.find_element(By.XPATH, './ancestor::li[contains(@class,"MuiListItem")]')
-                    name_el = list_item.find_element(By.CSS_SELECTOR, 'span.MuiListItemText-primary')
-                    model_name = name_el.text
-                    self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
-                    self.js_click(checkbox)
+                    list_item = toggle.find_element(By.XPATH, './ancestor::li[contains(@class,"MuiListItem")]')
+                    model_name = list_item.find_element(By.CSS_SELECTOR, 'span.MuiListItemText-primary').text
+                    self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", toggle)
+                    self.js_click(toggle)
                     return model_name
                 except Exception:
                     continue
