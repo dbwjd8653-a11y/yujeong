@@ -49,7 +49,7 @@ def non_admin_login():
 @allure.story("비관리자 설정 접근 불가 확인")
 @allure.title("[FHC-075] 조직 구성원 추가 가능 여부 테스트")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_075_non_admin_cannot_access_settings(non_admin_login):
+def test_non_admin_cannot_access_settings(non_admin_login):
     """
     [FHC-075] 조직 구성원 추가 가능 여부 테스트
 
