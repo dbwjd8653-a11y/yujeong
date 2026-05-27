@@ -108,6 +108,10 @@ def test_behavior_happy_case(behavior):
         assert behavior.is_result_button_visible(), \
             "키워드 저장 후 '생성 결과 받기' 버튼이 표시되지 않았습니다"
 
+    with allure.step("[FHC-043] '학생 추가' 버튼 클릭"):
+        logger.info("[FHC-043] 학생 추가 버튼 클릭 시작")
+        behavior.trigger_generation()
+
     with allure.step("[FHC-044] AI 생성 및 결과 파일 다운로드"):
         logger.info("[FHC-044] AI 생성 및 다운로드 시작")
         result = behavior.download_result(DOWNLOAD_DIR)

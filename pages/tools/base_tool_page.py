@@ -116,11 +116,9 @@ class BaseToolPage(BasePage):
         submit.click()
         self.wait.until(EC.staleness_of(submit))
         # 리다이렉트가 qaproject로 완전히 완료될 때까지 추가 대기
-        WebDriverWait(self.driver, 10).until(
-            EC.url_contains("qaproject.elice.io")
-        )
+        self.wait.until(EC.url_contains("qaproject.elice.io"))
         # LNB 링크가 렌더링될 때까지 대기 — 세션 쿠키 완전히 설정된 후에만 나타남
-        WebDriverWait(self.driver, 10).until(
+        self.wait.until(
             EC.presence_of_element_located(
                 (By.XPATH, "//a[contains(@href,'ai-helpy-chat')]")
             )

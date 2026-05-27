@@ -90,13 +90,12 @@ def test_FHC_097_ai_tool_load(ai_tool_load):
         if REQUEST_TEXT:
             page.enter_request_text(REQUEST_TEXT)
 
-    with allure.step("[FHC-044] AI 생성 트리거"):
-        page.trigger_generation()
-        page.search_student(NAME_TEXT)
-
     for i in range(1, REPEAT + 1):
         if i > 1:
             time.sleep(INTERVAL)
+        with allure.step(f"[FHC-044] AI 생성 트리거 ({i}/{REPEAT})"):
+            page.trigger_generation()
+            page.search_student(NAME_TEXT)
         logger.info(f"[{i}/{REPEAT}] 생성 결과 받기 시작")
         start = time.time()
         result = page.download_result(DOWNLOAD_DIR)

@@ -5,7 +5,6 @@ import pytest
 import allure
 
 from pages.chat.chat_page import ChatPage
-from pages.tools.base_tool_page import BaseToolPage
 
 TEST_MESSAGE   = "오늘 마실 차를 추천해 주세요"
 SEARCH_KEYWORD = "오늘"
@@ -19,17 +18,16 @@ pytestmark = [
 # ── fixture ────────────────────────────────────────────────────────
 
 @pytest.fixture(scope="module")
-def chat(tools_driver_module):
+def chat(login_module):
     """
     ChatPage fixture (모듈 공유)
 
-    전제: tools_driver_module fixture로 로그인 완료 상태
+    전제: login_module fixture로 로그인 완료 상태
     단계:
-      1. tools_driver_module에서 driver 수신 → ChatPage 반환
+      1. login_module에서 driver 수신 → ChatPage 반환
     """
-    page = ChatPage(tools_driver_module)
-    base = BaseToolPage(tools_driver_module)
-    base.login()
+    driver, wait = login_module
+    page = ChatPage(driver)
     page.open()
     return page
 
