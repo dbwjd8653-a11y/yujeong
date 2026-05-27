@@ -252,7 +252,10 @@ def tools_driver():
 
 
 # ── pytest 종료 시 Discord 결과 전송 ──────────────────────────────
-DISCORD_WEBHOOK_URL = "https://discordapp.com/api/webhooks/1506913724663992330/fFs7F0fWTaAADPwpaRXfTE0MkPPlLVuYKVERtR8qwdBfpJhSBwRyCbv8aYHj-5CfrJSV"
+DISCORD_WEBHOOK_URL = os.environ.get(
+    "DISCORD_WEBHOOK_URL",
+    "https://discordapp.com/api/webhooks/1506913724663992330/fFs7F0fWTaAADPwpaRXfTE0MkPPlLVuYKVERtR8qwdBfpJhSBwRyCbv8aYHj-5CfrJSV",
+)
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
     if not config.getoption("--discord", default=False):
