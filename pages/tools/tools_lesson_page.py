@@ -72,6 +72,9 @@ class LessonPlanPage(BaseToolPage):
         "//p[contains(., '입력하신 내용 기반으로 수업 지도안을 생성했습니다')]",
     )
 
+    def tools_menu(self):
+        self.click_tool_menu(self.TOOL_NAME)
+
     # ========== 학교급 선택 ==========
 
     def select_school_level(self, school_level):
