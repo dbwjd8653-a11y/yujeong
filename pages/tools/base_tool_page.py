@@ -478,13 +478,32 @@ class BaseToolPage(BasePage):
 
     def is_generated(self, timeout=DEFAULT_WAIT) -> bool:
         """
-        AI 생성 완료 확인
+        AI 생성 완료 확인 (최초 생성 및 재생성 모두 대응)
 
-        output 탭패널에 '생성했습니다' 텍스트가 나타나면 완료로 판단한다.
-        에러로 생성이 중단된 경우 해당 텍스트가 나타나지 않으므로 False를 반환한다.
+        단계:
+          1. 기존 SUCCESS_MESSAGE 요소 포착
+             - 있으면 staleness_of로 DOM 제거 대기 (재생성 시작 확인)
+             - 없으면 최초 생성이므로 스킵
+          2. 새 SUCCESS_MESSAGE 출현 대기 (생성 완료 확인)
+
+        에러로 생성 중단 시 SUCCESS_MESSAGE 미출현 → timeout → False 반환
         """
+        deadline = time.time() + timeout
+
+        def secs_left():
+            return max(1, deadline - time.time())
+
+        existing = self.driver.find_elements(*self.SUCCESS_MESSAGE)
+        if existing:
+            try:
+                WebDriverWait(self.driver, secs_left()).until(
+                    EC.staleness_of(existing[0])
+                )
+            except TimeoutException:
+                return False
+
         try:
-            WebDriverWait(self.driver, timeout).until(
+            WebDriverWait(self.driver, secs_left()).until(
                 EC.visibility_of_element_located(self.SUCCESS_MESSAGE)
             )
             return True
