@@ -1,5 +1,5 @@
 # tests/settings/test_settings_member.py
-# 설정 > 구성원 관리 탭 E2E 테스트 — FHC-072 ~ FHC-073
+# 설정 > 구성원 관리 탭 E2E 테스트 — FHC-073 ~ FHC-074
 
 import pytest
 import logging
@@ -37,49 +37,46 @@ def settings_member(login_module):
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
 @allure.story("토큰 한도 토글 비활성화")
-@allure.title("[FHC-072] 토큰 한도 토글 비활성화 테스트")
+@allure.title("[FHC-073] 토큰 한도 토글 비활성화 테스트")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_072_token_limit_disable(settings_member):
+def test_token_limit_disable(settings_member):
     """
-    [FHC-072] 토큰 한도 토글 비활성화 테스트
+    [FHC-073] 토큰 한도 토글 비활성화 테스트
 
     전제: 헬피챗 접속, 로그인 완료 (관리자 계정), 오른쪽 상단 톱니바퀴 '설정' 클릭 > '설정' 클릭,
           '구성원 관리' 탭 클릭, '토큰 한도' 토글 활성화
     단계:
       1. '구성원 토큰 관리'에서 '토큰 한도' 토글 비활성화
       2. 왼쪽 하단에 '저장' 버튼 클릭
-      3. '토큰 한도가 저장되었습니다.' 알림창 활성화
     기대: '토큰 한도가 저장되었습니다.' 알림창 활성화됨
     """
-    logger.info("[FHC-072] 토큰 한도 토글 비활성화 시작")
+    logger.info("[FHC-073] 토큰 한도 토글 비활성화 시작")
     settings_member.set_token_limit_toggle(activate=True)
     settings_member.set_token_limit_toggle(activate=False)
     toggle = settings_member.get_toggle()
     assert not settings_member.is_toggle_checked(toggle), "토큰 한도 토글 비활성화 실패"
     settings_member.save_and_verify_toast()
-    logger.info("[FHC-072] 토큰 한도 토글 비활성화 완료")
+    logger.info("[FHC-073] 토큰 한도 토글 비활성화 완료")
 
 
 @allure.story("토큰 한도 토글 활성화")
-@allure.title("[FHC-073] 토큰 한도 토글 활성화 테스트")
+@allure.title("[FHC-074] 토큰 한도 토글 활성화 테스트")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_073_token_limit_enable(settings_member):
+def test_token_limit_enable(settings_member):
     """
-    [FHC-073] 토큰 한도 토글 활성화 테스트
+    [FHC-074] 토큰 한도 토글 활성화 테스트
 
     전제: 헬피챗 접속, 로그인 완료 (관리자 계정), 오른쪽 상단 톱니바퀴 '설정' 클릭 > '설정' 클릭,
           '구성원 관리' 탭 클릭, '토큰 한도' 토글 비활성화
     단계:
       1. '구성원 토큰 관리'에서 '토큰 한도' 토글 활성화
       2. 왼쪽 하단에 '저장' 버튼 클릭
-      3. '토큰 한도가 저장되었습니다.' 알림창 활성화
     기대: '토큰 한도가 저장되었습니다.' 알림창 활성화됨
     """
-    logger.info("[FHC-073] 토큰 한도 토글 활성화 시작")
+    logger.info("[FHC-074] 토큰 한도 토글 활성화 시작")
     settings_member.set_token_limit_toggle(activate=False)
     settings_member.set_token_limit_toggle(activate=True)
     toggle = settings_member.get_toggle()
     assert settings_member.is_toggle_checked(toggle), "토큰 한도 토글 활성화 실패"
     settings_member.save_and_verify_toast()
-    logger.info("[FHC-073] 토큰 한도 토글 활성화 완료")
-
+    logger.info("[FHC-074] 토큰 한도 토글 활성화 완료")
