@@ -478,29 +478,34 @@ class BaseToolPage(BasePage):
         """
         AI 생성 완료 확인 (최초 생성 및 재생성 모두 대응)
 
-        SUCCESS_MESSAGE가 정의된 서브클래스(PPT·수업지도안 등)는 SUCCESS_MESSAGE를,
-        None인 경우(세부특기·행동특성 등)는 CHECK_ICON을 완료 지표로 사용한다.
-        각 단계가 timeout 예산을 공유해 재생성 후 timeout 이내 완료 여부를 측정한다.
+        생성 버튼이 disabled → enabled 로 전환되는 것을 완료 지표로 사용한다.
+        텍스트·아이콘 기반 지표는 UI 변경에 취약하므로 버튼 상태로 대체한다.
+
+        단계:
+          1. 생성 버튼 비활성화 대기 (생성 시작 확인, 최대 SHORT_WAIT)
+          2. 생성 버튼 재활성화 대기 (생성 완료 확인, 남은 timeout 내)
         """
-        completion = self.SUCCESS_MESSAGE if self.SUCCESS_MESSAGE is not None else self.CHECK_ICON
+        if self.GENERATE_BTN is None:
+            raise NotImplementedError(f"{self.__class__.__name__}에 GENERATE_BTN이 정의되지 않았습니다")
+
         deadline = time.time() + timeout
 
         def secs_left():
             return max(1, deadline - time.time())
 
+        # 1. 버튼 비활성화 대기 — 생성이 시작됐는지 확인 (타이밍 이슈면 무시)
         try:
             WebDriverWait(self.driver, SHORT_WAIT).until(
-                EC.visibility_of_element_located(completion)
+                lambda d: not d.find_element(*self.GENERATE_BTN).is_enabled()
             )
-            WebDriverWait(self.driver, secs_left()).until(
-                EC.invisibility_of_element_located(completion)
-            )
-        except TimeoutException:
+        except Exception:
             pass
-        WebDriverWait(self.driver, secs_left()).until(
-            EC.invisibility_of_element_located(self.SPINNER)
-        )
-        result = WebDriverWait(self.driver, secs_left()).until(
-            EC.visibility_of_element_located(completion)
-        )
-        return result.is_displayed()
+
+        # 2. 버튼 재활성화 대기 — 생성 완료 확인
+        try:
+            WebDriverWait(self.driver, secs_left()).until(
+                EC.element_to_be_clickable(self.GENERATE_BTN)
+            )
+            return True
+        except TimeoutException:
+            return False
