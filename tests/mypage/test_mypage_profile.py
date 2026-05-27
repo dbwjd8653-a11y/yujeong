@@ -40,7 +40,7 @@ class TestMyPageProfileHappyPath:
   @allure.story("프로필 드롭다운 메뉴 확인")
   @allure.title("[FHC-076] 프로필 드롭다운 메뉴 항목 확인")
   @allure.severity(allure.severity_level.NORMAL)
-  def test_FHC_076_profile_dropdown_menu(self, mypage):
+  def test_profile_dropdown_menu(self, mypage):
       """
       [FHC-076] 프로필 드롭다운 메뉴 항목 확인
 
@@ -61,7 +61,7 @@ class TestMyPageProfileHappyPath:
 
   @allure.title("[FHC-077] 계정 관리 페이지 이동 확인")
   @allure.severity(allure.severity_level.NORMAL)
-  def test_FHC_077_navigate_to_account_management(self, mypage):
+  def test_navigate_to_account_management(self, mypage):
       """
       [FHC-077] 계정 관리 페이지 이동 확인
 
@@ -79,7 +79,7 @@ class TestMyPageProfileHappyPath:
 
   @allure.title("[FHC-078] 프로필 이미지 변경 확인")
   @allure.severity(allure.severity_level.NORMAL)
-  def test_FHC_078_change_profile_image(self, mypage):
+  def test_change_profile_image(self, mypage):
       """
       [FHC-078] 프로필 이미지 변경 확인
 
@@ -102,7 +102,7 @@ class TestMyPageProfileHappyPath:
 
   @allure.title("[FHC-079] 프로필 이미지 제거 확인")
   @allure.severity(allure.severity_level.NORMAL)
-  def test_FHC_079_remove_profile_image(self, mypage):
+  def test_remove_profile_image(self, mypage):
       """
       [FHC-079] 프로필 이미지 제거 확인
 

@@ -47,7 +47,7 @@ class TestSignupHappyPath:
     
   @allure.title("[FHC-001] 회원가입 페이지 이동 확인")
   @allure.severity(allure.severity_level.NORMAL)
-  def test_FHC_001_signup_page_elements(self, signup):
+  def test_signup_page_elements(self, signup):
       """
       [FHC-001] 회원가입 페이지 이동 확인
 
@@ -119,7 +119,7 @@ class TestSignupNegative:
 
     @allure.title("[FHC-004] 이메일 유효성 검사")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_FHC_004_signup_invalid_email(self, signup):
+    def test_signup_invalid_email(self, signup):
         """
         [FHC-004] 이메일 유효성 검사
         단계: 
@@ -140,7 +140,7 @@ class TestSignupNegative:
 
     @allure.title("[FHC-005] 이름 유효성 검사")
     @allure.severity(allure.severity_level.NORMAL)
-    def test_FHC_005_signup_invalid_name(self, signup):
+    def test_signup_invalid_name(self, signup):
         """
         [FHC-005] 이름 유효성 검사
         단계:
