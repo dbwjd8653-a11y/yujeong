@@ -1,7 +1,10 @@
+import logging
 import os
 
 from config.selenium_imports import By, EC
 from pages.tools.base_tool_page import BaseToolPage
+
+logger = logging.getLogger(__name__)
 
 
 class LessonPlanPage(BaseToolPage):
@@ -89,7 +92,7 @@ class LessonPlanPage(BaseToolPage):
             )
         ).click()
         self.wait_backdrop_gone()
-        print(f"학교급 '{school_level}' 선택 완료")
+        self.logger.info(f"학교급 '{school_level}' 선택 완료")
 
     # ========== 필수 입력 ==========
 
@@ -153,7 +156,7 @@ class LessonPlanPage(BaseToolPage):
 
     @staticmethod
     def get_current_path():
-        print("current path is ", os.getcwd())
+        logger.info(f"current path is {os.getcwd()}")
         return os.getcwd()
 
     def upload_reference(self, file_path):

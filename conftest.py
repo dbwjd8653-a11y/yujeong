@@ -146,7 +146,7 @@ def pytest_runtest_makereport(item, call):
                 screenshot = driver.get_screenshot_as_png()
                 attach_image_to_jira(issue_key, screenshot)
             except Exception as e:
-                print(f"스크린샷 첨부 실패: {e}")
+                logger.warning(f"스크린샷 첨부 실패: {e}")
 
 
 # ── 테스트 실행 순서 정렬 (FHC 번호 오름차순) ─────────────────────
