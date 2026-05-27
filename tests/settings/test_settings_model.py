@@ -51,6 +51,9 @@ def test_activate_model(settings_model):
     """
     logger.info("[FHC-070] 비활성화 모델 활성화 시작")
     model_name = settings_model.activate_disabled_model()
+    if model_name is None:
+        settings_model.deactivate_active_model()
+        model_name = settings_model.activate_disabled_model()
     assert model_name is not None, "비활성화 모델이 없음"
     toast = settings_model.get_toast_message()
     assert toast == "모델이 활성화되었습니다.", f"알림창 메시지 불일치: '{toast}'"

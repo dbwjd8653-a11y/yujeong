@@ -15,7 +15,6 @@ class SettingsMemberPage(SettingsPage):
     def navigate_to_member_tab(self):
         self.wait.until(EC.element_to_be_clickable(self._MEMBER_TAB)).click()
         self.wait.until(EC.url_contains("/ai-helpy-chat/admin/users"))
-        time.sleep(3)
 
     def get_toggle(self):
         toggle = self.wait.until(EC.presence_of_element_located(self._TOKEN_LIMIT_TOGGLE))
