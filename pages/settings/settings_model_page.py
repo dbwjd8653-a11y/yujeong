@@ -1,4 +1,4 @@
-from config.selenium_imports import By, EC, WebDriverWait
+from config.selenium_imports import By, EC
 
 from selenium.webdriver.common.keys import Keys
 
@@ -15,21 +15,17 @@ class SettingsModelPage(SettingsPage):
 
     def navigate_to_models_tab(self):
         try:
-            WebDriverWait(self.driver, 5).until(
-                EC.invisibility_of_element_located(self._TOAST_ALERT)
-            )
+            self.wait_until_invisible(self._TOAST_ALERT, 5)
         except Exception:
             pass
         tab = self.wait.until(EC.element_to_be_clickable(self._MODELS_TAB))
-        self.driver.execute_script("arguments[0].click();", tab)
+        self.js_click(tab)
         self.wait.until(EC.url_contains("/ai-helpy-chat/admin/models"))
         self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'li.MuiListItem-root')))
 
     def _wait_toast_gone(self):
         try:
-            WebDriverWait(self.driver, 5).until(
-                EC.invisibility_of_element_located(self._TOAST_ALERT)
-            )
+            self.wait_until_invisible(self._TOAST_ALERT, 5)
         except Exception:
             pass
 
@@ -43,7 +39,7 @@ class SettingsModelPage(SettingsPage):
                     name_el = list_item.find_element(By.CSS_SELECTOR, 'span.MuiListItemText-primary')
                     model_name = name_el.text
                     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
-                    self.driver.execute_script("arguments[0].click();", checkbox)
+                    self.js_click(checkbox)
                     return model_name
                 except Exception:
                     continue
@@ -59,7 +55,7 @@ class SettingsModelPage(SettingsPage):
                     name_el = list_item.find_element(By.CSS_SELECTOR, 'span.MuiListItemText-primary')
                     model_name = name_el.text
                     self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", checkbox)
-                    self.driver.execute_script("arguments[0].click();", checkbox)
+                    self.js_click(checkbox)
                     return model_name
                 except Exception:
                     continue
@@ -83,5 +79,4 @@ class SettingsModelPage(SettingsPage):
         self.driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.ESCAPE)
 
     def get_toast_message(self):
-        el = self.wait.until(EC.visibility_of_element_located(self._TOAST_ALERT))
-        return el.text
+        return self.wait_for_visible(self._TOAST_ALERT).text

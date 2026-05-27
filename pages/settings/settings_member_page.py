@@ -1,6 +1,6 @@
 import time
 
-from config.selenium_imports import By, EC, WebDriverWait
+from config.selenium_imports import By, EC
 
 from pages.settings.settings_general_page import SettingsPage
 
@@ -51,18 +51,16 @@ class SettingsMemberPage(SettingsPage):
     def set_token_limit_toggle(self, activate: bool):
         toggle = self.get_toggle()
         if self.is_toggle_checked(toggle) != activate:
-            self.driver.execute_script("arguments[0].click();", toggle)
+            self.js_click(toggle)
             time.sleep(1)
 
     def save_and_verify_toast(self):
         try:
-            WebDriverWait(self.driver, 5).until(
-                EC.invisibility_of_element_located(self._TOAST)
-            )
+            self.wait_until_invisible(self._TOAST, 5)
         except Exception:
             pass
         save_btn = self.wait.until(EC.element_to_be_clickable(self._SAVE_BTN))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", save_btn)
-        self.driver.execute_script("arguments[0].click();", save_btn)
-        toast = self.wait.until(EC.visibility_of_element_located(self._TOAST))
+        self.js_click(save_btn)
+        toast = self.wait_for_visible(self._TOAST)
         assert "저장되었습니다" in toast.text, f"저장 알림창 메시지 불일치: '{toast.text}'"
