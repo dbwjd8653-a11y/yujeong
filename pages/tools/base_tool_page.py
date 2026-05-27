@@ -96,10 +96,12 @@ class BaseToolPage(BasePage):
 
     STOP_BTN          = (By.XPATH, "//button[.//*[@data-testid='stopIcon']]")  # 생성 중단 버튼
     SPINNER           = (By.CSS_SELECTOR, "span[role='progressbar']")          # 로딩 스피너
-    CHECK_ICON        = (By.CSS_SELECTOR, "[data-testid='circle-checkIcon']")  # 생성 완료 체크 아이콘
     GENERATE_BTN      = None  # 서브클래스에서 반드시 정의
     REGEN_CONFIRM_BTN = None  # 서브클래스에서 정의 시 해당 로케이터 사용, None이면 텍스트 기반 폴백
-    SUCCESS_MESSAGE   = None  # 서브클래스에서 정의 시 is_generated() 완료 지표로 사용, None이면 CHECK_ICON 사용
+    SUCCESS_MESSAGE   = (                                                        # 생성 완료 텍스트 — 모든 도구 공통
+        By.XPATH,
+        "//div[@role='tabpanel'][@data-panel='output']//p[contains(., '생성했습니다')]",
+    )
 
     # ========== 초기화 / 로그인 ==========
 
@@ -478,29 +480,32 @@ class BaseToolPage(BasePage):
         """
         AI 생성 완료 확인 (최초 생성 및 재생성 모두 대응)
 
-        SUCCESS_MESSAGE가 정의된 서브클래스(PPT·수업지도안 등)는 SUCCESS_MESSAGE를,
-        None인 경우(세부특기·행동특성 등)는 CHECK_ICON을 완료 지표로 사용한다.
-        각 단계가 timeout 예산을 공유해 재생성 후 timeout 이내 완료 여부를 측정한다.
+        단계:
+          1. 기존 SUCCESS_MESSAGE 요소 포착
+             - 있으면 staleness_of로 DOM 제거 대기 (재생성 시작 확인)
+             - 없으면 최초 생성이므로 스킵
+          2. 새 SUCCESS_MESSAGE 출현 대기 (생성 완료 확인)
+
+        에러로 생성 중단 시 SUCCESS_MESSAGE 미출현 → timeout → False 반환
         """
-        completion = self.SUCCESS_MESSAGE if self.SUCCESS_MESSAGE is not None else self.CHECK_ICON
         deadline = time.time() + timeout
 
         def secs_left():
             return max(1, deadline - time.time())
 
+        existing = self.driver.find_elements(*self.SUCCESS_MESSAGE)
+        if existing:
+            try:
+                WebDriverWait(self.driver, secs_left()).until(
+                    EC.staleness_of(existing[0])
+                )
+            except TimeoutException:
+                return False
+
         try:
-            WebDriverWait(self.driver, SHORT_WAIT).until(
-                EC.visibility_of_element_located(completion)
-            )
             WebDriverWait(self.driver, secs_left()).until(
-                EC.invisibility_of_element_located(completion)
+                EC.visibility_of_element_located(self.SUCCESS_MESSAGE)
             )
+            return True
         except TimeoutException:
-            pass
-        WebDriverWait(self.driver, secs_left()).until(
-            EC.invisibility_of_element_located(self.SPINNER)
-        )
-        result = WebDriverWait(self.driver, secs_left()).until(
-            EC.visibility_of_element_located(completion)
-        )
-        return result.is_displayed()
+            return False
