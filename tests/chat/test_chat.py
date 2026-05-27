@@ -28,7 +28,6 @@ def chat(login_module):
     """
     driver, wait = login_module
     page = ChatPage(driver)
-    page.open()
     return page
 
 
