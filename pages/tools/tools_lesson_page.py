@@ -222,15 +222,6 @@ class LessonPlanPage(BaseToolPage):
         except Exception:
             return False
 
-    def click_generate(self):
-        btn = self.wait.until(EC.element_to_be_clickable(self.GENERATE_BTN))
-        self.js_click(btn)
-        try:
-            confirm = self.wait.until(EC.element_to_be_clickable(self.REGEN_CONFIRM_BTN))
-            self.js_click(confirm)
-        except Exception:
-            pass
-
     def click_generate_and_cancel(self):
         try:
             btn = self.wait.until(EC.element_to_be_clickable(self.GENERATE_BTN))
