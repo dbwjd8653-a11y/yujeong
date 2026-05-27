@@ -47,7 +47,7 @@ def agent_detail_page(logged_in_driver):
 @allure.story("에이전트 탐색 탭 확인")
 @allure.title("[FHC-065] 에이전트 탐색 탭 확인")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_065_agents_tab_click(agents_page):
+def test_agents_tab_click(agents_page):
     """
     [FHC-065] 에이전트 탐색 탭 확인
 
@@ -67,7 +67,7 @@ def test_FHC_065_agents_tab_click(agents_page):
 @allure.story("에이전트 기능 동작 확인")
 @allure.title("[FHC-066] 에이전트 기능 동작 확인")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_066_agent_features_displayed(agents_page, agent_detail_page):
+def test_agent_features_displayed(agents_page, agent_detail_page):
     """
     [FHC-066] 에이전트 기능 동작 확인
 
@@ -87,7 +87,7 @@ def test_FHC_066_agent_features_displayed(agents_page, agent_detail_page):
 @allure.story("에이전트 대화창 확인")
 @allure.title("[FHC-067] 에이전트 대화창 확인")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_067_agent_chat_via_button(agents_page, agent_detail_page):
+def test_agent_chat_via_button(agents_page, agent_detail_page):
     """
     [FHC-067] 에이전트 대화창 확인
 

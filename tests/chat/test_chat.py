@@ -37,7 +37,7 @@ def chat(login_module):
 @allure.story("새 대화 탭 확인")
 @allure.title("[FHC-022] '새 대화' 탭 확인")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_022_new_chat_tab_click(chat):
+def test_new_chat_tab_click(chat):
     """
     [FHC-022] '새 대화' 탭 확인
 
@@ -56,7 +56,7 @@ def test_FHC_022_new_chat_tab_click(chat):
 @allure.story("AI 대화 기능 테스트")
 @allure.title("[FHC-023] AI 대화 기능 테스트")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_023_ai_chat_response(chat):
+def test_ai_chat_response(chat):
     """
     [FHC-023] AI 대화 기능 테스트
 
@@ -73,7 +73,7 @@ def test_FHC_023_ai_chat_response(chat):
 @allure.story("검색 탭 확인")
 @allure.title("[FHC-024] '검색' 탭 확인")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_024_search_tab_click(chat):
+def test_search_tab_click(chat):
     """
     [FHC-024] '검색' 탭 확인
 
@@ -90,7 +90,7 @@ def test_FHC_024_search_tab_click(chat):
 @allure.story("검색 기능 테스트")
 @allure.title("[FHC-025] 검색 기능 테스트")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_025_search_keyword_results(chat):
+def test_search_keyword_results(chat):
     """
     [FHC-025] 검색 기능 테스트
 
@@ -107,7 +107,7 @@ def test_FHC_025_search_keyword_results(chat):
 @allure.story("검색 기존 대화 선택")
 @allure.title("[FHC-026] '검색' 기능 — 기존 대화 선택")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_026_search_select_existing_chat(chat):
+def test_search_select_existing_chat(chat):
     """
     [FHC-026] '검색' 기능 — 기존 대화 선택
 
@@ -124,7 +124,7 @@ def test_FHC_026_search_select_existing_chat(chat):
 @allure.story("대화 목록 확인")
 @allure.title("[FHC-027] '대화 목록' 확인")
 @allure.severity(allure.severity_level.NORMAL)
-def test_FHC_027_lnb_chat_list_click(chat):
+def test_lnb_chat_list_click(chat):
     """
     [FHC-027] '대화 목록' 확인
 
