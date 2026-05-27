@@ -5,6 +5,7 @@ import logging
 import time
 
 from config.selenium_imports import By, EC, WebDriverWait
+from config.login_helpers import close_token_banner
 
 class BasePage:
 
@@ -20,6 +21,7 @@ class BasePage:
 
     def go(self, url):
         self.driver.get(url)
+        close_token_banner(self.driver, self.wait)
 
     # ========== 클릭 유틸리티 ==========
 

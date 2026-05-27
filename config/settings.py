@@ -20,7 +20,7 @@ SIGNUP_URL = (
 )
 
 # ── 대기 시간 (초) ──────────────────────────────────────────────────
-SHORT_WAIT   = 5
+SHORT_WAIT   = 2
 DEFAULT_WAIT = 10
 LONG_WAIT    = 20
 

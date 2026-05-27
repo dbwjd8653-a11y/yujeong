@@ -147,6 +147,7 @@ class BaseToolPage(BasePage):
         self.js_click(tool_btn)
         self.wait.until(EC.url_contains("ai-helpy-chat/tools/"))
         self.logger.info(f"'{tool_name}' 클릭 완료")
+        close_token_banner(self.driver, self.wait)
 
     def setup_tool(self):
         """도구 메뉴 진입 후 생성 중이면 중단 (서브클래스의 tools_menu() 사용)"""
