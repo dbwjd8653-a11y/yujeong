@@ -51,6 +51,8 @@ def pytest_sessionstart(session):
 
 def pytest_sessionfinish(session, exitstatus):
     import subprocess
+    subprocess.run(["taskkill", "/F", "/IM", "firefox.exe"], capture_output=True)
+    subprocess.run(["taskkill", "/F", "/IM", "geckodriver.exe"], capture_output=True)
     subprocess.run(
         ["allure", "generate", "allure-results", "-o", "allure-report", "--clean"],
         capture_output=True, timeout=60, shell=True
@@ -252,7 +254,10 @@ def tools_driver():
 
 
 # ── pytest 종료 시 Discord 결과 전송 ──────────────────────────────
-DISCORD_WEBHOOK_URL = "https://discordapp.com/api/webhooks/1506913724663992330/fFs7F0fWTaAADPwpaRXfTE0MkPPlLVuYKVERtR8qwdBfpJhSBwRyCbv8aYHj-5CfrJSV"
+DISCORD_WEBHOOK_URL = os.environ.get(
+    "DISCORD_WEBHOOK_URL",
+    "https://discordapp.com/api/webhooks/1506913724663992330/fFs7F0fWTaAADPwpaRXfTE0MkPPlLVuYKVERtR8qwdBfpJhSBwRyCbv8aYHj-5CfrJSV",
+)
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
     if not config.getoption("--discord", default=False):

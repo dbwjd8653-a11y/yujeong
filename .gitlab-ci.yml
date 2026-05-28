@@ -1,10 +1,74 @@
-notify_discord:
-  stage: .post
+stages:
+  - test
+  - deploy
+  - notify
+
+variables:
+  GIT_SSL_NO_VERIFY: "true"
+  PYTHONIOENCODING: "utf-8"
+
+# ─────────────────────────────────────────────────────────────
+# 1) 테스트 실행
+# ─────────────────────────────────────────────────────────────
+run_tests:
+  stage: test
+  variables:
+    GIT_STRATEGY: fetch
+    GIT_CLEAN_FLAGS: -ffdx
   script:
-    - |
-      curl -X POST "$DISCORD_WEBHOOK_URL" \
-        -H "Content-Type: application/json" \
-        -d "{\"content\": \"✅ **${CI_PROJECT_NAME}** - \`${CI_COMMIT_REF_NAME}\` 브랜치에 머지 완료\\n- 작성자: ${GITLAB_USER_NAME}\\n- 커밋: ${CI_COMMIT_TITLE}\"}"
+    - python -m pytest tests/ --jira --override-ini="addopts=-v -s --tb=short --alluredir=allure-results --clean-alluredir --continue-on-collection-errors" -m "not slow and not xfail"
+  artifacts:
+    when: always
+    paths:
+      - allure-results/
+    expire_in: 1 week
   rules:
-    - if: $CI_COMMIT_BRANCH == "develop"
-      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH =~ /^test/'
+
+# ─────────────────────────────────────────────────────────────
+# 2) Allure 리포트 생성 + GitLab Pages 배포
+#    - job 이름이 반드시 "pages" 여야 GitLab Pages로 배포됨
+#    - allure-history 캐시로 트렌드/히스토리 보존
+# ─────────────────────────────────────────────────────────────
+pages:
+  stage: deploy
+  needs:
+    - job: run_tests
+      artifacts: true
+  when: always
+  script:
+    - python scripts/ci_allure.py
+  artifacts:
+    paths:
+      - public/
+    expire_in: 30 days
+  cache:
+    key: "allure-history-$CI_COMMIT_BRANCH"
+    paths:
+      - allure-history/
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH =~ /^test/'
+
+# ─────────────────────────────────────────────────────────────
+# 3) Discord 알림
+#    - DISCORD_WEBHOOK_URL: GitLab CI/CD 변수에 등록 필요
+#    - 성공/실패 관계없이 항상 실행
+# ─────────────────────────────────────────────────────────────
+notify_discord:
+  stage: notify
+  needs:
+    - job: run_tests
+      artifacts: false
+    - job: pages
+      artifacts: true
+  when: always
+  script:
+    - python scripts/ci_notify.py
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH =~ /^test/'
