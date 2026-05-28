@@ -45,8 +45,10 @@ class AgentsPage(BasePage):
     def navigate_to_base(self):
         """메인 채팅 페이지로 이동 후 페이지 로드 대기 (LNB 탭 클릭 테스트 전제 조건)"""
         from config.settings import BASE_URL
+        from config.login_helpers import close_token_banner
         self.driver.get(BASE_URL)
         self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+        close_token_banner(self.driver, self.wait)
 
     # ========== LNB 탭 클릭 ==========
 
@@ -63,7 +65,9 @@ class AgentsPage(BasePage):
         """에이전트 목록(virtuoso 그리드)이 화면에 표시되는지 확인"""
         try:
             self.wait.until(EC.presence_of_element_located(self.AGENT_GRID))
-            cards = self.driver.find_elements(*self.AGENT_CARDS)
+            cards = WebDriverWait(self.driver, 15).until(
+                EC.presence_of_all_elements_located(self.AGENT_CARDS)
+            )
             self.logger.info(f"에이전트 목록 표시 확인 (카드 {len(cards)}개)")
             return len(cards) > 0
         except Exception:

@@ -12,8 +12,8 @@ class MyPage07(MyPage):
     # ========== Locators ==========
     QAPROJECT_LINK = (By.XPATH,
         "//a[contains(@href,'qaproject.elice.io')]"
-        " | //*[contains(text(),'qaproject.elice.io') or contains(text(),'qa 프로젝트')]"
-        "/ancestor::a"
+        " | //*[contains(normalize-space(),'qaproject.elice.io 가기')]"
+        "/ancestor-or-self::a[1]"
     )
     HELP_CENTER_LINK = (By.XPATH,
         "//a[contains(@href,'helpcenter.elice.io')]"
