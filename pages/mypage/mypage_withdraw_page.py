@@ -131,8 +131,7 @@ class MyPage06(MyPage):
             EC.visibility_of_element_located(self.WITHDRAW_CONFIRM_INPUT)
         )
         confirm_text = f"Delete {email}"
-        input_el.clear()
-        input_el.send_keys(confirm_text)
+        self.js_input(input_el, confirm_text)
         self.logger.info(f"탈퇴 확인 문구 입력 완료: {confirm_text}")
 
     def submit_withdraw(self):
@@ -174,16 +173,13 @@ class MyPage06(MyPage):
         self.logger.info("이메일로 가입하기 클릭 완료")
 
         email_input = self.wait.until(EC.visibility_of_element_located(self.SIGNUP_EMAIL_INPUT))
-        email_input.clear()
-        email_input.send_keys(email)
+        self.js_input(email_input, email)
 
         pw_input = self.wait.until(EC.visibility_of_element_located(self.SIGNUP_PASSWORD_INPUT))
-        pw_input.clear()
-        pw_input.send_keys(password)
+        self.js_input(pw_input, password)
 
         name_input = self.wait.until(EC.visibility_of_element_located(self.SIGNUP_NAME_INPUT))
-        name_input.clear()
-        name_input.send_keys(name)
+        self.js_input(name_input, name)
 
         agree_checkbox = self.wait.until(EC.element_to_be_clickable(self.AGREE_ALL_CHECKBOX))
         self.js_click(agree_checkbox)
