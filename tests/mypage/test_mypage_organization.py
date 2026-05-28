@@ -4,6 +4,7 @@
 import pytest
 import allure
 
+from config.settings import TEST_USER
 from pages.mypage.mypage_organization_page import MyPage07
 
 pytestmark = [
@@ -22,9 +23,10 @@ def mypage(tools_driver_module):
     전제: tools_driver_module fixture로 로그인 완료 상태
     단계:
       1. tools_driver_module에서 driver 수신 → MyPage07 반환
+    계정: 관리자 계정 (FHC-088/089 qaproject 기관 링크 접근 필요)
     """
     page = MyPage07(tools_driver_module)
-    page.login()
+    page.login(email=TEST_USER["id"], password=TEST_USER["pw"])
     return page
 
 

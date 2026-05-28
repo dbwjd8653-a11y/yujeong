@@ -76,6 +76,9 @@ class MyPage(BasePage):
     def navigate_to_org(self):
         self.driver.get(self.ORG_URL)
         self.wait.until(EC.url_contains("members/organization"))
+        WebDriverWait(self.driver, 10).until(
+            lambda d: len(d.find_element(By.TAG_NAME, "body").text.strip()) > 50
+        )
         self.logger.info("내 기관 페이지 이동 완료")
 
     def navigate_to_language(self):
