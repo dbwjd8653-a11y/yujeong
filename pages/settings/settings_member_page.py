@@ -13,7 +13,7 @@ class SettingsMemberPage(SettingsPage):
     _TOAST = (By.ID, 'notistack-snackbar')
 
     def navigate_to_member_tab(self):
-        self.wait.until(EC.element_to_be_clickable(self._MEMBER_TAB)).click()
+        self.js_click(self.wait.until(EC.element_to_be_clickable(self._MEMBER_TAB)))
         self.wait.until(EC.url_contains("/ai-helpy-chat/admin/users"))
 
     def get_toggle(self):
