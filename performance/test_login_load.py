@@ -1,5 +1,5 @@
 # tests/performance/test_login_load.py
-# 로그인/로그아웃 반복 부하 테스트 — FHC-096
+# 로그인/로그아웃 반복 부하 테스트 — FHC-104
 
 import time
 import logging
@@ -34,11 +34,11 @@ def login_load():
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
 @allure.story("로그인 로그아웃 반복 부하 테스트")
-@allure.title("[FHC-096] 로그인/로그아웃 반복 부하 테스트")
+@allure.title("[FHC-104] 로그인/로그아웃 반복 부하 테스트")
 @allure.severity(allure.severity_level.NORMAL)
 def test_login_logout_load(login_load):
     """
-    [FHC-096] 로그인/로그아웃 반복 부하 테스트
+    [FHC-104] 로그인/로그아웃 반복 부하 테스트
 
     전제: 헬피챗 접속, 비로그인 상태
     단계:
@@ -50,7 +50,7 @@ def test_login_logout_load(login_load):
     기대: 5회 반복 중 로그인 실패 없음, 매 회 정상 메인 페이지 진입
     관련 TC: FHC-006, FHC-014, FHC-015, FHC-016, FHC-017
     """
-    logger.info("[FHC-096] 로그인/로그아웃 반복 부하 테스트 시작")
+    logger.info("[FHC-104] 로그인/로그아웃 반복 부하 테스트 시작")
     driver, wait = login_load
     fail_count = 0
     saved_cookies = None
@@ -84,4 +84,4 @@ def test_login_logout_load(login_load):
         logger.info(f"[{i}/{REPEAT}] 로그아웃 완료 (쿠키 삭제)")
 
     assert fail_count == 0, f"5회 중 {fail_count}회 로그인 실패"
-    logger.info("[FHC-096] 로그인/로그아웃 반복 부하 테스트 완료")
+    logger.info("[FHC-104] 로그인/로그아웃 반복 부하 테스트 완료")

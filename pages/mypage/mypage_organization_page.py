@@ -1,6 +1,6 @@
 # pages/mypage/mypage_organization_page.py
 # 마이페이지 > 내 기관 전용 Page 클래스
-# FHC-081(UI 확인) / FHC-082(qaproject 링크) / FHC-083(헬프 센터 링크)
+# FHC-093(UI 확인) / FHC-094(qaproject 링크) / FHC-095(헬프 센터 링크)
 
 from config.selenium_imports import By, EC, WebDriverWait
 
