@@ -1,5 +1,6 @@
 # tests/test_mypage_05.py
-# 마이페이지 > 계정 관리 — 기본 정보 E2E 테스트 — FHC-080 ~ FHC-083
+# 마이페이지 > 계정 관리 — 기본 정보 E2E 테스트 — FHC-080, FHC-083, FHC-088, FHC-089
+# ※ FHC-081, 082 (인증), FHC-084~087 (계정보안/본인확인/소셜연결) 은 비자동화 항목
 
 import pytest
 import allure
@@ -60,11 +61,11 @@ def test_change_name(mypage):
 
 
 @allure.story("비밀번호 변경")
-@allure.title("[FHC-081] 비밀번호 변경")
+@allure.title("[FHC-083] 비밀번호 변경")
 @allure.severity(allure.severity_level.NORMAL)
 def test_change_password(mypage):
     """
-    [FHC-081] 비밀번호 변경
+    [FHC-083] 비밀번호 변경
 
     전제: 로그인 상태
     단계:
@@ -87,11 +88,11 @@ def test_change_password(mypage):
 
 
 @allure.story("프로모션 알림 설정 변경")
-@allure.title("[FHC-082] 프로모션 알림 설정 변경")
+@allure.title("[FHC-088] 프로모션 알림 설정 변경")
 @allure.severity(allure.severity_level.NORMAL)
 def test_toggle_promotion(mypage):
     """
-    [FHC-082] 프로모션 알림 설정 변경
+    [FHC-088] 프로모션 알림 설정 변경
 
     전제: 로그인 상태
     단계:
@@ -112,11 +113,11 @@ def test_toggle_promotion(mypage):
 
 
 @allure.story("선호 언어 설정 변경")
-@allure.title("[FHC-083] 선호 언어 설정 변경")
+@allure.title("[FHC-089] 선호 언어 설정 변경")
 @allure.severity(allure.severity_level.NORMAL)
 def test_change_language(mypage):
     """
-    [FHC-083] 선호 언어 설정 변경
+    [FHC-089] 선호 언어 설정 변경
 
     전제: 로그인 상태
     단계:

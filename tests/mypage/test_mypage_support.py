@@ -1,5 +1,5 @@
 # tests/test_mypage_09.py
-# 마이페이지 > 고객 센터 E2E 테스트 — FHC-093
+# 마이페이지 > 고객 센터 E2E 테스트 — FHC-100
 
 import pytest
 import allure
@@ -31,11 +31,11 @@ def mypage(tools_driver_module):
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
 @allure.story("고객 센터 AI 작동")
-@allure.title("[FHC-093] 고객 센터 AI 작동")
+@allure.title("[FHC-100] 고객 센터 AI 작동")
 @allure.severity(allure.severity_level.NORMAL)
 def test_customer_service_ai(mypage):
     """
-    [FHC-093] 고객 센터 AI 작동
+    [FHC-100] 고객 센터 AI 작동
 
     전제: 로그인 상태
     단계:
@@ -43,9 +43,9 @@ def test_customer_service_ai(mypage):
       2. 'Start a chat' 영역 클릭
     기대: 설정된 AI 답변이 표시된다
     """
-    with allure.step("[FHC-093] 고객 센터 페이지 이동 후 'Start a chat' 클릭"):
+    with allure.step("[FHC-100] 고객 센터 페이지 이동 후 'Start a chat' 클릭"):
         mypage.navigate_to_support()
         mypage.click_start_chat()
-    with allure.step("[FHC-093] AI 답변 표시 확인"):
+    with allure.step("[FHC-100] AI 답변 표시 확인"):
         assert mypage.is_chat_ai_displayed(), \
             "'Start a chat' 클릭 후 AI 답변이 표시되지 않았습니다"
