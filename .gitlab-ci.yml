@@ -4,7 +4,6 @@ stages:
   - notify
 
 variables:
-  GIT_STRATEGY: clone
   GIT_SSL_NO_VERIFY: "true"
   PYTHONIOENCODING: "utf-8"
 
@@ -13,6 +12,8 @@ variables:
 # ─────────────────────────────────────────────────────────────
 run_tests:
   stage: test
+  variables:
+    GIT_STRATEGY: clone
   script:
     - python -m pytest tests/ --alluredir=allure-results --clean-alluredir -v --tb=short
   artifacts:
