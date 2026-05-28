@@ -62,7 +62,7 @@ notify_discord:
   stage: notify
   needs:
     - job: run_tests
-      artifacts: true
+      artifacts: false
     - job: pages
       artifacts: true
   when: always
