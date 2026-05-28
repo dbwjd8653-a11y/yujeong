@@ -16,7 +16,7 @@ run_tests:
     GIT_STRATEGY: fetch
     GIT_CLEAN_FLAGS: -ffdx
   script:
-    - python -m pytest tests/ --alluredir=allure-results --clean-alluredir -v --tb=short
+    - python -m pytest tests/ --jira
   artifacts:
     when: always
     paths:
