@@ -31,10 +31,11 @@ run_tests:
 # ─────────────────────────────────────────────────────────────
 pages:
   stage: deploy
+  when: always
   needs:
     - job: run_tests
       artifacts: true
-  when: always
+      optional: true
   script:
     - python scripts/ci_allure.py
   artifacts:
