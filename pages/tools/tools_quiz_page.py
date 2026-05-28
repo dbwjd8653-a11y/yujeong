@@ -18,16 +18,13 @@ class QuizPage(BaseToolPage):
     DIFFICULTY_DD  = "mui-component-select-quiz_configs.0.difficulty"                                     # 난이도 드롭다운 ID
     CONTENT_INPUT  = (By.NAME, "content")                                                                  # 주제 입력 필드
     GENERATE_BTN   = (By.CSS_SELECTOR, "button[form='tool-factory-create_quiz_from_context']")            # 자동 생성 버튼
+    SPINNER        = (By.CSS_SELECTOR, "span.MuiCircularProgress-indeterminate.MuiCircularProgress-colorPrimary[role='progressbar']")      # 생성 중 스피너
 
     # ── 테스트 입력값 상수 ─────────────────────────────────────────
     OPTION_TYPE_VALUE = "객관식 (단일 선택)"
     DIFFICULTY_VALUE  = "하"
     CONTENT_VALUE     = "퀴즈"
     TITLE_TEXT        = "퀴즈 생성"
-
-    def __init__(self, login):
-        driver, wait = login
-        super().__init__(driver, wait)
 
     def tools_menu(self):
         self.click_tool_menu(self.TOOL_NAME)
@@ -44,8 +41,10 @@ class QuizPage(BaseToolPage):
                 break
         self.wait_dropdown_closed()
 
-    def is_tool_page_displayed(self):
+    def is_tool_page_displayed(self) -> bool:
         """퀴즈 생성 페이지 타이틀 표시 여부 검증"""
-        title_element = self.wait_for_visible(self.TITLE_ELEMENT)
-        assert title_element.is_displayed(), "퀴즈 생성 타이틀이 화면에 보이지 않습니다."
-        assert title_element.text == self.TITLE_TEXT, f"타이틀이 일치하지 않습니다. (현재: {title_element.text})"
+        try:
+            title_element = self.wait_for_visible(self.TITLE_ELEMENT)
+            return title_element.is_displayed() and title_element.text == self.TITLE_TEXT
+        except Exception:
+            return False

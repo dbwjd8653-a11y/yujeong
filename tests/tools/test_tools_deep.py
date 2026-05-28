@@ -28,7 +28,8 @@ def deep(login_module):
       2. 도구 목록 URL 직접 이동
       3. 심층 조사 도구 초기 세팅
     """
-    tool = DeepPage(login_module)
+    driver, wait = login_module
+    tool = DeepPage(driver, wait)
     tool.navigate_to_tools()
     tool.setup_tool()
     return tool
@@ -45,7 +46,8 @@ def deep_sad(login):
       2. 도구 목록 URL 직접 이동
       3. 심층 조사 도구 초기 세팅
     """
-    tool = DeepPage(login)
+    driver, wait = login
+    tool = DeepPage(driver, wait)
     tool.navigate_to_tools()
     tool.setup_tool()
     return tool
@@ -62,7 +64,8 @@ def deep_sad_module(login_module):
       2. 도구 목록 URL 직접 이동
       3. 심층 조사 도구 초기 세팅
     """
-    tool = DeepPage(login_module)
+    driver, wait = login_module
+    tool = DeepPage(driver, wait)
     tool.navigate_to_tools()
     tool.setup_tool()
     return tool
@@ -88,7 +91,7 @@ def test_deep_research_happy_path(deep):
     logger.info("[FHC-058] 심층 조사 해피패스 시작")
 
     with allure.step("[FHC-058] 심층 조사 페이지 진입 확인"):
-        deep.is_tool_page_displayed()
+        assert deep.is_tool_page_displayed(), "심층 조사 페이지로 이동하지 못했습니다"
 
     with allure.step("[FHC-059~060] 주제 및 지시사항 입력"):
         deep.enter_text(DeepPage.TOPIC_INPUT, DeepPage.TOPIC_TEXT)

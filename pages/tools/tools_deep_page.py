@@ -17,6 +17,7 @@ class DeepPage(BaseToolPage):
     TOPIC_INPUT     = (By.NAME, "topic")                                                                   # 주제 입력 필드
     MESSAGE_INPUT   = (By.NAME, "instructions")                                                            # 지시사항 입력 필드
     GENERATE_BTN    = (By.CSS_SELECTOR, "button[form='tool-factory-do_deep_research']")                   # 자동 생성 버튼
+    SPINNER         = (By.CSS_SELECTOR, "span.MuiCircularProgress-indeterminate.MuiCircularProgress-colorPrimary[role='progressbar']")     # 생성 중 스피너
     ERROR_ALERT     = (By.CSS_SELECTOR, "[data-testid='circle-exclamationIcon']")                         # 오류 알림 아이콘
     ERROR_ALERT_MSG = (By.XPATH, "//div[contains(text(),'답변 생성에 문제가 발생했습니다')]")                 # 오류 메시지 텍스트
 
@@ -28,18 +29,16 @@ class DeepPage(BaseToolPage):
     TOPIC_501_CHARS = "가" * 501
     TOPIC_BLANK     = " "
 
-    def __init__(self, login):
-        driver, wait = login
-        super().__init__(driver, wait)
-
     def tools_menu(self):
         self.click_tool_menu(self.TOOL_NAME)
 
-    def is_tool_page_displayed(self):
+    def is_tool_page_displayed(self) -> bool:
         """심층 조사 페이지 타이틀 표시 여부 검증"""
-        title_element = self.wait_for_visible(self.TITLE_ELEMENT)
-        assert title_element.is_displayed(), "심층 조사 타이틀이 화면에 보이지 않습니다."
-        assert title_element.text == self.TITLE_TEXT, f"타이틀이 일치하지 않습니다. (현재: {title_element.text})"
+        try:
+            title_element = self.wait_for_visible(self.TITLE_ELEMENT)
+            return title_element.is_displayed() and title_element.text == self.TITLE_TEXT
+        except Exception:
+            return False
 
     def is_error_alert_displayed(self):
         """
