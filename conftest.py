@@ -51,6 +51,8 @@ def pytest_sessionstart(session):
 
 def pytest_sessionfinish(session, exitstatus):
     import subprocess
+    subprocess.run(["taskkill", "/F", "/IM", "firefox.exe"], capture_output=True)
+    subprocess.run(["taskkill", "/F", "/IM", "geckodriver.exe"], capture_output=True)
     subprocess.run(
         ["allure", "generate", "allure-results", "-o", "allure-report", "--clean"],
         capture_output=True, timeout=60, shell=True
