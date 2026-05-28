@@ -28,7 +28,8 @@ def quiz(login_module):
       2. 도구 목록 URL 직접 이동
       3. 퀴즈 생성 도구 초기 세팅
     """
-    tool = QuizPage(login_module)
+    driver, wait = login_module
+    tool = QuizPage(driver, wait)
     tool.navigate_to_tools()
     tool.setup_tool()
     return tool
@@ -51,10 +52,10 @@ def test_quiz_happy_path(quiz):
       3. [자동 생성] 버튼 클릭 → 로딩 스피너 확인 → 생성 완료 (최대 2분) (FHC-057)
     기대: '퀴즈 생성' 페이지 진입 → 버튼 활성화 → 2분 이내 생성 완료
     """
-    logger.info("[FHC-054] 퀴즈 생성 해피패스 시작")
+    logger.info("[FHC-055] 퀴즈 생성 해피패스 시작")
 
     with allure.step("[FHC-055] 퀴즈 생성 페이지 진입 확인"):
-        quiz.is_tool_page_displayed()
+        assert quiz.is_tool_page_displayed(), "퀴즈 생성 페이지로 이동하지 못했습니다"
 
     with allure.step("[FHC-056] 문제 유형, 난이도, 주제 입력"):
         quiz.select_option(QuizPage.OPTION_TYPE_DD, QuizPage.OPTION_TYPE_VALUE)

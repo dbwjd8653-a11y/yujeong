@@ -131,6 +131,7 @@ class BaseToolPage(BasePage):
 
     def navigate_to_tools(self):
         self.go(self.TOOLS_URL)
+        close_token_banner(self.driver, self.wait)
         self.wait.until(
             EC.presence_of_element_located(
                 (By.XPATH, "//a[contains(@href,'ai-helpy-chat/tools/')]")
@@ -481,31 +482,35 @@ class BaseToolPage(BasePage):
         AI 생성 완료 확인 (최초 생성 및 재생성 모두 대응)
 
         단계:
-          1. 기존 SUCCESS_MESSAGE 요소 포착
-             - 있으면 staleness_of로 DOM 제거 대기 (재생성 시작 확인)
-             - 없으면 최초 생성이므로 스킵
-          2. 새 SUCCESS_MESSAGE 출현 대기 (생성 완료 확인)
-
-        에러로 생성 중단 시 SUCCESS_MESSAGE 미출현 → timeout → False 반환
+          1. 기존 SUCCESS_MESSAGE가 있으면 SHORT_WAIT 내 소멸 대기 (재생성 감지)
+             - 소멸되지 않아도 스피너 단계로 계속 진행 (timeout 예산 보호)
+          2. 스피너 소멸 대기 — 생성 완료의 핵심 신호
+          3. SUCCESS_MESSAGE 출현 확인
         """
         deadline = time.time() + timeout
 
         def secs_left():
             return max(1, deadline - time.time())
 
-        existing = self.driver.find_elements(*self.SUCCESS_MESSAGE)
-        if existing:
+        if self.driver.find_elements(*self.SUCCESS_MESSAGE):
             try:
-                WebDriverWait(self.driver, secs_left()).until(
-                    EC.staleness_of(existing[0])
+                WebDriverWait(self.driver, SHORT_WAIT).until(
+                    EC.invisibility_of_element_located(self.SUCCESS_MESSAGE)
                 )
             except TimeoutException:
-                return False
+                pass
 
         try:
             WebDriverWait(self.driver, secs_left()).until(
+                EC.invisibility_of_element_located(self.SPINNER)
+            )
+        except TimeoutException:
+            return False
+
+        try:
+            result = WebDriverWait(self.driver, secs_left()).until(
                 EC.visibility_of_element_located(self.SUCCESS_MESSAGE)
             )
-            return True
+            return result.is_displayed()
         except TimeoutException:
             return False
