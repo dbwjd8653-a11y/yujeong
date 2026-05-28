@@ -23,16 +23,40 @@ if not WEBHOOK_URL:
 
 
 def parse_allure_summary() -> dict:
+    # 1차: pages 잡이 생성한 summary.json
     summary_path = Path("public/widgets/summary.json")
-    if not summary_path.exists():
-        print("[경고] summary.json 없음 — 통계 0으로 처리")
+    if summary_path.exists():
+        try:
+            with open(summary_path, encoding="utf-8") as f:
+                stats = json.load(f).get("statistic", {})
+            if stats.get("total", 0) > 0:
+                return stats
+        except Exception as e:
+            print(f"[경고] summary.json 파싱 실패: {e}", file=sys.stderr)
+
+    # 2차: allure-results/*.json 직접 파싱 (fallback)
+    print("[정보] allure-results 직접 파싱으로 전환")
+    return _parse_from_results()
+
+
+def _parse_from_results() -> dict:
+    results_dir = Path("allure-results")
+    if not results_dir.exists():
+        print("[경고] allure-results 디렉터리 없음")
         return {}
-    try:
-        with open(summary_path, encoding="utf-8") as f:
-            return json.load(f).get("statistic", {})
-    except Exception as e:
-        print(f"[경고] summary.json 파싱 실패: {e}", file=sys.stderr)
-        return {}
+
+    stats = {"passed": 0, "failed": 0, "broken": 0, "skipped": 0, "total": 0}
+    for result_file in results_dir.glob("*-result.json"):
+        try:
+            with open(result_file, encoding="utf-8") as f:
+                status = json.load(f).get("status", "")
+            if status in stats:
+                stats[status] += 1
+            stats["total"] += 1
+        except Exception:
+            pass
+
+    return stats
 
 
 def build_message(stats: dict) -> str:
