@@ -4,14 +4,19 @@
 import time
 
 import pytest
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+import allure
 
-from pages.token_page import TokenPage
+from config.selenium_imports import By, EC, WebDriverWait
+
+from pages.token.token_page import TokenPage
 from pages.tools.base_tool_page import BaseToolPage
 
 TEST_MESSAGE = "안녕하세요, 토큰 사용량 테스트입니다."
+
+pytestmark = [
+    allure.epic("Token"),
+    allure.feature("토큰 사용량"),
+]
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -33,7 +38,10 @@ def token(tools_driver_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
-def test_FHC_018_lnb_token_displayed(token):
+@allure.story("LNB 토큰 사용량 표시 확인")
+@allure.title("[FHC-018] LNB 토큰 사용량 표시 확인")
+@allure.severity(allure.severity_level.NORMAL)
+def test_lnb_token_displayed(token):
     """
     [FHC-018] LNB 토큰 사용량 표시 확인
 
@@ -47,7 +55,10 @@ def test_FHC_018_lnb_token_displayed(token):
         "LNB에 토큰 사용량이 표시되지 않았습니다"
 
 
-def test_FHC_019_token_increases_after_chat(token):
+@allure.story("AI 대화 후 토큰 사용량 증가")
+@allure.title("[FHC-019] AI 대화 후 토큰 사용량 증가 확인")
+@allure.severity(allure.severity_level.NORMAL)
+def test_token_increases_after_chat(token):
     """
     [FHC-019] AI 대화 후 토큰 사용량 증가 확인
 
@@ -84,7 +95,10 @@ def test_FHC_019_token_increases_after_chat(token):
         f"대화 후 토큰 이용 내역이 증가하지 않았습니다 (전: {before_rows}행 → 후: {after_rows}행)"
 
 
-def test_FHC_020_lnb_token_click_goes_to_settings(token):
+@allure.story("LNB 토큰 클릭 설정 페이지 이동")
+@allure.title("[FHC-020] LNB 토큰 클릭 → 설정 페이지 이동")
+@allure.severity(allure.severity_level.NORMAL)
+def test_lnb_token_click_goes_to_settings(token):
     """
     [FHC-020] LNB 토큰 클릭 → 설정 페이지 이동 확인
 
@@ -101,7 +115,10 @@ def test_FHC_020_lnb_token_click_goes_to_settings(token):
         "설정 페이지에 토큰 사용량 테이블이 표시되지 않았습니다"
 
 
-def test_FHC_021_all_history_button(token):
+@allure.story("전체 이용 내역 버튼")
+@allure.title("[FHC-021] '전체 이용 내역' 버튼 클릭")
+@allure.severity(allure.severity_level.NORMAL)
+def test_all_history_button(token):
     """
     [FHC-021] '전체 이용 내역' 버튼 클릭 → 이동 확인
 

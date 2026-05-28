@@ -6,7 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 
-from config.config import LOGIN_URL, TEST_USER, SHORT_WAIT, DEFAULT_WAIT
+from config.settings import LOGIN_URL, TEST_USER, SHORT_WAIT, DEFAULT_WAIT
 
 
 def do_login(driver, wait, user: dict = None):
@@ -26,17 +26,22 @@ def do_login(driver, wait, user: dict = None):
     wait.until(
         EC.element_to_be_clickable((By.XPATH, "//button[text()='로그인']"))
     ).click()
-    wait.until(EC.url_contains("ai-helpy-chat"))
+    wait.until(lambda d: d.current_url.startswith("https://qaproject.elice.io"))
+    close_token_banner(driver, wait)
+
+
+_BANNER_BTN = (By.XPATH, "//*[@data-testid='xmark-largeIcon']/ancestor::button[1]")
 
 
 def close_token_banner(driver, wait):
     """토큰 안내 배너가 표시된 경우 닫기 (없으면 무시)"""
     try:
         close_btn = WebDriverWait(driver, SHORT_WAIT).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "//*[@data-testid='xmark-largeIcon']/ancestor::button[1]")
-            )
+            EC.element_to_be_clickable(_BANNER_BTN)
         )
         close_btn.click()
+        WebDriverWait(driver, SHORT_WAIT).until(
+            EC.invisibility_of_element_located(_BANNER_BTN)
+        )
     except Exception:
         pass

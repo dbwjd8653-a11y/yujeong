@@ -4,9 +4,7 @@
 
 import time
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from config.selenium_imports import By, EC
 
 from pages.mypage.mypage_page import MyPage
 
@@ -53,19 +51,18 @@ class MyPage05(MyPage):
         """)
         if result == 'not-found':
             raise Exception("이름 편집 버튼을 찾을 수 없습니다")
-        print(f"이름 편집 버튼 클릭 완료 ({result})")
+        self.logger.info(f"이름 편집 버튼 클릭 완료 ({result})")
 
     def enter_name(self, name: str):
         name_input = self.wait.until(EC.visibility_of_element_located(self.NAME_INPUT))
-        name_input.clear()
-        name_input.send_keys(name)
-        print(f"이름 입력 완료: {name}")
+        self.js_input(name_input, name)
+        self.logger.info(f"이름 입력 완료: {name}")
 
     def save_name(self):
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.COMPLETE_BUTTON))
         )
-        print("이름 저장(완료) 버튼 클릭 완료")
+        self.logger.info("이름 저장(완료) 버튼 클릭 완료")
 
     def is_save_success_toast_displayed(self) -> bool:
         try:
@@ -89,26 +86,23 @@ class MyPage05(MyPage):
         """)
         if result == 'not-found':
             raise Exception("비밀번호 편집 버튼을 찾을 수 없습니다")
-        print(f"비밀번호 편집 버튼 클릭 완료 ({result})")
+        self.logger.info(f"비밀번호 편집 버튼 클릭 완료 ({result})")
 
     def change_password(self, current_pw: str, new_pw: str):
         """비밀번호 변경 (current_pw → new_pw, 동일 비밀번호 불가)"""
         curr = self.wait.until(EC.visibility_of_element_located(self.CURRENT_PW_INPUT))
-        curr.clear()
-        curr.send_keys(current_pw)
+        self.js_input(curr, current_pw)
 
         new = self.wait.until(EC.visibility_of_element_located(self.NEW_PW_INPUT))
-        new.clear()
-        new.send_keys(new_pw)
+        self.js_input(new, new_pw)
 
         confirm = self.wait.until(EC.visibility_of_element_located(self.CONFIRM_PW_INPUT))
-        confirm.clear()
-        confirm.send_keys(new_pw)
+        self.js_input(confirm, new_pw)
 
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.COMPLETE_BUTTON))
         )
-        print(f"비밀번호 변경 완료: {current_pw} → {new_pw}")
+        self.logger.info(f"비밀번호 변경 완료: {current_pw} → {new_pw}")
         time.sleep(1)
 
     # ========== FHC-075: 프로모션 알림 토글 ==========
@@ -118,7 +112,7 @@ class MyPage05(MyPage):
             EC.presence_of_element_located(self.PROMOTION_TOGGLE)
         )
         state = checkbox.is_selected()
-        print(f"프로모션 알림 현재 상태: {'ON' if state else 'OFF'}")
+        self.logger.info(f"프로모션 알림 현재 상태: {'ON' if state else 'OFF'}")
         return state
 
     def toggle_promotion(self):
@@ -127,4 +121,4 @@ class MyPage05(MyPage):
         )
         self.driver.execute_script("arguments[0].click();", checkbox)
         time.sleep(0.5)
-        print("프로모션 알림 토글 클릭 완료")
+        self.logger.info("프로모션 알림 토글 클릭 완료")

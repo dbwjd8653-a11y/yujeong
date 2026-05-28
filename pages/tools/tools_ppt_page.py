@@ -3,15 +3,16 @@ import os
 import random
 import time
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-
+from config.selenium_imports import By, EC
 from pages.tools.base_tool_page import BaseToolPage
 
 
 class PPTPage(BaseToolPage):
 
     TOOL_NAME = "PPT 생성"
+
+    # 생성 완료 후 LinearProgress가 indeterminate → determinate로 교체되어 DOM 잔류
+    SPINNER = (By.CSS_SELECTOR, "span.MuiLinearProgress-indeterminate[role='progressbar']")
 
     # ========== Locators ==========
 
@@ -21,8 +22,17 @@ class PPTPage(BaseToolPage):
     SECTION_COUNT_INPUT   = (By.CSS_SELECTOR, "input[name='section_count']")
 
     GENERATE_BTN = (
-        By.CSS_SELECTOR,
-        "button[type='submit'][form='tool-factory-create_pptx']",
+        By.XPATH,
+        "//button[@type='submit'][@form='tool-factory-create_pptx']"
+        "[not(ancestor::div[@role='dialog'])]",
+    )
+    REGEN_CONFIRM_BTN = (
+        By.XPATH,
+        "//div[@role='dialog']//button[@type='submit'][@form='tool-factory-create_pptx']",
+    )
+    REGEN_CANCEL_BTN = (
+        By.XPATH,
+        "//div[@role='dialog']//button[@type='button' and normalize-space()='취소']",
     )
 
     DEEP_RESEARCH_INPUT  = (By.CSS_SELECTOR, "input[name='simple_mode']")
@@ -30,25 +40,25 @@ class PPTPage(BaseToolPage):
         By.XPATH,
         "//input[@name='simple_mode']/ancestor::span[contains(@class,'MuiSwitch-root')]",
     )
-    SUCCESS_MESSAGE = (
-        By.XPATH,
-        "//div[@role='tabpanel'][@data-panel='output']"
-        "//p[contains(., '입력하신 내용 기반으로 PPT를 생성했습니다')]",
-    )
     DOWNLOAD_BTN = (
         By.XPATH,
         "//a[contains(., '생성 결과 다운받기')]",
     )
 
+    _ALL_FIELDS = [
+        "TOPIC_INPUT",
+        "INSTRUCTIONS_TEXTAREA",
+        "SLIDES_COUNT_INPUT",
+        "SECTION_COUNT_INPUT",
+    ]
+
+    def tools_menu(self):
+        self.click_tool_menu(self.TOOL_NAME)
+
     # ========== 입력 필드 사전 체크 / 초기화 ==========
 
     def has_any_field_value(self):
-        for locator in [
-            self.TOPIC_INPUT,
-            self.INSTRUCTIONS_TEXTAREA,
-            self.SLIDES_COUNT_INPUT,
-            self.SECTION_COUNT_INPUT,
-        ]:
+        for locator in [getattr(self, f) for f in self._ALL_FIELDS]:
             try:
                 if self.driver.find_element(*locator).get_attribute("value"):
                     return True
@@ -57,32 +67,18 @@ class PPTPage(BaseToolPage):
         return False
 
     def clear_all_fields(self):
-        for locator in [
-            self.TOPIC_INPUT,
-            self.INSTRUCTIONS_TEXTAREA,
-            self.SLIDES_COUNT_INPUT,
-            self.SECTION_COUNT_INPUT,
-        ]:
+        for locator in [getattr(self, f) for f in self._ALL_FIELDS]:
             try:
                 el = self.wait.until(EC.element_to_be_clickable(locator))
-                el.click()
-                time.sleep(0.3)
-                el.clear()
+                self.js_input(el, "")
             except Exception:
                 pass
-        time.sleep(0.5)
 
     # ========== 필수 입력 ==========
 
     def enter_topic(self, topic):
         inp = self.wait.until(EC.element_to_be_clickable(self.TOPIC_INPUT))
-        inp.click()
-        time.sleep(0.5)
-        inp.clear()
-        inp.send_keys(topic)
-        time.sleep(0.5)
-        assert inp.get_attribute("value") == topic, \
-            f"주제 '{topic}' 입력 실패"
+        self.js_input(inp, topic)
 
     # ========== 선택 입력 ==========
 
@@ -90,35 +86,17 @@ class PPTPage(BaseToolPage):
         if not instructions:
             return
         ta = self.wait.until(EC.element_to_be_clickable(self.INSTRUCTIONS_TEXTAREA))
-        ta.click()
-        time.sleep(0.5)
-        ta.clear()
-        ta.send_keys(instructions)
-        time.sleep(0.5)
-        assert ta.get_attribute("value") == instructions, \
-            f"지시사항 '{instructions}' 입력 실패"
+        self.js_input(ta, instructions)
 
     def enter_slides_count(self, count=None):
         count = count or str(random.randint(3, 10))
         inp = self.wait.until(EC.element_to_be_clickable(self.SLIDES_COUNT_INPUT))
-        inp.click()
-        time.sleep(0.5)
-        inp.clear()
-        inp.send_keys(count)
-        time.sleep(0.5)
-        assert inp.get_attribute("value") == count, \
-            f"슬라이드 수 '{count}' 입력 실패"
+        self.js_input(inp, count)
 
     def enter_section_count(self, count=None):
         count = count or str(random.randint(1, 5))
         inp = self.wait.until(EC.element_to_be_clickable(self.SECTION_COUNT_INPUT))
-        inp.click()
-        time.sleep(0.5)
-        inp.clear()
-        inp.send_keys(count)
-        time.sleep(0.5)
-        assert inp.get_attribute("value") == count, \
-            f"섹션 수 '{count}' 입력 실패"
+        self.js_input(inp, count)
 
     # ========== 심층조사 모드 토글 ==========
 
@@ -137,25 +115,40 @@ class PPTPage(BaseToolPage):
         self.driver.execute_script(
             "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btn
         )
-        time.sleep(0.5)
 
     # ========== 다운로드 ==========
 
-    def click_download(self):
+    def download_result(self, download_dir: str, browser: str = "firefox"):
+        before_mtime = {}
+        for f in glob.glob(os.path.join(download_dir, "*.pptx")):
+            try:
+                before_mtime[f] = os.path.getmtime(f)
+            except OSError:
+                pass
+
         btn = self.wait.until(EC.element_to_be_clickable(self.DOWNLOAD_BTN))
         self.driver.execute_script(
             "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btn
         )
-        time.sleep(0.5)
         self.js_click(btn)
-        time.sleep(1)
+        self.logger.info("생성 결과 다운받기 버튼 클릭 완료")
+        click_time = time.time()
 
-    def is_pptx_downloaded(self, download_dir, timeout=30):
-        deadline = time.time() + timeout
+        self.logger.info("파일 다운로드 대기 중...")
+        deadline = time.time() + 60
         while time.time() < deadline:
-            if glob.glob(os.path.join(download_dir, "*.pptx")):
-                return True
-            time.sleep(1)
+            time.sleep(0.5)
+            for f in glob.glob(os.path.join(download_dir, "*.pptx")):
+                if os.path.exists(f + ".part"):
+                    continue
+                try:
+                    mtime = os.path.getmtime(f)
+                except OSError:
+                    continue
+                if f not in before_mtime or mtime > click_time:
+                    self.logger.info(f"다운로드 완료: {f}")
+                    return True
+        self.logger.warning("다운로드 타임아웃 (60초 초과)")
         return False
 
     # ========== 생성 버튼 활성화 확인 / 클릭 / 결과 대기 ==========
@@ -167,16 +160,5 @@ class PPTPage(BaseToolPage):
         except Exception:
             return False
 
-    def click_generate(self):
-        btn = self.wait.until(EC.element_to_be_clickable(self.GENERATE_BTN))
-        self.js_click(btn)
 
-    def wait_for_generation(self, timeout: int = 120) -> bool:
-        try:
-            from selenium.webdriver.support.ui import WebDriverWait
-            WebDriverWait(self.driver, timeout).until(
-                EC.visibility_of_element_located(self.SUCCESS_MESSAGE)
-            )
-            return True
-        except Exception:
-            return False
+

@@ -1,0 +1,259 @@
+# tests/conftest.py
+# 통합 conftest — 팀 전체 공통 fixture
+
+import logging
+import os
+import re
+from datetime import datetime
+from pathlib import Path
+
+import pytest
+
+from config.selenium_imports import WebDriverWait
+
+from config.settings import DEFAULT_WAIT, DOWNLOAD_DIR
+from config.browser_factory import (
+    make_firefox_driver, make_simple_firefox_driver,
+    make_chrome_driver, make_simple_chrome_driver,
+)
+from config.login_helpers import do_login, close_token_banner
+from utils.jira_helper import create_jira_bug_ticket, attach_image_to_jira
+
+logger = logging.getLogger(__name__)
+
+
+# ── 로깅 설정 ──────────────────────────────────────────────────────
+def pytest_configure(config):
+    os.makedirs("logs", exist_ok=True)
+    log_file = f"logs/test_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)-5s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        handlers=[
+            logging.FileHandler(log_file, encoding="utf-8"),
+            logging.StreamHandler(),
+        ],
+        force=True,
+    )
+    logging.getLogger("selenium").setLevel(logging.WARNING)
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+
+
+def pytest_sessionstart(session):
+    import shutil
+    history_src = Path("allure-report/history")
+    history_dst = Path("allure-results/history")
+    if history_src.exists():
+        if history_dst.exists():
+            shutil.rmtree(history_dst)
+        shutil.copytree(str(history_src), str(history_dst))
+
+
+def pytest_sessionfinish(session, exitstatus):
+    import subprocess
+    subprocess.run(["taskkill", "/F", "/IM", "firefox.exe"], capture_output=True)
+    subprocess.run(["taskkill", "/F", "/IM", "geckodriver.exe"], capture_output=True)
+    subprocess.run(
+        ["allure", "generate", "allure-results", "-o", "allure-report", "--clean"],
+        capture_output=True, timeout=60, shell=True
+    )
+
+
+# ── 테스트 실패 자동 로깅 + Jira 이슈 생성 및 스크린샷 첨부 Hook ──
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+    
+    # ── 로그 처리 ─────────────────────────────
+    if report.when == "call":
+        _logger = logging.getLogger(item.module.__name__)
+
+        if report.failed:
+            # ① 로그 기록
+            msg = str(report.longrepr)
+            match = re.search(r'AssertionError:\s*(.+)', msg)
+            fail_msg = match.group(1).strip() if match else msg.splitlines()[-1].strip()
+            _logger.error(f"❌ {item.name} | {fail_msg}")
+
+        elif report.passed:
+            _logger.info(f"✅ {item.name}")
+
+        elif report.skipped:
+            reason = getattr(report, 'wasxfail', None) or str(report.longrepr)
+            _logger.warning(f"⚠️  {item.name} | {reason}")
+    
+    # ── Jira 처리 ────────────────────────────
+    if report.when == "call" and report.failed:
+        jira_enabled = item.config.getoption("--jira")
+
+        if not jira_enabled:
+            return
+        
+        # xfail 제외
+        if hasattr(report, "wasxfail"):
+            return
+
+        # ② driver 탐색
+        driver = (
+            item.funcargs.get("driver")
+            or item.funcargs.get("driver_module")
+            or item.funcargs.get("tools_driver")
+            or item.funcargs.get("tools_driver_module")
+        )
+
+        current_url = "URL 확인 실패"
+        browser_name = "unknown"
+
+        if driver:
+            try:
+                current_url = driver.current_url
+            except Exception:
+                pass
+            try:
+                browser_name = driver.capabilities.get("browserName")
+            except Exception:
+                pass
+
+        # ③ Jira 이슈 생성
+        test_file = item.location[0]
+        error_message = str(call.excinfo.value)
+        summary = f"[자동화 테스트 실패] {item.name}"
+        description = f"""
+                    자동화 테스트 실패
+
+                    [Test Case]
+                    {item.name}
+
+                    [Test File]
+                    {test_file}
+
+                    [Browser]
+                    {browser_name}
+
+                    [URL]
+                    {current_url}
+
+                    [Error]
+                    {error_message}
+                    """
+
+        issue_key = create_jira_bug_ticket(summary=summary, description=description)
+
+        # ④ 스크린샷 첨부
+        if issue_key and driver:
+            try:
+                screenshot = driver.get_screenshot_as_png()
+                attach_image_to_jira(issue_key, screenshot)
+            except Exception as e:
+                logger.warning(f"스크린샷 첨부 실패: {e}")
+
+
+# ── 테스트 실행 순서 정렬 (FHC 번호 오름차순) ─────────────────────
+def pytest_collection_modifyitems(items):
+    """FHC_NNN 번호 기준으로 전체 테스트를 오름차순 정렬"""
+    def _fhc_key(item):
+        m = re.search(r'FHC[_-](\d+)', item.nodeid)
+        if m:
+            return int(m.group(1))
+        doc = getattr(item.function, '__doc__', '') or ''
+        m = re.search(r'FHC[_-](\d+)', doc)
+        if m:
+            return int(m.group(1))
+        return 9999
+    items.sort(key=_fhc_key)
+
+
+# ── CLI 옵션 ───────────────────────────────────────────────────────
+def pytest_addoption(parser):
+    parser.addoption(
+        "--jira",
+        action="store_true",
+        default=False,
+        help="실패 테스트를 Jira 등록"
+    )
+    parser.addoption(
+        "--browser",
+        action="store",
+        default="firefox",
+        choices=["firefox", "chrome"],
+        help="테스트 브라우저 선택 (firefox | chrome)",
+    )
+
+
+# ── 브라우저 fixtures (테스트마다 독립 실행) ───────────────────────
+
+def _make_simple_driver(browser: str):
+    return make_simple_chrome_driver() if browser == "chrome" else make_simple_firefox_driver()
+
+
+def _make_driver(browser: str, download_dir: str = DOWNLOAD_DIR):
+    return make_chrome_driver(download_dir) if browser == "chrome" else make_firefox_driver(download_dir)
+
+
+@pytest.fixture
+def driver(request):
+    """테스트마다 새 브라우저 실행 (--browser 옵션으로 선택)"""
+    _driver = _make_simple_driver(request.config.getoption("--browser"))
+    yield _driver
+    _driver.quit()
+
+
+@pytest.fixture
+def wait(driver):
+    return WebDriverWait(driver, DEFAULT_WAIT)
+
+
+@pytest.fixture
+def login(driver, wait):
+    """로그인 완료 상태 반환 — (driver, wait) 튜플"""
+    do_login(driver, wait)
+    return driver, wait
+
+
+# ── 브라우저 fixtures (모듈 전체 공유) ────────────────────────────
+
+@pytest.fixture(scope="module")
+def driver_module(request):
+    """모듈 전체 공유 브라우저 (--browser 옵션으로 선택)"""
+    _driver = _make_simple_driver(request.config.getoption("--browser"))
+    yield _driver
+    _driver.quit()
+
+
+@pytest.fixture(scope="module")
+def wait_module(driver_module):
+    return WebDriverWait(driver_module, DEFAULT_WAIT)
+
+
+@pytest.fixture(scope="module")
+def login_module(driver_module):
+    """모듈 전체 공유 로그인 상태 — (driver, wait) 튜플"""
+    _wait = WebDriverWait(driver_module, DEFAULT_WAIT)
+    do_login(driver_module, _wait)
+    return driver_module, _wait
+
+
+# ── tools 전용 fixtures (다운로드 디렉터리 설정 포함) ─────────────
+
+@pytest.fixture(scope="module")
+def tools_driver_module(request):
+    """tools 테스트 전용 모듈 공유 브라우저 (다운로드 설정 포함)"""
+    browser = request.config.getoption("--browser")
+    _driver = _make_driver(browser, DOWNLOAD_DIR)
+    logger.info(f"브라우저: {browser.upper()} 실행 완료")
+    yield _driver
+    _driver.quit()
+
+
+@pytest.fixture
+def tools_driver(request):
+    """tools 테스트 전용 독립 브라우저 (다운로드 설정 포함)"""
+    browser = request.config.getoption("--browser")
+    _driver = _make_driver(browser, DOWNLOAD_DIR)
+    logger.info(f"브라우저: {browser.upper()} 실행 완료")
+    yield _driver
+    _driver.quit()
+
+

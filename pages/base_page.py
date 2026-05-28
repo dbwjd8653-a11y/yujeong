@@ -3,9 +3,9 @@
 
 import logging
 import time
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait, Select
-from selenium.webdriver.support import expected_conditions as EC
+
+from config.selenium_imports import By, EC, WebDriverWait
+from config.login_helpers import close_token_banner
 
 class BasePage:
 
@@ -16,6 +16,12 @@ class BasePage:
         else:
             self.wait = WebDriverWait(driver, wait_or_timeout)
         self.logger = logging.getLogger(self.__class__.__name__)
+
+    # ========== 네비게이션 ==========
+
+    def go(self, url):
+        self.driver.get(url)
+        close_token_banner(self.driver, self.wait)
 
     # ========== 클릭 유틸리티 ==========
 
@@ -30,18 +36,20 @@ class BasePage:
     # ========== 입력 유틸리티 ==========
 
     def enter_text(self, locator, text):
-        """요소가 보일 때까지 대기 후 텍스트 입력"""
+        """요소가 보일 때까지 대기 후 텍스트 입력 (JS setValue로 React state 직접 갱신 — Chrome/Firefox 공통)"""
         element = self.wait_for_visible(locator)
-        element.clear()
-        element.send_keys(text)
+        element.click()
+        self.js_input(element, text)
 
     def js_input(self, element, text):
-        """React controlled input/textarea에 JS로 값 입력"""
+        """React controlled input/textarea에 JS로 값 입력 (input/textarea 모두 대응)"""
         self.driver.execute_script(
             """
-            var nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-                window.HTMLTextAreaElement.prototype, 'value').set;
-            nativeInputValueSetter.call(arguments[0], arguments[1]);
+            var proto = arguments[0].tagName.toLowerCase() === 'textarea'
+                ? window.HTMLTextAreaElement.prototype
+                : window.HTMLInputElement.prototype;
+            var setter = Object.getOwnPropertyDescriptor(proto, 'value').set;
+            setter.call(arguments[0], arguments[1]);
             arguments[0].dispatchEvent(new Event('input', { bubbles: true }));
             arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
             """,

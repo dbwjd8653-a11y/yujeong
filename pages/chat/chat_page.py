@@ -5,13 +5,12 @@
 import random
 import time
 
-from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+
+from config.selenium_imports import By, EC, WebDriverWait
 
 from pages.base_page import BasePage
-from config.config import BASE_URL
+from config.settings import BASE_URL
 
 
 class ChatPage(BasePage):
@@ -108,8 +107,7 @@ class ChatPage(BasePage):
 
     def open(self):
         """메인 채팅 페이지로 이동"""
-        self.driver.get(self.BASE_URL)
-        self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+        self.go(self.BASE_URL)
         self.logger.info("메인 채팅 페이지 이동 완료")
 
     # ========== LNB 탭 클릭 ==========
@@ -183,6 +181,7 @@ class ChatPage(BasePage):
                 EC.presence_of_element_located(self.RESPONSE_CONTENT)
             )
             self.logger.info("AI 응답 생성 확인")
+
             return True
         except Exception:
             self.logger.warning("AI 응답 대기 타임아웃")
@@ -238,8 +237,7 @@ class ChatPage(BasePage):
             search_input = WebDriverWait(self.driver, 5).until(
                 EC.visibility_of_element_located(self.SEARCH_MODAL_INPUT)
             )
-            search_input.clear()
-            search_input.send_keys(keyword)
+            self.js_input(search_input, keyword)
         except Exception:
             # 입력 필드가 없으면 모달 자체에 포커스 후 타이핑
             modal = self.driver.find_element(*self.SEARCH_MODAL)

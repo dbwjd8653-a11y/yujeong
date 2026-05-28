@@ -6,9 +6,11 @@ BasePage를 상속받아 공통 동작을 재사용합니다.
 한글 버전 로그인 페이지(lang=ko-KR) 기준으로 구현되었습니다.
 """
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from config.selenium_imports import By, EC, TimeoutException
+
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+
 from pages.base_page import BasePage
 
 
@@ -31,7 +33,7 @@ class LoginPage(BasePage):
     LANGUAGE_SELECT = (By.CSS_SELECTOR, "select[aria-label='Change Languages']")  # 언어 선택 드롭다운
 
     # ── Error Message Locators ─────────────────────────────────────
-    EMAIL_FORMAT_ERR = (By.XPATH, "//p[contains(text(),'잘못된 이메일 형식입니다.')]")                  # 이메일 유효성 오류 메시지
+    EMAIL_FORMAT_ERR = (By.XPATH, "//p[contains(text(),'잘못된 이메일 형식입니다.') or contains(text(),'Invalid email format')]")                  # 이메일 유효성 오류 메시지
     PWD_FORMAT_ERR   = (By.XPATH, "//p[contains(text(),'비밀번호는 8자리 이상 입력해주세요.')]")         # 비밀번호 유효성 오류 메시지
     PHONE_FORMAT_ERR = (By.XPATH, "//p[contains(text(),'잘못된 번호 형식입니다.')]")                    # 전화번호 유효성 오류 메시지
     LOCKOUT_MSG      = (By.XPATH, "//p[contains(text(),'로그인을 여러 번 잘못 시도하셨습니다.')]")       # 계정 잠금 메시지
@@ -39,6 +41,16 @@ class LoginPage(BasePage):
 
     def __init__(self, driver, wait):
         super().__init__(driver, wait)
+
+    def is_terms_popup_displayed(self):
+        """약관 동의 팝업(체크박스) 표시 여부 확인 (3초 이내)"""
+        try:
+            WebDriverWait(self.driver, 3).until(
+                EC.presence_of_element_located(self.AGREE_ALL_CHECKBOX)
+            )
+            return True
+        except TimeoutException:
+            return False
 
     def agree_and_submit(self):
         """
@@ -55,6 +67,7 @@ class LoginPage(BasePage):
     def enter_email(self, email):
         """이메일 입력 필드에 텍스트를 입력한다."""
         self.enter_text(self.EMAIL_INPUT, email)
+        self.driver.find_element(*self.EMAIL_INPUT).send_keys(Keys.TAB)
 
     def enter_password(self, pwd):
         """비밀번호 입력 필드에 텍스트를 입력한다."""
@@ -90,7 +103,9 @@ class LoginPage(BasePage):
 
     def is_email_error_displayed(self):
         """'잘못된 이메일 형식입니다.' 오류 메시지가 표시되는지 확인한다."""
-        return self.wait_for_visible(self.EMAIL_FORMAT_ERR).is_displayed()
+        return WebDriverWait(self.driver, 20).until(
+            EC.visibility_of_element_located(self.EMAIL_FORMAT_ERR)
+        ).is_displayed()
 
     def is_pwd_error_displayed(self):
         """'비밀번호는 8자리 이상 입력해주세요.' 오류 메시지가 표시되는지 확인한다."""

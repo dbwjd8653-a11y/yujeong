@@ -1,161 +1,206 @@
-# tests/test_tools_06.py
-# 심층 조사 도구 E2E 테스트 — FHC-057 ~ FHC-063
+# tests/tools/test_tools_deep.py
+# 심층 조사 도구 E2E 테스트 — FHC-058 ~ FHC-064
 
-import pytest
 import logging
-from pages.tools.tools_deep_page import Tool6Page
+import allure
+from pages.tools.tools_deep_page import DeepPage
+import pytest
 
 logger = logging.getLogger(__name__)
 
+pytestmark = [
+    allure.epic("Tools"),
+    allure.feature("심층 조사"),
+    allure.story("심층 조사 해피패스"),
+]
 
-# ── fixture ────────────────────────────────────────────────────────
+
+# ── fixtures ───────────────────────────────────────────────────────
 
 @pytest.fixture(scope="module")
 def deep(login_module):
     """
-    심층 조사 도구 fixture (모듈 공유)
+    심층 조사 도구 fixture - 해피패스용 (모듈 공유)
 
     전제: login_module fixture로 로그인 완료 상태
     단계:
-      1. login_module에서 (driver, wait) 수신 → Tool6Page 생성
-      2. LNB 도구 메뉴 진입 및 심층 조사 도구 초기 세팅
+      1. login_module에서 (driver, wait) 수신 → DeepPage 생성
+      2. 도구 목록 URL 직접 이동
+      3. 심층 조사 도구 초기 세팅
     """
-    tool = Tool6Page(login_module)
-    tool.tools_LNB()
+    driver, wait = login_module
+    tool = DeepPage(driver, wait)
+    tool.navigate_to_tools()
     tool.setup_tool()
     return tool
 
 
-# ── 테스트 케이스 ──────────────────────────────────────────────────
-
-def test_FHC_057_navigate_to_deep_research(deep):
+@pytest.fixture
+def deep_sad(login):
     """
-    [FHC-057] '심층 조사' 메뉴 확인
+    심층 조사 도구 fixture - 새드패스용 (독립 브라우저, FHC-062 전용)
+
+    전제: login fixture로 로그인 완료 상태 (함수 스코프, 해피패스와 독립)
+    단계:
+      1. login에서 (driver, wait) 수신 → DeepPage 생성
+      2. 도구 목록 URL 직접 이동
+      3. 심층 조사 도구 초기 세팅
+    """
+    driver, wait = login
+    tool = DeepPage(driver, wait)
+    tool.navigate_to_tools()
+    tool.setup_tool()
+    return tool
+
+
+@pytest.fixture
+def deep_sad_module(login_module):
+    """
+    심층 조사 도구 fixture - 경계값 새드패스용 (함수 스코프, FHC-063~064)
+
+    전제: login_module fixture로 로그인 완료 상태
+    단계:
+      1. login_module에서 (driver, wait) 수신 → DeepPage 생성
+      2. 도구 목록 URL 직접 이동
+      3. 심층 조사 도구 초기 세팅
+    참고: FHC-063(500자)과 FHC-064(501자)가 필드 상태를 공유하지 않도록 테스트마다 독립 세팅
+    """
+    driver, wait = login_module
+    tool = DeepPage(driver, wait)
+    tool.navigate_to_tools()
+    tool.setup_tool()
+    return tool
+
+
+# ── 해피패스 ──────────────────────────────────────────────────────
+
+@allure.story("심층 조사 해피패스")
+@allure.title("[FHC-058] 심층 조사 메뉴 → 입력 → 생성 시작 확인 (Happy Path)")
+@allure.severity(allure.severity_level.CRITICAL)
+def test_deep_research_happy_path(deep):
+    """
+    [FHC-058~61] 심층 조사 해피패스 — 생성 시작까지
 
     전제: 로그인 완료 상태
     단계:
-      1. LNB > '도구' 탭 클릭
-      2. '심층 조사' 메뉴 클릭
-    기대: '심층 조사' 페이지 타이틀 확인
+      1. LNB > '도구' 탭 클릭 → '심층 조사' 메뉴 클릭 (FHC-058)
+      2. 주제 입력 필드에 '날씨' 입력 (FHC-059)
+      3. 지시사항 입력 필드에 '대한민국 서울의 2026년 5월의 날씨' 입력 (FHC-060)
+      4. [자동 생성] 버튼 클릭 → 로딩 스피너 확인 (FHC-061)
+    기대: '심층 조사' 페이지 진입 → 버튼 활성화 → 생성 시작(스피너 표시)
     """
-    logger.info("[FHC-057] 심층 조사 페이지 진입 확인 시작")
-    deep.is_tool_page_displayed()
-    logger.info("[FHC-057] 심층 조사 페이지 진입 확인 완료")
+    logger.info("[FHC-058] 심층 조사 해피패스 시작")
+
+    with allure.step("[FHC-058] 심층 조사 페이지 진입 확인"):
+        assert deep.is_tool_page_displayed(), "심층 조사 페이지로 이동하지 못했습니다"
+
+    with allure.step("[FHC-059~060] 주제 및 지시사항 입력"):
+        deep.enter_text(DeepPage.TOPIC_INPUT, DeepPage.TOPIC_TEXT)
+        deep.enter_text(DeepPage.MESSAGE_INPUT, DeepPage.MESSAGE_TEXT)
+
+    with allure.step("[FHC-061] 생성 버튼 활성화 확인 및 클릭"):
+        deep.assert_generate_btn_enabled()
+        deep.click_generate()
+
+    with allure.step("[FHC-061] 생성 시작(스피너) 확인"):
+        assert deep.is_generating(), "생성이 시작되지 않았습니다"
+
+    logger.info("[FHC-058~61] 심층 조사 해피패스 — 생성 시작 확인 완료")
 
 
-def test_FHC_058_topic_only_btn_enabled(deep):
+@pytest.mark.slow
+@allure.story("심층 조사 해피패스")
+@allure.title("[FHC-061s] 심층 조사 생성 완료 확인")
+@allure.severity(allure.severity_level.CRITICAL)
+def test_deep_research_is_generated(deep):
     """
-    [FHC-058] 주제만 입력 → [자동 생성] 버튼 활성화 확인
+    [FHC-058a] 심층 조사 생성 완료 확인 (최대 10분) — test_deep_research_happy_path 이후 실행
 
-    전제: test_FHC_057 이어서 심층 조사 페이지 상태
+    전제: test_deep_research_happy_path에서 생성이 시작된 상태 (module fixture 공유)
     단계:
-      1. 주제 입력 필드에 '날씨' 입력
+      1. 생성 완료 확인 (최대 10분) (FHC-061a)
+    기대: 10분 이내 생성 완료
+    """
+    logger.info("[FHC-058a] 심층 조사 생성 완료 확인 시작")
+
+    with allure.step("[FHC-061a] 생성 완료 확인 (최대 10분)"):
+        assert deep.is_generated(timeout=600), "10분 이내 생성 실패"
+
+    logger.info("[FHC-058a] 심층 조사 생성 완료 확인 완료")
+
+
+# ── 새드패스 (해피패스와 독립) ───────────────────────────────────
+
+@allure.story("주제 공백 입력 오류 메시지")
+@allure.title("[FHC-062] 주제 공백 입력 시 오류 메시지 확인")
+@allure.severity(allure.severity_level.NORMAL)
+def test_blank_topic_error(deep_sad):
+    """
+    [FHC-062] 주제 공백 입력 시 오류 메시지 확인
+
+    전제: 로그인 완료 상태 (독립 브라우저)
+    단계:
+      1. 주제 필드에 공백(' ') 입력
       2. 지시사항 필드 비움
-    기대:
-      - 토큰 정상: [자동 생성] 버튼 활성화
-      - 토큰 소진: 버튼 비활성화 (xfail)
-    """
-    logger.info("[FHC-058] 주제만 입력 → 버튼 활성화 확인 시작")
-    deep.enter_text(Tool6Page.TOPIC_INPUT, Tool6Page.TOPIC_TEXT)
-    deep.enter_text(Tool6Page.MESSAGE_INPUT, "")
-    deep.assert_generate_btn_enabled()
-    logger.info("[FHC-058] 주제만 입력 → 버튼 활성화 확인 완료")
-
-
-def test_FHC_059_topic_and_message_btn_enabled(deep):
-    """
-    [FHC-059] 주제 + 지시사항 입력 → [자동 생성] 버튼 활성화 확인
-
-    전제: test_FHC_058 이어서 주제 입력 완료 상태
-    단계:
-      1. 지시사항 필드에 '대한민국 서울의 2026년 5월의 날씨' 입력
-    기대:
-      - 토큰 정상: [자동 생성] 버튼 활성화
-      - 토큰 소진: 버튼 비활성화 (xfail)
-    """
-    logger.info("[FHC-059] 주제 + 지시사항 입력 → 버튼 활성화 확인 시작")
-    deep.enter_text(Tool6Page.MESSAGE_INPUT, Tool6Page.MESSAGE_TEXT)
-    deep.assert_generate_btn_enabled()
-    logger.info("[FHC-059] 주제 + 지시사항 입력 → 버튼 활성화 확인 완료")
-
-
-def test_FHC_060_generate_start(deep):
-    """
-    [FHC-060] 생성 버튼 클릭 → 생성 시작 확인
-
-    전제: test_FHC_059 이어서 주제 + 지시사항 입력 완료 상태
-    단계:
-      1. [자동 생성] 버튼 클릭
-      2. 로딩 스피너 확인
-    기대:
-      - 토큰 소진: xfail
-      - 토큰 정상: 로딩 스피너 표시 (생성 시작)
-    """
-    logger.info("[FHC-060] 생성 버튼 클릭 → 생성 시작 확인 시작")
-    if deep.is_token_exhausted():
-        pytest.xfail("토큰 한도 소진으로 생성 불가")
-    deep.click_generate()
-    assert deep.is_generating(), "생성이 시작되지 않았습니다"
-    logger.info("[FHC-060] 생성 버튼 클릭 → 생성 시작 확인 완료")
-    """
-    ### 05-18 PM 6시 기준 PASSED ###
-    assert tools_ready.is_generated(timeout=600), "10분 이내 생성 실패"  # 생성완료 확인 시 주석 해제
-    logger.info("[FHC-060] 생성 확인 완료")
-    """
-
-
-def test_FHC_061_blank_topic_error(deep):
-    """
-    [FHC-061] 주제 공백 입력 시 오류 메시지 확인
-
-    전제: test_FHC_060 이어서 심층 조사 페이지 상태
-    단계:
-      1. 생성 중이면 정지
-      2. 주제 필드에 공백(' ') 입력
-      3. 지시사항 필드 비움
-      4. [자동 생성] 버튼 클릭
+      3. [자동 생성] 버튼 클릭
     기대: '답변 생성에 문제가 발생했습니다.' 오류 메시지 표시
     """
-    logger.info("[FHC-061] 주제 공백 입력 시 오류 메시지 확인 시작")
-    deep.stop_if_generating()
-    deep.enter_text(Tool6Page.TOPIC_INPUT, Tool6Page.TOPIC_BLANK)
-    deep.enter_text(Tool6Page.MESSAGE_INPUT, "")
-    deep.click_generate()
-    assert deep.is_error_alert_displayed(), "오류 메시지가 표시되지 않았습니다"
-    logger.info("[FHC-061] 주제 공백 입력 시 오류 메시지 확인 완료")
+    logger.info("[FHC-062] 주제 공백 입력 시 오류 메시지 확인 시작")
+
+    with allure.step("[FHC-062] 주제 공백 입력 후 생성 버튼 클릭"):
+        deep_sad.enter_text(DeepPage.TOPIC_INPUT, DeepPage.TOPIC_BLANK)
+        deep_sad.enter_text(DeepPage.MESSAGE_INPUT, "")
+        deep_sad.click_generate()
+
+    with allure.step("[FHC-062] 오류 메시지 표시 확인"):
+        assert deep_sad.is_error_alert_displayed(), "오류 메시지가 표시되지 않았습니다"
+
+    logger.info("[FHC-062] 주제 공백 입력 시 오류 메시지 확인 완료")
 
 
-def test_FHC_062_topic_500_chars_btn_enabled(deep):
+@allure.story("주제 500자 입력 버튼 활성화 경계값")
+@allure.title("[FHC-063] 주제 500자 입력 → [자동 생성] 버튼 활성화 확인 (경계값)")
+@allure.severity(allure.severity_level.NORMAL)
+def test_topic_500_chars_btn_enabled(deep_sad_module):
     """
-    [FHC-062] 주제 500자 입력 → [자동 생성] 버튼 활성화 확인 (경계값)
+    [FHC-063] 주제 500자 입력 → [자동 생성] 버튼 활성화 확인 (경계값)
 
-    전제: test_FHC_061 이어서 심층 조사 페이지 상태
+    전제: 로그인 완료 상태 (독립 브라우저)
     단계:
-      1. 생성 중이면 정지
-      2. 주제 필드에 500자 입력 ('가' * 500)
+      1. 주제 필드에 500자 입력 ('가' * 500)
     기대:
       - 토큰 정상: [자동 생성] 버튼 활성화 (500자 허용 범위 내)
       - 토큰 소진: 버튼 비활성화 (xfail)
     """
-    logger.info("[FHC-062] 주제 500자 입력 → 버튼 활성화 확인 시작")
-    deep.stop_if_generating()
-    deep.enter_text(Tool6Page.TOPIC_INPUT, Tool6Page.TOPIC_500_CHARS)
-    deep.assert_generate_btn_enabled()
-    logger.info("[FHC-062] 주제 500자 입력 → 버튼 활성화 확인 완료")
+    logger.info("[FHC-063] 주제 500자 입력 → 버튼 활성화 확인 시작")
+
+    with allure.step("[FHC-063] 주제 500자 입력"):
+        deep_sad_module.enter_text(DeepPage.TOPIC_INPUT, DeepPage.TOPIC_500_CHARS)
+
+    with allure.step("[FHC-063] 생성 버튼 활성화 확인"):
+        deep_sad_module.assert_generate_btn_enabled()
+
+    logger.info("[FHC-063] 주제 500자 입력 → 버튼 활성화 확인 완료")
 
 
-def test_FHC_063_topic_501_chars_btn_disabled(deep):
+@allure.story("주제 501자 입력 버튼 비활성화 경계값")
+@allure.title("[FHC-064] 주제 501자 입력 → [자동 생성] 버튼 비활성화 확인 (경계값)")
+@allure.severity(allure.severity_level.NORMAL)
+def test_topic_501_chars_btn_disabled(deep_sad_module):
     """
-    [FHC-063] 주제 501자 입력 → [자동 생성] 버튼 비활성화 확인 (경계값)
+    [FHC-064] 주제 501자 입력 → [자동 생성] 버튼 비활성화 확인 (경계값)
 
-    전제: test_FHC_062 이어서 심층 조사 페이지 상태
+    전제: 로그인 완료 상태 (독립 브라우저)
     단계:
-      1. 생성 중이면 정지
-      2. 주제 필드에 501자 입력 ('가' * 501)
+      1. 주제 필드에 501자 입력 ('가' * 501)
     기대: [자동 생성] 버튼 비활성화 (501자 허용 범위 초과)
     """
-    logger.info("[FHC-063] 주제 501자 입력 → 버튼 비활성화 확인 시작")
-    deep.stop_if_generating()
-    deep.enter_text(Tool6Page.TOPIC_INPUT, Tool6Page.TOPIC_501_CHARS)
-    deep.assert_generate_btn_disabled()
-    logger.info("[FHC-063] 주제 501자 입력 → 버튼 비활성화 확인 완료")
+    logger.info("[FHC-064] 주제 501자 입력 → 버튼 비활성화 확인 시작")
+
+    with allure.step("[FHC-064] 주제 501자 입력"):
+        deep_sad_module.enter_text(DeepPage.TOPIC_INPUT, DeepPage.TOPIC_501_CHARS)
+
+    with allure.step("[FHC-064] 생성 버튼 비활성화 확인"):
+        deep_sad_module.assert_generate_btn_disabled()
+
+    logger.info("[FHC-064] 주제 501자 입력 → 버튼 비활성화 확인 완료")

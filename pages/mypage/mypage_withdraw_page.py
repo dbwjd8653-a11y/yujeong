@@ -4,9 +4,8 @@
 
 import time
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from config.selenium_imports import By, EC, WebDriverWait
+from config.login_helpers import close_token_banner
 
 from pages.mypage.mypage_page import MyPage
 
@@ -42,15 +41,17 @@ class MyPage06(MyPage):
     )
 
     # ========== Locators — FHC-080: 회원가입 ==========
-    SIGNUP_LINK         = (By.CSS_SELECTOR, "a[href*='/accounts/signup']")
-    EMAIL_SIGNUP_BUTTON = (By.XPATH,
+    EMAIL_SIGNUP_BUTTON   = (By.XPATH,
         "//button[contains(normalize-space(),'이메일로 가입하기')"
         " or contains(normalize-space(),'Create account with email')]"
     )
     SIGNUP_EMAIL_INPUT    = (By.CSS_SELECTOR, "input[name='loginId']")
     SIGNUP_PASSWORD_INPUT = (By.CSS_SELECTOR, "input[autocomplete='new-password']")
     SIGNUP_NAME_INPUT     = (By.CSS_SELECTOR, "input[name='fullname']")
-    AGREE_ALL_CHECKBOX    = (By.CSS_SELECTOR, "input.PrivateSwitchBase-input[type='checkbox']")
+    AGREE_ALL_CHECKBOX    = (By.XPATH,
+        "//span[normalize-space(text())='전체 동의']/ancestor::label"
+        " | //label[.//span[normalize-space(text())='전체 동의']]"
+    )
     SIGNUP_SUBMIT         = (By.XPATH,
         "//button[@type='submit' and @form='signup-form']"
         " | //button[@type='submit' and contains(@class,'MuiLoadingButton-root')]"
@@ -72,7 +73,7 @@ class MyPage06(MyPage):
             else { window.scrollTo(0, document.body.scrollHeight); }
         """)
         time.sleep(0.5)
-        print("탈퇴 영역으로 스크롤 완료")
+        self.logger.info("탈퇴 영역으로 스크롤 완료")
 
     def is_withdraw_area_displayed(self) -> bool:
         """JS로 탈퇴 버튼 존재 여부 확인"""
@@ -108,7 +109,7 @@ class MyPage06(MyPage):
         if result == 'not-found':
             raise Exception("탈퇴 버튼을 찾을 수 없습니다")
         time.sleep(0.5)
-        print(f"탈퇴하기 버튼 클릭 완료 ({result})")
+        self.logger.info(f"탈퇴하기 버튼 클릭 완료 ({result})")
 
     def is_withdraw_confirm_message_displayed(self) -> bool:
         try:
@@ -130,15 +131,14 @@ class MyPage06(MyPage):
             EC.visibility_of_element_located(self.WITHDRAW_CONFIRM_INPUT)
         )
         confirm_text = f"Delete {email}"
-        input_el.clear()
-        input_el.send_keys(confirm_text)
-        print(f"탈퇴 확인 문구 입력 완료: {confirm_text}")
+        self.js_input(input_el, confirm_text)
+        self.logger.info(f"탈퇴 확인 문구 입력 완료: {confirm_text}")
 
     def submit_withdraw(self):
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.WITHDRAW_FINAL_BUTTON))
         )
-        print("최종 탈퇴 제출 완료")
+        self.logger.info("최종 탈퇴 제출 완료")
 
     def is_withdrawal_complete(self) -> bool:
         try:
@@ -160,41 +160,42 @@ class MyPage06(MyPage):
     # ========== FHC-080: 재가입 ==========
 
     def signup(self, email: str, password: str, name: str):
-        """로그인 페이지 → Create account → 이메일로 가입하기 → 폼 입력 → 제출"""
-        self.js_click(
-            self.wait.until(EC.element_to_be_clickable(self.SIGNUP_LINK))
-        )
-        print("Create account 링크 클릭 완료")
+        """방법 선택 페이지 이동 → 이메일로 가입하기 → 폼 입력 → 제출 (org=qaproject 포함)"""
+        from config.settings import SIGNUP_URL
+        self.driver.get(SIGNUP_URL)
+        WebDriverWait(self.driver, 10).until(EC.url_contains("signup/method"))
+        self.logger.info("회원가입 방법 선택 페이지 이동 완료")
 
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.EMAIL_SIGNUP_BUTTON))
         )
-        print("이메일로 가입하기 클릭 완료")
+        WebDriverWait(self.driver, 10).until(EC.url_contains("signup/form"))
+        self.logger.info("이메일로 가입하기 클릭 완료")
 
         email_input = self.wait.until(EC.visibility_of_element_located(self.SIGNUP_EMAIL_INPUT))
-        email_input.clear()
-        email_input.send_keys(email)
+        self.js_input(email_input, email)
 
         pw_input = self.wait.until(EC.visibility_of_element_located(self.SIGNUP_PASSWORD_INPUT))
-        pw_input.clear()
-        pw_input.send_keys(password)
+        self.js_input(pw_input, password)
 
         name_input = self.wait.until(EC.visibility_of_element_located(self.SIGNUP_NAME_INPUT))
-        name_input.clear()
-        name_input.send_keys(name)
+        self.js_input(name_input, name)
 
-        agree_checkbox = self.wait.until(
-            EC.presence_of_element_located(self.AGREE_ALL_CHECKBOX)
-        )
-        self.driver.execute_script("arguments[0].click();", agree_checkbox)
+        agree_checkbox = self.wait.until(EC.element_to_be_clickable(self.AGREE_ALL_CHECKBOX))
+        self.js_click(agree_checkbox)
         time.sleep(0.3)
-        print("전체 동의 클릭 완료")
+        self.logger.info("전체 동의 클릭 완료")
 
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.SIGNUP_SUBMIT))
         )
-        print(f"회원가입 제출 완료: {email}")
-        time.sleep(2)
+        self.logger.info(f"회원가입 제출 완료: {email}")
+
+        WebDriverWait(self.driver, 30).until(
+            lambda d: "qaproject.elice.io" in d.current_url
+        )
+        close_token_banner(self.driver, self.wait)
+        self.logger.info("회원가입 후 qaproject 리다이렉트 완료")
 
     def is_signup_success(self) -> bool:
         try:

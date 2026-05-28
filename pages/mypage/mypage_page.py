@@ -4,9 +4,7 @@
 
 import time
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from config.selenium_imports import By, EC, WebDriverWait
 
 from pages.base_page import BasePage
 
@@ -57,24 +55,13 @@ class MyPage(BasePage):
 
     def login(self, email: str = None, password: str = None):
         """qaproject SSO 로그인 (기본: MAIN_EMAIL/MAIN_PASSWORD)"""
-        from config.config import LOGIN_URL
-        email    = email    or self.MAIN_EMAIL
-        password = password or self.MAIN_PASSWORD
-
-        self.driver.get(LOGIN_URL)
-        self.wait.until(EC.presence_of_element_located(self.EMAIL_INPUT))
-        self.driver.find_element(*self.EMAIL_INPUT).send_keys(email)
-        self.driver.find_element(*self.PASSWORD_INPUT).send_keys(password)
-        submit = self.driver.find_element(*self.SUBMIT_BUTTON)
-        submit.click()
-        self.wait.until(EC.staleness_of(submit))
-        WebDriverWait(self.driver, 30).until(EC.url_contains("qaproject.elice.io"))
-        WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located(
-                (By.XPATH, "//a[contains(@href,'ai-helpy-chat')]")
-            )
-        )
-        self.logger.info(f"로그인 성공: {email}")
+        from config.login_helpers import do_login
+        user = {
+            "id": email or self.MAIN_EMAIL,
+            "pw": password or self.MAIN_PASSWORD,
+        }
+        do_login(self.driver, self.wait, user)
+        self.logger.info(f"로그인 성공: {user['id']}")
 
     # ========== 페이지 이동 ==========
 
@@ -89,6 +76,9 @@ class MyPage(BasePage):
     def navigate_to_org(self):
         self.driver.get(self.ORG_URL)
         self.wait.until(EC.url_contains("members/organization"))
+        WebDriverWait(self.driver, 10).until(
+            lambda d: len(d.find_element(By.TAG_NAME, "body").text.strip()) > 50
+        )
         self.logger.info("내 기관 페이지 이동 완료")
 
     def navigate_to_language(self):
@@ -100,7 +90,9 @@ class MyPage(BasePage):
         """고객 센터: 계정 페이지 이동 후 JS로 ChannelTalk 위젯 열기 (언어 무관)"""
         self.driver.get(self.ACCOUNT_URL)
         self.wait.until(EC.url_contains("members"))
-        time.sleep(2)
+        WebDriverWait(self.driver, 5).until(
+            lambda d: d.execute_script("return typeof window.ChannelIO === 'function'")
+        )
         result = self.driver.execute_script("""
             if (window.ChannelIO) {
                 window.ChannelIO('showMessenger');

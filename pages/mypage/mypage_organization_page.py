@@ -1,10 +1,8 @@
 # pages/mypage/mypage_organization_page.py
 # 마이페이지 > 내 기관 전용 Page 클래스
-# FHC-081(UI 확인) / FHC-082(qaproject 링크) / FHC-083(헬프 센터 링크)
+# FHC-093(UI 확인) / FHC-094(qaproject 링크) / FHC-095(헬프 센터 링크)
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from config.selenium_imports import By, EC, WebDriverWait
 
 from pages.mypage.mypage_page import MyPage
 
@@ -14,8 +12,8 @@ class MyPage07(MyPage):
     # ========== Locators ==========
     QAPROJECT_LINK = (By.XPATH,
         "//a[contains(@href,'qaproject.elice.io')]"
-        " | //*[contains(text(),'qaproject.elice.io') or contains(text(),'qa 프로젝트')]"
-        "/ancestor::a"
+        " | //*[contains(normalize-space(),'qaproject.elice.io 가기')]"
+        "/ancestor-or-self::a[1]"
     )
     HELP_CENTER_LINK = (By.XPATH,
         "//a[contains(@href,'helpcenter.elice.io')]"
@@ -41,7 +39,7 @@ class MyPage07(MyPage):
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.QAPROJECT_LINK))
         )
-        print("qaproject 링크 클릭 완료")
+        self.logger.info("qaproject 링크 클릭 완료")
 
     # ========== FHC-083: 헬프 센터 링크 ==========
 
@@ -49,4 +47,4 @@ class MyPage07(MyPage):
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.HELP_CENTER_LINK))
         )
-        print("헬프 센터 링크 클릭 완료")
+        self.logger.info("헬프 센터 링크 클릭 완료")

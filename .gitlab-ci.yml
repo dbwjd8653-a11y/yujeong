@@ -1,0 +1,68 @@
+stages:
+  - test
+  - deploy
+  - notify
+
+variables:
+  GIT_SSL_NO_VERIFY: "true"
+  PYTHONIOENCODING: "utf-8"
+
+# ─────────────────────────────────────────────────────────────
+# 1) 테스트 실행
+# ─────────────────────────────────────────────────────────────
+run_tests:
+  stage: test
+  variables:
+    GIT_STRATEGY: fetch
+    GIT_CLEAN_FLAGS: -ffdx
+  script:
+    - python -m pytest tests/ --jira --override-ini="addopts=-v -s --tb=short --alluredir=allure-results --clean-alluredir --continue-on-collection-errors" -m "not slow and not xfail"
+  artifacts:
+    when: always
+    paths:
+      - allure-results/
+    expire_in: 1 week
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+
+# ─────────────────────────────────────────────────────────────
+# 2) Allure 리포트 생성 + GitLab Pages 배포
+# ─────────────────────────────────────────────────────────────
+pages:
+  stage: deploy
+  when: always
+  needs:
+    - job: run_tests
+      artifacts: true
+      optional: true
+  script:
+    - python scripts/ci_allure.py
+  artifacts:
+    paths:
+      - public/
+    expire_in: 30 days
+  cache:
+    key: "allure-history-$CI_COMMIT_BRANCH"
+    paths:
+      - allure-history/
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+
+# ─────────────────────────────────────────────────────────────
+# 3) Discord 알림
+# ─────────────────────────────────────────────────────────────
+notify_discord:
+  stage: notify
+  needs:
+    - job: run_tests
+      artifacts: false
+    - job: pages
+      artifacts: true
+  when: always
+  script:
+    - python scripts/ci_notify.py
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
