@@ -212,6 +212,11 @@ class ChatPage(BasePage):
             title = items[idx].find_element(*self.LNB_CHAT_ITEM_TITLE).text.strip()
         except Exception:
             title = "(제목 파악 불가)"
+        # stale element 방지: 클릭 직전 재탐색 (크기가 달라질 수 있으므로 modulo 처리)
+        items = self.driver.find_elements(*self.LNB_CHAT_ITEMS)
+        if not items:
+            raise Exception("LNB 채팅 목록을 찾을 수 없습니다")
+        self.js_click(items[idx % len(items)])
         self.logger.info(f"LNB 대화 '{title}' 클릭 완료")
         return title
 
