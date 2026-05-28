@@ -32,9 +32,10 @@ def restore_history() -> None:
 
 def generate_report() -> bool:
     result = subprocess.run(
-        ["allure", "generate", str(RESULTS_DIR), "-o", str(REPORT_DIR), "--clean"],
+        f'allure generate "{RESULTS_DIR}" -o "{REPORT_DIR}" --clean',
         capture_output=True,
         text=True,
+        shell=True,
     )
     if result.returncode != 0:
         print(f"[경고] allure generate 실패:\n{result.stderr}", file=sys.stderr)

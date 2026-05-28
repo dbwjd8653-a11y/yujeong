@@ -14,6 +14,10 @@ run_tests:
   stage: test
   variables:
     GIT_STRATEGY: clone
+  before_script:
+    - Stop-Process -Name "firefox" -Force -ErrorAction SilentlyContinue
+    - Stop-Process -Name "geckodriver" -Force -ErrorAction SilentlyContinue
+    - Start-Sleep -Seconds 3
   script:
     - python -m pytest tests/ --alluredir=allure-results --clean-alluredir -v --tb=short
   artifacts:
