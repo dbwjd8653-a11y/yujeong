@@ -128,26 +128,36 @@ class PPTPage(BaseToolPage):
     # ========== 다운로드 ==========
 
     def download_result(self, download_dir: str, browser: str = "firefox"):
-        existing = set(glob.glob(os.path.join(download_dir, "*.pptx")))
+        before_mtime = {}
+        for f in glob.glob(os.path.join(download_dir, "*.pptx")):
+            try:
+                before_mtime[f] = os.path.getmtime(f)
+            except OSError:
+                pass
+
         btn = self.wait.until(EC.element_to_be_clickable(self.DOWNLOAD_BTN))
         self.driver.execute_script(
             "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btn
         )
         self.js_click(btn)
         self.logger.info("생성 결과 다운받기 버튼 클릭 완료")
+        click_time = time.time()
 
         self.logger.info("파일 다운로드 대기 중...")
-        temp_ext = "*.part" if browser.lower() == "firefox" else "*.crdownload"
-        deadline = time.time() + 30
+        deadline = time.time() + 60
         while time.time() < deadline:
-            time.sleep(1)
-            current = set(glob.glob(os.path.join(download_dir, "*.pptx")))
-            new_files = current - existing
-            temp_files = glob.glob(os.path.join(download_dir, temp_ext))
-            if new_files and not temp_files:
-                self.logger.info(f"다운로드 완료: {list(new_files)[0]}")
-                return True
-        self.logger.warning("다운로드 타임아웃 (30초 초과)")
+            time.sleep(0.5)
+            for f in glob.glob(os.path.join(download_dir, "*.pptx")):
+                if os.path.exists(f + ".part"):
+                    continue
+                try:
+                    mtime = os.path.getmtime(f)
+                except OSError:
+                    continue
+                if f not in before_mtime or mtime > click_time:
+                    self.logger.info(f"다운로드 완료: {f}")
+                    return True
+        self.logger.warning("다운로드 타임아웃 (60초 초과)")
         return False
 
     # ========== 생성 버튼 활성화 확인 / 클릭 / 결과 대기 ==========
