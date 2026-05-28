@@ -23,7 +23,7 @@ if not WEBHOOK_URL:
 
 
 def parse_allure_summary() -> dict:
-    summary_path = Path("allure-report/widgets/summary.json")
+    summary_path = Path("public/widgets/summary.json")
     if not summary_path.exists():
         print("[경고] summary.json 없음 — 통계 0으로 처리")
         return {}
