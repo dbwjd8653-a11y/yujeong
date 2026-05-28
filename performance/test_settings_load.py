@@ -50,7 +50,7 @@ def test_tab_load(settings_load):
       5. 페이지 이동 정상동작 확인
     기대: 각 탭(일반, 이용내역, 모델 설정, 구독 관리, 구성원 관리) 클릭 시 해당 탭
           페이지로 정상 이동되며, 탭 전환 시 페이지 깨짐/로딩 오류 없이 콘텐츠가 정상 표시됨
-    관련 TC: FHC-082, FHC-083, FHC-065
+    관련 TC: FHC-068, FHC-069, FHC-070, FHC-071, FHC-072, FHC-073, FHC-074
     """
     logger.info("[FHC-094] 설정 탭 부하 테스트 시작")
     settings_load.click_all_tabs_three_times()
