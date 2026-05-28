@@ -38,11 +38,11 @@ def quiz(login_module):
 
 
 @allure.story("퀴즈 생성 해피패스")
-@allure.title("[FHC-055] 퀴즈 생성 메뉴 → 입력 → 생성 → 완료 (Happy Path)")
+@allure.title("[FHC-055~057] 퀴즈 생성 메뉴 → 입력 → 생성 → 완료 (Happy Path)")
 @allure.severity(allure.severity_level.CRITICAL)
 def test_quiz_happy_path(quiz):
     """
-    [FHC-055~57] 퀴즈 생성 해피패스 (FHC-055 ~ FHC-057 통합)
+    [FHC-055~057] 퀴즈 생성 해피패스 (FHC-055 ~ FHC-057 통합)
 
     전제: 로그인 완료 상태
     단계:
@@ -51,7 +51,7 @@ def test_quiz_happy_path(quiz):
       3. [자동 생성] 버튼 클릭 → 로딩 스피너 확인 → 생성 완료 (최대 2분) (FHC-057)
     기대: '퀴즈 생성' 페이지 진입 → 버튼 활성화 → 2분 이내 생성 완료
     """
-    logger.info("[FHC-054] 퀴즈 생성 해피패스 시작")
+    logger.info("[FHC-055] 퀴즈 생성 해피패스 시작")
 
     with allure.step("[FHC-055] 퀴즈 생성 페이지 진입 확인"):
         quiz.is_tool_page_displayed()
