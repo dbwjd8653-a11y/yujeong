@@ -1,6 +1,8 @@
 # config/browser_factory.py
 # 브라우저 드라이버 생성 팩토리 — Selenium Manager 사용 (별도 드라이버 설치 불필요)
 
+import os
+
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
@@ -8,7 +10,10 @@ from config.settings import DOWNLOAD_DIR
 
 
 def _base_opts() -> FirefoxOptions:
-    return FirefoxOptions()
+    opts = FirefoxOptions()
+    if os.environ.get("CI"):
+        opts.add_argument("--headless")
+    return opts
 
 
 def make_firefox_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Firefox:
