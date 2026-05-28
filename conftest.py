@@ -7,8 +7,6 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-import requests
-
 import pytest
 
 from config.selenium_imports import WebDriverWait
@@ -57,8 +55,6 @@ def pytest_sessionfinish(session, exitstatus):
         ["allure", "generate", "allure-results", "-o", "allure-report", "--clean"],
         capture_output=True, timeout=60, shell=True
     )
-    if session.config.getoption("--open", default=False) or session.config.getoption("--discord", default=False):
-        subprocess.Popen(["allure", "serve", "allure-results"], shell=True)
 
 
 # ── 테스트 실패 자동 로깅 + Jira 이슈 생성 및 스크린샷 첨부 Hook ──
@@ -169,18 +165,6 @@ def pytest_collection_modifyitems(items):
 # ── CLI 옵션 ───────────────────────────────────────────────────────
 def pytest_addoption(parser):
     parser.addoption(
-        "--discord",
-        action="store_true",
-        default=False,
-        help="테스트 완료 후 Discord로 결과 전송",
-    )
-    parser.addoption(
-        "--open",
-        action="store_true",
-        default=False,
-        help="테스트 완료 후 HTML 리포트를 브라우저로 열기",
-    )
-    parser.addoption(
         "--jira",
         action="store_true",
         default=False,
@@ -253,86 +237,3 @@ def tools_driver():
     _driver.quit()
 
 
-# ── pytest 종료 시 Discord 결과 전송 ──────────────────────────────
-DISCORD_WEBHOOK_URL = os.environ.get(
-    "DISCORD_WEBHOOK_URL",
-    "https://discordapp.com/api/webhooks/1506913724663992330/fFs7F0fWTaAADPwpaRXfTE0MkPPlLVuYKVERtR8qwdBfpJhSBwRyCbv8aYHj-5CfrJSV",
-)
-
-def pytest_terminal_summary(terminalreporter, exitstatus, config):
-    if not config.getoption("--discord", default=False):
-        return
-
-    passed = len(terminalreporter.stats.get('passed', []))
-    failed = len(terminalreporter.stats.get('failed', []))
-    error  = len(terminalreporter.stats.get('error', []))
-    total  = passed + failed + error
-    date   = datetime.now().strftime("%Y-%m-%d %H:%M")
-
-    args = [a for a in config.args if not a.startswith("-")]
-    if args:
-        test_name = ", ".join(os.path.basename(a.rstrip("/\\")) for a in args) + " 테스트 결과"
-    else:
-        test_name = "전체 테스트 결과"
-
-    config._discord_message = f"""🚀 {test_name}
-테스트 일자: {date}
-✅ 성공: {passed}건
-❌ 실패: {failed}건
-총: {total}건"""
-
-
-def pytest_unconfigure(config):
-    if not config.getoption("--discord", default=False):
-        return
-
-    message = getattr(config, '_discord_message', '')
-    screenshot_bytes = None
-
-    try:
-        import subprocess, threading, http.server, socket, time
-        from selenium import webdriver
-        from selenium.webdriver.firefox.options import Options as FirefoxOptions
-
-        with socket.socket() as s:
-            s.bind(('', 0))
-            port = s.getsockname()[1]
-
-        class _Handler(http.server.SimpleHTTPRequestHandler):
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, directory="allure-report", **kwargs)
-            def log_message(self, *args):
-                pass
-
-        server = http.server.HTTPServer(('localhost', port), _Handler)
-        t = threading.Thread(target=server.serve_forever)
-        t.daemon = True
-        t.start()
-
-        opts = FirefoxOptions()
-        opts.add_argument("--headless")
-        driver = webdriver.Firefox(options=opts)
-        try:
-            driver.get(f"http://localhost:{port}/index.html")
-            driver.set_window_size(1400, 900)
-            time.sleep(4)
-            screenshot_bytes = driver.get_screenshot_as_png()
-        finally:
-            driver.quit()
-            server.shutdown()
-
-    except Exception as e:
-        logger.warning(f"Allure 리포트 스크린샷 실패: {e}")
-
-    try:
-        if screenshot_bytes:
-            requests.post(
-                DISCORD_WEBHOOK_URL,
-                data={"content": message},
-                files={"file": ("report.png", screenshot_bytes, "image/png")},
-                timeout=30
-            )
-        else:
-            requests.post(DISCORD_WEBHOOK_URL, json={"content": message}, timeout=10)
-    except Exception as e:
-        logger.warning(f"Discord 전송 실패: {e}")

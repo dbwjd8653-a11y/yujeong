@@ -25,12 +25,9 @@ run_tests:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - if: '$CI_COMMIT_BRANCH == "develop"'
-    - if: '$CI_COMMIT_BRANCH =~ /^test/'
 
 # ─────────────────────────────────────────────────────────────
 # 2) Allure 리포트 생성 + GitLab Pages 배포
-#    - job 이름이 반드시 "pages" 여야 GitLab Pages로 배포됨
-#    - allure-history 캐시로 트렌드/히스토리 보존
 # ─────────────────────────────────────────────────────────────
 pages:
   stage: deploy
@@ -51,12 +48,9 @@ pages:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - if: '$CI_COMMIT_BRANCH == "develop"'
-    - if: '$CI_COMMIT_BRANCH =~ /^test/'
 
 # ─────────────────────────────────────────────────────────────
 # 3) Discord 알림
-#    - DISCORD_WEBHOOK_URL: GitLab CI/CD 변수에 등록 필요
-#    - 성공/실패 관계없이 항상 실행
 # ─────────────────────────────────────────────────────────────
 notify_discord:
   stage: notify
@@ -71,4 +65,3 @@ notify_discord:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - if: '$CI_COMMIT_BRANCH == "develop"'
-    - if: '$CI_COMMIT_BRANCH =~ /^test/'
