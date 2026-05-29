@@ -30,10 +30,6 @@
 > pytest -n 4
 
 
-## Discord 알림 사용
-> pytest --discord tests/폴더명/
-
-
 ## Allure 리포트 환경 설정
 ### Allure 설치 순서
 #### 사전 준비
@@ -71,16 +67,13 @@ VS Code 터미널에서 우측 상단 + 옆 드롭다운 → PowerShell 선택
 
 
 ## Allure 리포트 확인
-> pytest tests/폴더명/ --open
+테스트 실행 후 allure-report/ 가 자동 생성됩니다.
 
-### 빠른 확인 (결과만 저장, 브라우저 안 열림)
-> pytest tests/폴더명/
+### 브라우저로 바로 열기
+> allure serve allure-results
 
-### 리포트 브라우저로 보기
-> pytest tests/폴더명/ --open
-
-### Discord로 전송 (리포트 스크린샷 포함)
-> pytest tests/폴더명/ --discord
+### 정적 리포트 생성 후 열기
+> allure open allure-report
 
 
 ## Allure 리포트 확인 없이 테스트만 실행
