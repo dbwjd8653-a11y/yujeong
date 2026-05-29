@@ -7,6 +7,14 @@
 ## slow marker만 실행
 > pytest -m slow 
 
+## 브라우저별 실행
+
+- Firefox
+> pytest
+
+- Chrome
+> pytest --browser chrome
+
 ## Jira Issue Report 생성 (임시)
 > pytest --jira
 

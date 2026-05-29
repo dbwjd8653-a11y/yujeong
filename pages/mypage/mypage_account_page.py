@@ -55,8 +55,7 @@ class MyPage05(MyPage):
 
     def enter_name(self, name: str):
         name_input = self.wait.until(EC.visibility_of_element_located(self.NAME_INPUT))
-        name_input.clear()
-        name_input.send_keys(name)
+        self.js_input(name_input, name)
         self.logger.info(f"이름 입력 완료: {name}")
 
     def save_name(self):
@@ -92,16 +91,13 @@ class MyPage05(MyPage):
     def change_password(self, current_pw: str, new_pw: str):
         """비밀번호 변경 (current_pw → new_pw, 동일 비밀번호 불가)"""
         curr = self.wait.until(EC.visibility_of_element_located(self.CURRENT_PW_INPUT))
-        curr.clear()
-        curr.send_keys(current_pw)
+        self.js_input(curr, current_pw)
 
         new = self.wait.until(EC.visibility_of_element_located(self.NEW_PW_INPUT))
-        new.clear()
-        new.send_keys(new_pw)
+        self.js_input(new, new_pw)
 
         confirm = self.wait.until(EC.visibility_of_element_located(self.CONFIRM_PW_INPUT))
-        confirm.clear()
-        confirm.send_keys(new_pw)
+        self.js_input(confirm, new_pw)
 
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.COMPLETE_BUTTON))

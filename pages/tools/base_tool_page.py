@@ -247,8 +247,7 @@ class BaseToolPage(BasePage):
         )
         self.logger.info("이름 필드 클릭 완료")
         name_input = self.wait.until(EC.visibility_of_element_located(self.FOOTER_NAME_INPUT))
-        name_input.clear()
-        name_input.send_keys(name)
+        self.js_input(name_input, name)
         self.logger.info(f"학생 이름 '{name}' 입력 완료")
         time.sleep(0.3)  # React 키 입력 상태 반영 최소 대기
 

@@ -53,16 +53,17 @@ def deep_sad(login):
     return tool
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def deep_sad_module(login_module):
     """
-    심층 조사 도구 fixture - 경계값 새드패스용 (모듈 공유, FHC-063~064)
+    심층 조사 도구 fixture - 경계값 새드패스용 (함수 스코프, FHC-063~064)
 
     전제: login_module fixture로 로그인 완료 상태
     단계:
       1. login_module에서 (driver, wait) 수신 → DeepPage 생성
       2. 도구 목록 URL 직접 이동
       3. 심층 조사 도구 초기 세팅
+    참고: FHC-063(500자)과 FHC-064(501자)가 필드 상태를 공유하지 않도록 테스트마다 독립 세팅
     """
     driver, wait = login_module
     tool = DeepPage(driver, wait)
@@ -105,6 +106,7 @@ def test_deep_research_happy_path(deep):
         assert deep.is_generating(), "생성이 시작되지 않았습니다"
 
     logger.info("[FHC-058~61] 심층 조사 해피패스 — 생성 시작 확인 완료")
+
 
 
 @allure.story("심층 조사 해피패스")

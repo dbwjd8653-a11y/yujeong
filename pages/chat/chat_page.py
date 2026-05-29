@@ -237,8 +237,7 @@ class ChatPage(BasePage):
             search_input = WebDriverWait(self.driver, 5).until(
                 EC.visibility_of_element_located(self.SEARCH_MODAL_INPUT)
             )
-            search_input.clear()
-            search_input.send_keys(keyword)
+            self.js_input(search_input, keyword)
         except Exception:
             # 입력 필드가 없으면 모달 자체에 포커스 후 타이핑
             modal = self.driver.find_element(*self.SEARCH_MODAL)

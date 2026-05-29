@@ -112,8 +112,7 @@ class LessonPlanPage(BaseToolPage):
 
     def enter_topic(self, topic):
         inp = self.wait.until(EC.element_to_be_clickable(self.TOPIC_INPUT))
-        inp.clear()
-        inp.send_keys(topic)
+        self.js_input(inp, topic)
 
     def select_period(self, period):
         combo = self.wait.until(EC.element_to_be_clickable(self.PERIOD_COMBOBOX))
@@ -156,8 +155,7 @@ class LessonPlanPage(BaseToolPage):
             "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", ta
         )
         ta = self.wait.until(EC.element_to_be_clickable(self.COMMENT_TEXTAREA))
-        ta.clear()
-        ta.send_keys(comment)
+        self.js_input(ta, comment)
 
     def regen_with_random_values(self):
         self.select_school_level(random.choice(["초등학교", "중학교", "고등학교"]))

@@ -70,8 +70,7 @@ class SignupPage(BasePage):
         element = self.wait.until(
             EC.visibility_of_element_located(locator)
         )
-        element.clear()
-        element.send_keys(text)
+        self.js_input(element, text)
     
     # email, pw, name 입력
     def enter_email(self, email):

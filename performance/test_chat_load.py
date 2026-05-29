@@ -1,5 +1,5 @@
 # tests/performance/test_chat_load.py
-# 채팅 메시지 연속 전송 부하 테스트 — FHC-095
+# 채팅 메시지 연속 전송 부하 테스트 — FHC-103
 
 import time
 import logging
@@ -32,11 +32,11 @@ def chat_load(login_module):
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
 @allure.story("채팅 메시지 연속 전송 부하 테스트")
-@allure.title("[FHC-095] 채팅 메시지 연속 전송 부하 테스트")
+@allure.title("[FHC-103] 채팅 메시지 연속 전송 부하 테스트")
 @allure.severity(allure.severity_level.NORMAL)
 def test_chat_load(chat_load):
     """
-    [FHC-095] 채팅 메시지 연속 전송 부하 테스트
+    [FHC-103] 채팅 메시지 연속 전송 부하 테스트
 
     전제: 헬피챗 접속, 로그인 완료 (관리자 계정)
     단계:
@@ -48,7 +48,7 @@ def test_chat_load(chat_load):
     기대: 10회 전송 중 오류 없이 응답 수신, 각 응답 시간 기록됨
     관련 TC: FHC-022, FHC-023, FHC-024, FHC-025, FHC-026, FHC-027
     """
-    logger.info("[FHC-095] 채팅 연속 전송 부하 테스트 시작")
+    logger.info("[FHC-103] 채팅 연속 전송 부하 테스트 시작")
     fail_count = 0
 
     for i in range(1, REPEAT + 1):
@@ -68,4 +68,4 @@ def test_chat_load(chat_load):
         time.sleep(INTERVAL)
 
     assert fail_count == 0, f"10회 중 {fail_count}회 응답 수신 실패"
-    logger.info("[FHC-095] 채팅 연속 전송 부하 테스트 완료")
+    logger.info("[FHC-103] 채팅 연속 전송 부하 테스트 완료")

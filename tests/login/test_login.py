@@ -60,7 +60,6 @@ def test_login_success(login):
 
     driver, wait = login
     page = LoginPage(driver, wait)
-
     with allure.step("[FHC-006] 약관 동의 팝업 처리 (최초 로그인 시)"):
         if page.is_terms_popup_displayed():
             page.agree_and_submit()

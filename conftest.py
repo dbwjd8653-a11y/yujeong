@@ -12,7 +12,10 @@ import pytest
 from config.selenium_imports import WebDriverWait
 
 from config.settings import DEFAULT_WAIT, DOWNLOAD_DIR
-from config.browser_factory import make_firefox_driver, make_simple_firefox_driver
+from config.browser_factory import (
+    make_firefox_driver, make_simple_firefox_driver,
+    make_chrome_driver, make_simple_chrome_driver,
+)
 from config.login_helpers import do_login, close_token_banner
 from utils.jira_helper import create_jira_bug_ticket, attach_image_to_jira
 
@@ -49,6 +52,8 @@ def pytest_sessionstart(session):
 
 def pytest_sessionfinish(session, exitstatus):
     import subprocess
+    subprocess.run(["taskkill", "/F", "/IM", "firefox.exe"], capture_output=True)
+    subprocess.run(["taskkill", "/F", "/IM", "geckodriver.exe"], capture_output=True)
     subprocess.run(
         ["allure", "generate", "allure-results", "-o", "allure-report", "--clean"],
         capture_output=True, timeout=60, shell=True
@@ -168,14 +173,29 @@ def pytest_addoption(parser):
         default=False,
         help="실패 테스트를 Jira 등록"
     )
+    parser.addoption(
+        "--browser",
+        action="store",
+        default="firefox",
+        choices=["firefox", "chrome"],
+        help="테스트 브라우저 선택 (firefox | chrome)",
+    )
 
 
 # ── 브라우저 fixtures (테스트마다 독립 실행) ───────────────────────
 
+def _make_simple_driver(browser: str):
+    return make_simple_chrome_driver() if browser == "chrome" else make_simple_firefox_driver()
+
+
+def _make_driver(browser: str, download_dir: str = DOWNLOAD_DIR):
+    return make_chrome_driver(download_dir) if browser == "chrome" else make_firefox_driver(download_dir)
+
+
 @pytest.fixture
-def driver():
-    """테스트마다 새 Firefox 브라우저 실행"""
-    _driver = make_simple_firefox_driver()
+def driver(request):
+    """테스트마다 새 브라우저 실행 (--browser 옵션으로 선택)"""
+    _driver = _make_simple_driver(request.config.getoption("--browser"))
     yield _driver
     _driver.quit()
 
@@ -195,9 +215,9 @@ def login(driver, wait):
 # ── 브라우저 fixtures (모듈 전체 공유) ────────────────────────────
 
 @pytest.fixture(scope="module")
-def driver_module():
-    """모듈 전체 공유 Firefox 브라우저"""
-    _driver = make_simple_firefox_driver()
+def driver_module(request):
+    """모듈 전체 공유 브라우저 (--browser 옵션으로 선택)"""
+    _driver = _make_simple_driver(request.config.getoption("--browser"))
     yield _driver
     _driver.quit()
 
@@ -218,19 +238,21 @@ def login_module(driver_module):
 # ── tools 전용 fixtures (다운로드 디렉터리 설정 포함) ─────────────
 
 @pytest.fixture(scope="module")
-def tools_driver_module():
+def tools_driver_module(request):
     """tools 테스트 전용 모듈 공유 브라우저 (다운로드 설정 포함)"""
-    _driver = make_firefox_driver(DOWNLOAD_DIR)
-    logger.info("브라우저: FIREFOX 실행 완료")
+    browser = request.config.getoption("--browser")
+    _driver = _make_driver(browser, DOWNLOAD_DIR)
+    logger.info(f"브라우저: {browser.upper()} 실행 완료")
     yield _driver
     _driver.quit()
 
 
 @pytest.fixture
-def tools_driver():
+def tools_driver(request):
     """tools 테스트 전용 독립 브라우저 (다운로드 설정 포함)"""
-    _driver = make_firefox_driver(DOWNLOAD_DIR)
-    logger.info("브라우저: FIREFOX 실행 완료")
+    browser = request.config.getoption("--browser")
+    _driver = _make_driver(browser, DOWNLOAD_DIR)
+    logger.info(f"브라우저: {browser.upper()} 실행 완료")
     yield _driver
     _driver.quit()
 
