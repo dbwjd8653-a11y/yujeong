@@ -22,7 +22,7 @@ if not WEBHOOK_URL:
     sys.exit(1)
 
 
-def parse_allure_summary() -> dict:
+def parse_allure_summary() -> tuple[dict, list[str]]:
     # 1차: pages 잡이 생성한 summary.json
     summary_path = Path("public/widgets/summary.json")
     if summary_path.exists():
@@ -30,7 +30,8 @@ def parse_allure_summary() -> dict:
             with open(summary_path, encoding="utf-8") as f:
                 stats = json.load(f).get("statistic", {})
             if stats.get("total", 0) > 0:
-                return stats
+                failed_names = _get_failed_names()
+                return stats, failed_names
         except Exception as e:
             print(f"[경고] summary.json 파싱 실패: {e}", file=sys.stderr)
 
@@ -39,27 +40,57 @@ def parse_allure_summary() -> dict:
     return _parse_from_results()
 
 
-def _parse_from_results() -> dict:
+def _get_failed_names() -> list[str]:
+    """public/data/suites.json 또는 allure-results에서 실패 TC 이름 수집"""
+    suites_path = Path("public/data/suites.json")
+    if suites_path.exists():
+        try:
+            with open(suites_path, encoding="utf-8") as f:
+                data = json.load(f)
+            names: list[str] = []
+            _collect_failed(data, names)
+            return names
+        except Exception as e:
+            print(f"[경고] suites.json 파싱 실패: {e}", file=sys.stderr)
+
+    _, names = _parse_from_results()
+    return names
+
+
+def _collect_failed(node: dict, names: list[str]) -> None:
+    """suites.json 노드를 재귀 순회하여 failed/broken 이름 수집"""
+    if node.get("status") in ("failed", "broken"):
+        names.append(node.get("name", "unknown"))
+    for child in node.get("children", []):
+        _collect_failed(child, names)
+
+
+def _parse_from_results() -> tuple[dict, list[str]]:
     results_dir = Path("allure-results")
     if not results_dir.exists():
         print("[경고] allure-results 디렉터리 없음")
-        return {}
+        return {}, []
 
     stats = {"passed": 0, "failed": 0, "broken": 0, "skipped": 0, "total": 0}
+    failed_names: list[str] = []
     for result_file in results_dir.glob("*-result.json"):
         try:
             with open(result_file, encoding="utf-8") as f:
-                status = json.load(f).get("status", "")
+                data = json.load(f)
+            status = data.get("status", "")
             if status in stats:
                 stats[status] += 1
             stats["total"] += 1
+            if status in ("failed", "broken"):
+                name = data.get("name") or data.get("fullName", result_file.stem)
+                failed_names.append(name)
         except Exception:
             pass
 
-    return stats
+    return stats, failed_names
 
 
-def build_message(stats: dict) -> str:
+def build_message(stats: dict, failed_names: list[str]) -> str:
     passed  = stats.get("passed", 0)
     failed  = stats.get("failed", 0)
     broken  = stats.get("broken", 0)
@@ -84,6 +115,15 @@ def build_message(stats: dict) -> str:
         f"✅ 성공: **{passed}**  ❌ 실패: **{failed + broken}**  ⏭ 스킵: **{skipped}**  합계: **{total}**",
     ]
 
+    if failed_names:
+        lines.append("")
+        lines.append("❌ 실패 목록:")
+        for name in failed_names[:3]:
+            lines.append(f"  · {name}")
+        rest = len(failed_names) - 3
+        if rest > 0:
+            lines.append(f"  외 {rest}건")
+
     if pages_url:
         lines.append(f"\n📊 Allure 리포트: {pages_url}")
     if pipeline_url:
@@ -99,8 +139,8 @@ def send(message: str) -> None:
 
 
 if __name__ == "__main__":
-    stats = parse_allure_summary()
-    message = build_message(stats)
+    stats, failed_names = parse_allure_summary()
+    message = build_message(stats, failed_names)
     try:
         send(message)
     except Exception as e:
