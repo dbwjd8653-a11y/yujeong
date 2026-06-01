@@ -1,8 +1,5 @@
-## pytest 평소 실행 (slow 제외 test)
+## pytest 평소 실행
 > pytest
-
-## slow marker까지 실행
-> pytest -m "" 
 
 ## slow marker만 실행
 > pytest -m slow 
