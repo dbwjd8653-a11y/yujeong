@@ -22,7 +22,7 @@ def _base_opts() -> FirefoxOptions:
 
 def make_firefox_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Firefox:
     """파일 다운로드 설정이 포함된 Firefox 드라이버 생성"""
-    opts = FirefoxOptions()
+    opts = _base_opts()
     opts.set_preference("browser.download.folderList", 2)
     opts.set_preference("browser.download.dir", download_dir)
     opts.set_preference("browser.download.useDownloadDir", True)
@@ -44,7 +44,7 @@ def make_firefox_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Firefox:
 
 def make_simple_firefox_driver() -> webdriver.Firefox:
     """다운로드 설정 없는 기본 Firefox 드라이버 생성"""
-    driver = webdriver.Firefox(options=FirefoxOptions())
+    driver = webdriver.Firefox(options=_base_opts())
     driver.set_window_size(WINDOW_WIDTH, WINDOW_HEIGHT)
     return driver
 
