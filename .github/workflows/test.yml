@@ -19,10 +19,10 @@ jobs:
       - name: Install dependencies
         run: pip install -r config/requirements.txt
 
-      - name: Install Firefox & geckodriver
+      - name: Install Firefox
         run: |
-          sudo snap install firefox
-          sudo ln -sf /snap/bin/firefox /usr/local/bin/firefox
+          sudo apt-get update -qq
+          sudo apt-get install -y firefox-esr
 
       - name: Run tests
         env:
