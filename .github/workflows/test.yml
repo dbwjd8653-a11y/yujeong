@@ -20,14 +20,7 @@ jobs:
         run: pip install -r config/requirements.txt
 
       - name: Install Firefox
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget bzip2
-          wget -q "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" -O firefox.tar.bz2
-          tar -xjf firefox.tar.bz2
-          sudo mv firefox /opt/firefox
-          sudo ln -sf /opt/firefox/firefox /usr/local/bin/firefox
-          firefox --version
+        uses: browser-actions/setup-firefox@latest
 
       - name: Run tests
         env:
