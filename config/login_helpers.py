@@ -26,7 +26,7 @@ def do_login(driver, wait, user: dict = None):
     wait.until(
         EC.element_to_be_clickable((By.XPATH, "//button[text()='로그인']"))
     ).click()
-    wait.until(lambda d: d.current_url.startswith("https://qaproject.elice.io"))
+    wait.until(lambda d: d.current_url.startswith("https://qaproject-temp.app.elice.io"))
     close_token_banner(driver, wait)
 
 
