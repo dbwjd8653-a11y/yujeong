@@ -10,8 +10,10 @@ GitLab CI 환경 변수(CI_PROJECT_NAME, CI_PAGES_URL 등)를 자동으로 사�
 import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
+
+KST = timezone(timedelta(hours=9))
 
 import requests
 
@@ -105,7 +107,7 @@ def build_message(stats: dict, failed_names: list[str]) -> str:
     pipeline_url = os.environ.get("CI_PIPELINE_URL", "")
 
     icon = "✅" if (failed + broken) == 0 else "❌"
-    date = datetime.now().strftime("%Y-%m-%d %H:%M")
+    date = datetime.now(KST).strftime("%Y-%m-%d %H:%M KST")
 
     lines = [
         f"{icon} **{project}** — `{branch}` 테스트 완료",
