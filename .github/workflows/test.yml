@@ -21,8 +21,13 @@ jobs:
 
       - name: Install Firefox
         run: |
-          sudo snap install firefox
-          sudo ln -sf /snap/bin/firefox /usr/local/bin/firefox
+          sudo apt-get update
+          sudo apt-get install -y wget bzip2
+          wget -q "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" -O firefox.tar.bz2
+          tar -xjf firefox.tar.bz2
+          sudo mv firefox /opt/firefox
+          sudo ln -sf /opt/firefox/firefox /usr/local/bin/firefox
+          firefox --version
 
       - name: Run tests
         env:
