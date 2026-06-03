@@ -6,16 +6,15 @@ import os
 # ── URL ────────────────────────────────────────────────────────────
 LOGIN_URL = (
     "https://accounts.elice.io/accounts/signin/me"
-    "?continue_to=https%3A%2F%2Fqaproject.elice.io%2Fai-helpy-chat"
+    "?continue_to=https%3A%2F%2Fqaproject-temp.app.elice.io%2Fai-helpy-chat"
     "&lang=ko-KR&org=qaproject"
 )
-BASE_URL     = "https://qaproject.elice.io/ai-helpy-chat"
-BASE_UI_URL  = "https://qaproject.elice.io"
+BASE_URL     = "https://qaproject-temp.app.elice.io/ai-helpy-chat"
+BASE_UI_URL  = "https://qaproject-temp.app.elice.io"
 BASE_API_URL = "https://dev-v2-community-api.dev.elicer.io"
-
 SIGNUP_URL = (
     "https://accounts.elice.io/accounts/signup/method"
-    "?continue_to=https%3A%2F%2Fqaproject.elice.io%2Fai-helpy-chat"
+    "?continue_to=https%3A%2F%2Fqaproject-temp.app.elice.io%2Fai-helpy-chat"
     "&lang=ko-KR&org=qaproject"
 )
 
