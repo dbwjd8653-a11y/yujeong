@@ -52,12 +52,13 @@ def pytest_sessionstart(session):
 
 def pytest_sessionfinish(session, exitstatus):
     import subprocess
-    subprocess.run(["taskkill", "/F", "/IM", "firefox.exe"], capture_output=True)
-    subprocess.run(["taskkill", "/F", "/IM", "geckodriver.exe"], capture_output=True)
-    subprocess.run(
-        ["allure", "generate", "allure-results", "-o", "allure-report", "--clean"],
-        capture_output=True, timeout=60, shell=True
-    )
+    import platform
+    if platform.system() == "Windows":
+        subprocess.run(["taskkill", "/F", "/IM", "firefox.exe"], capture_output=True)
+        subprocess.run(["taskkill", "/F", "/IM", "geckodriver.exe"], capture_output=True)
+    else:
+        subprocess.run(["pkill", "-f", "firefox"], capture_output=True)
+        subprocess.run(["pkill", "-f", "geckodriver"], capture_output=True)
 
 
 # ── 테스트 실패 자동 로깅 + Jira 이슈 생성 및 스크린샷 첨부 Hook ──
