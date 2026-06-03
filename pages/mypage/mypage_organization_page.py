@@ -3,16 +3,19 @@
 # FHC-093(UI 확인) / FHC-094(qaproject 링크) / FHC-095(헬프 센터 링크)
 
 from config.selenium_imports import By, EC, WebDriverWait
+from config.settings import BASE_UI_URL
 
 from pages.mypage.mypage_page import MyPage
+
+_HOST = BASE_UI_URL.replace("https://", "")
 
 
 class MyPage07(MyPage):
 
     # ========== Locators ==========
     QAPROJECT_LINK = (By.XPATH,
-        "//a[contains(@href,'qaproject.elice.io')]"
-        " | //*[contains(normalize-space(),'qaproject.elice.io 가기')]"
+        f"//a[contains(@href,'{_HOST}')]"
+        f" | //*[contains(normalize-space(),'{_HOST} 가기')]"
         "/ancestor-or-self::a[1]"
     )
     HELP_CENTER_LINK = (By.XPATH,

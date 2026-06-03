@@ -5,6 +5,7 @@
 import time
 
 from config.selenium_imports import By, EC, WebDriverWait
+from config.settings import BASE_URL, SIGNUP_FORM_URL
 
 from pages.base_page import BasePage
 
@@ -12,16 +13,12 @@ from pages.base_page import BasePage
 class MyPage(BasePage):
 
     # ========== URLs ==========
-    CHAT_URL         = "https://qaproject.elice.io/ai-helpy-chat"
+    CHAT_URL         = BASE_URL
     ACCOUNT_URL      = "https://accounts.elice.io/members/account"
     ORG_URL          = "https://accounts.elice.io/members/organization"
     LANGUAGE_URL     = "https://accounts.elice.io/members/language"
     SUPPORT_URL      = "https://accounts.elice.io/members/support"
-    SIGNUP_FORM_URL  = (
-        "https://accounts.elice.io/accounts/signup/form"
-        "?continue_to=https%3A%2F%2Fqaproject.elice.io%2Fai-helpy-chat"
-        "&lang=ko-KR&org=qaproject"
-    )
+    SIGNUP_FORM_URL  = SIGNUP_FORM_URL
 
     # ========== 계정 정보 ==========
     MAIN_EMAIL    = "test_dummy@naver.com"

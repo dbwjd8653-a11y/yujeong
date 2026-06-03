@@ -6,7 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 
-from config.settings import LOGIN_URL, TEST_USER, SHORT_WAIT, DEFAULT_WAIT
+from config.settings import LOGIN_URL, TEST_USER, SHORT_WAIT, DEFAULT_WAIT, BASE_UI_URL
 
 
 def do_login(driver, wait, user: dict = None):
@@ -26,7 +26,7 @@ def do_login(driver, wait, user: dict = None):
     wait.until(
         EC.element_to_be_clickable((By.XPATH, "//button[text()='로그인']"))
     ).click()
-    wait.until(lambda d: d.current_url.startswith("https://qaproject-temp.app.elice.io"))
+    wait.until(lambda d: d.current_url.startswith(BASE_UI_URL))
     close_token_banner(driver, wait)
 
 

@@ -17,6 +17,11 @@ SIGNUP_URL = (
     "?continue_to=https%3A%2F%2Fqaproject-temp.app.elice.io%2Fai-helpy-chat"
     "&lang=ko-KR&org=qaproject"
 )
+SIGNUP_FORM_URL = (
+    "https://accounts.elice.io/accounts/signup/form"
+    "?continue_to=https%3A%2F%2Fqaproject-temp.app.elice.io%2Fai-helpy-chat"
+    "&lang=ko-KR&org=qaproject"
+)
 
 # ── 대기 시간 (초) ──────────────────────────────────────────────────
 SHORT_WAIT   = 2
@@ -25,8 +30,8 @@ LONG_WAIT    = 20
 
 # ── 테스트 계정 ────────────────────────────────────────────────────
 TEST_USER = {
-    "id": os.getenv("TEST_USER_ID", "qa5team3-04@elicer.com"),
-    "pw": os.getenv("TEST_USER_PW", "qa3teamjs@"),
+    "id": os.getenv("TEST_USER_ID"),
+    "pw": os.getenv("TEST_USER_PW"),
 }
 
 # ── 다운로드 경로 ───────────────────────────────────────────────────

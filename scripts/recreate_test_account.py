@@ -11,7 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from config.browser_factory import make_simple_firefox_driver
-from config.settings import SIGNUP_URL
+from config.settings import SIGNUP_URL, BASE_UI_URL
 
 EMAIL    = "test_dummy@naver.com"
 PASSWORD = "test@1234"
@@ -56,7 +56,7 @@ def recreate_account():
         submit.click()
 
         print("[6] 성공 대기 (qaproject.elice.io 이동)")
-        WebDriverWait(driver, 30).until(EC.url_contains("qaproject.elice.io"))
+        WebDriverWait(driver, 30).until(EC.url_contains(BASE_UI_URL))
         print(f"[OK] 계정 재생성 완료: {EMAIL} / {PASSWORD}")
 
     except Exception as e:

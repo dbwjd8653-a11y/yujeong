@@ -5,13 +5,14 @@
 import random
 
 from config.selenium_imports import By, EC, WebDriverWait
+from config.settings import BASE_URL
 
 from pages.base_page import BasePage
 
 
 class AgentsPage(BasePage):
 
-    AGENTS_URL = "https://qaproject.elice.io/ai-helpy-chat/agents"
+    AGENTS_URL = BASE_URL + "/agents"
 
     # ========== Locators ==========
 

@@ -6,6 +6,7 @@ import time
 
 from config.selenium_imports import By, EC, WebDriverWait
 from config.login_helpers import close_token_banner
+from config.settings import BASE_UI_URL
 
 from pages.mypage.mypage_page import MyPage
 
@@ -192,7 +193,7 @@ class MyPage06(MyPage):
         self.logger.info(f"회원가입 제출 완료: {email}")
 
         WebDriverWait(self.driver, 30).until(
-            lambda d: "qaproject.elice.io" in d.current_url
+            lambda d: BASE_UI_URL in d.current_url
         )
         close_token_banner(self.driver, self.wait)
         self.logger.info("회원가입 후 qaproject 리다이렉트 완료")
@@ -202,7 +203,7 @@ class MyPage06(MyPage):
             WebDriverWait(self.driver, 10).until(
                 lambda d: (
                     "ai-helpy-chat" in d.current_url
-                    or "qaproject.elice.io" in d.current_url
+                    or BASE_UI_URL in d.current_url
                 )
             )
             return True

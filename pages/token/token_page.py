@@ -8,14 +8,15 @@ import time
 from selenium.webdriver.common.keys import Keys
 
 from config.selenium_imports import By, EC, WebDriverWait
+from config.settings import BASE_URL
 
 from pages.base_page import BasePage
 
 
 class TokenPage(BasePage):
 
-    CHAT_URL  = "https://qaproject.elice.io/ai-helpy-chat"
-    ADMIN_URL = "https://qaproject.elice.io/ai-helpy-chat/admin/general"
+    CHAT_URL  = BASE_URL
+    ADMIN_URL = BASE_URL + "/admin/general"
 
     # ========== LNB Locators ==========
 

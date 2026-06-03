@@ -9,14 +9,14 @@ import time
 from config.selenium_imports import By, EC, WebDriverWait, TimeoutException
 
 from pages.base_page import BasePage
-from config.settings import BASE_URL, LOGIN_URL, TEST_USER, DEFAULT_WAIT, SHORT_WAIT
+from config.settings import BASE_URL, BASE_UI_URL, LOGIN_URL, TEST_USER, DEFAULT_WAIT, SHORT_WAIT
 from config.login_helpers import close_token_banner
 
 
 class BaseToolPage(BasePage):
 
     BASE_URL       = BASE_URL
-    TOOLS_URL      = "https://qaproject.elice.io/ai-helpy-chat/tools"
+    TOOLS_URL      = BASE_URL + "/tools"
     LOGIN_URL      = LOGIN_URL
     LOGIN_EMAIL    = TEST_USER["id"]
     LOGIN_PASSWORD = TEST_USER["pw"]
@@ -117,7 +117,7 @@ class BaseToolPage(BasePage):
         submit.click()
         self.wait.until(EC.staleness_of(submit))
         # 리다이렉트가 qaproject로 완전히 완료될 때까지 추가 대기
-        self.wait.until(EC.url_contains("qaproject.elice.io"))
+        self.wait.until(EC.url_contains(BASE_UI_URL))
         # LNB 링크가 렌더링될 때까지 대기 — 세션 쿠키 완전히 설정된 후에만 나타남
         self.wait.until(
             EC.presence_of_element_located(
