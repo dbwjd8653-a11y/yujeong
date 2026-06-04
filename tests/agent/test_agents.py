@@ -84,6 +84,7 @@ def test_agent_features_displayed(agents_page, agent_detail_page):
             f"에이전트 '{agent_name}' 클릭 후 주요 기능이 표시되지 않았습니다"
 
 
+@pytest.mark.xfail(reason="에이전트 UI 개편으로 퀵 리플라이 프롬프트 버튼 미제공 — 'AI Helpy Chat' 버튼만 존재하며 chatroom으로 연결되지 않음", strict=False)
 @allure.story("에이전트 대화창 확인")
 @allure.title("[FHC-067] 에이전트 대화창 확인")
 @allure.severity(allure.severity_level.NORMAL)

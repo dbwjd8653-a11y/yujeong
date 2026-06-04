@@ -15,9 +15,10 @@ class AgentDetailPage(BasePage):
     # main 영역 안의 텍스트가 있는 버튼들 (헤더·전송 버튼 제외)
     QUICK_REPLY_BUTTONS = (
         By.XPATH,
-        "//main//button[contains(@class,'MuiButtonBase-root')"
-        " and @type='button'"
-        " and string-length(normalize-space(.)) > 0]",
+        "//button[@type='button'"
+        " and string-length(normalize-space(.)) > 0"
+        " and not(ancestor::header)"
+        " and not(contains(@aria-label,'전송') or contains(@aria-label,'send') or contains(@aria-label,'Submit'))]",
     )
 
     # 채팅 입력창
@@ -69,7 +70,10 @@ class AgentDetailPage(BasePage):
         index: 0 = 첫 번째 버튼 (기본값)
         """
         buttons = self.get_quick_reply_buttons()
-        btn = buttons[index]
+        # 한국어 텍스트가 포함된 버튼만 실제 퀵 리플라이로 간주
+        korean_buttons = [b for b in buttons if any('가' <= c <= '힣' for c in b.text)]
+        target_buttons = korean_buttons if korean_buttons else buttons
+        btn = target_buttons[index]
         btn_text = btn.text.strip()
         self.js_click(btn)
         self.logger.info(f"퀵 리플라이 버튼 클릭: '{btn_text}'")

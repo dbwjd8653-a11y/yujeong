@@ -53,6 +53,7 @@ def test_org_info_displayed(mypage):
             "내 기관 페이지에 UI 및 정보가 표시되지 않았습니다"
 
 
+@pytest.mark.skip(reason="qaproject 링크가 서비스에서 제거됨")
 @allure.story("qa프로젝트 페이지 하이퍼링크 작동")
 @allure.title("[FHC-094] qa프로젝트 페이지 하이퍼링크 작동")
 @allure.severity(allure.severity_level.NORMAL)
