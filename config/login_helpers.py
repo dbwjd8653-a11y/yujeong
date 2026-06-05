@@ -27,6 +27,13 @@ def do_login(driver, wait, user: dict = None):
         EC.element_to_be_clickable((By.XPATH, "//button[text()='로그인']"))
     ).click()
     wait.until(lambda d: d.current_url.startswith(BASE_UI_URL))
+    # LNB 링크가 렌더링될 때까지 대기 — 세션 쿠키가 완전히 설정된 후에만 나타남
+    # (URL만 보고 반환하면 세션 확립 전에 다음 navigate가 실행돼 레이스로 실패함)
+    wait.until(
+        EC.presence_of_element_located(
+            (By.XPATH, "//a[contains(@href,'ai-helpy-chat')]")
+        )
+    )
     close_token_banner(driver, wait)
 
 
