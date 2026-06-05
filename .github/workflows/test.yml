@@ -50,7 +50,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: test
-    if: always()
+    # main 브랜치에서만 배포 (develop 등 다른 브랜치는 테스트만 수행)
+    if: ${{ always() && github.ref_name == 'main' }}
     permissions:
       pages: write
       id-token: write

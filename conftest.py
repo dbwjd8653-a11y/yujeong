@@ -26,14 +26,25 @@ logger = logging.getLogger(__name__)
 def pytest_configure(config):
     os.makedirs("logs", exist_ok=True)
     log_file = f"logs/test_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+
+    formatter = logging.Formatter(
+        fmt="%(asctime)s [%(levelname)-5s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+    # 파일: 에러만 기록 (실패 분석/보관용)
+    file_handler = logging.FileHandler(log_file, encoding="utf-8")
+    file_handler.setLevel(logging.ERROR)
+    file_handler.setFormatter(formatter)
+
+    # 콘솔: INFO 그대로 (실행 중 실시간 진행 확인용)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(formatter)
+
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s [%(levelname)-5s] %(name)s: %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=[
-            logging.FileHandler(log_file, encoding="utf-8"),
-            logging.StreamHandler(),
-        ],
+        handlers=[file_handler, console_handler],
         force=True,
     )
     logging.getLogger("selenium").setLevel(logging.WARNING)
@@ -73,17 +84,26 @@ def pytest_runtest_makereport(item, call):
 
         if report.failed:
             # ① 로그 기록
-            msg = str(report.longrepr)
-            match = re.search(r'AssertionError:\s*(.+)', msg)
-            fail_msg = match.group(1).strip() if match else msg.splitlines()[-1].strip()
-            _logger.error(f"❌ {item.name} | {fail_msg}")
+            if call.excinfo is not None:
+                exc_type = call.excinfo.typename
+                raw = str(call.excinfo.value).strip()
+                # 첫 줄만 사용하고 셀레늄 예외의 "Message:" 접두어 제거
+                first_line = raw.splitlines()[0].strip() if raw else ""
+                detail = re.sub(r'^Message:\s*', '', first_line).strip()
+                if exc_type == "AssertionError":
+                    fail_msg = detail or exc_type
+                else:
+                    fail_msg = f"{exc_type}: {detail}" if detail else exc_type
+            else:
+                fail_msg = str(report.longrepr).splitlines()[-1].strip()
+            _logger.error(f"{item.name} | {fail_msg}")
 
         elif report.passed:
-            _logger.info(f"✅ {item.name}")
+            _logger.info(f"{item.name}")
 
         elif report.skipped:
             reason = getattr(report, 'wasxfail', None) or str(report.longrepr)
-            _logger.warning(f"⚠️  {item.name} | {reason}")
+            _logger.warning(f"{item.name} | {reason}")
     
     # ── Jira 처리 ────────────────────────────
     if report.when == "call" and report.failed:

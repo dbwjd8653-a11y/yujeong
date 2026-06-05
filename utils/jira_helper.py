@@ -41,7 +41,7 @@ def create_jira_bug_ticket(summary, description):
             "summary": summary,
             "description": description,
             "issuetype": {
-                "name": "버그"
+                "name": "작업"
             },
             "labels": [
                 "Automation"
