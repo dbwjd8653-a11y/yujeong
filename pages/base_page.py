@@ -2,7 +2,6 @@
 # 모든 Page 클래스가 공통으로 상속받는 베이스 클래스
 
 import logging
-import time
 
 from config.selenium_imports import By, EC, WebDriverWait
 from config.login_helpers import close_token_banner

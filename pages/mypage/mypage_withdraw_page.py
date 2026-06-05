@@ -2,8 +2,6 @@
 # 마이페이지 > 계정 탈퇴 + 재가입 전용 Page 클래스
 # FHC-077(탈퇴 영역) / FHC-078(탈퇴 확인) / FHC-079(탈퇴) / FHC-080(재가입)
 
-import time
-
 from config.selenium_imports import By, EC, WebDriverWait
 from config.login_helpers import close_token_banner
 from config.settings import BASE_UI_URL

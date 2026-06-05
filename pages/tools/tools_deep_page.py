@@ -3,7 +3,7 @@
 BaseToolPage를 상속받아 심층 조사 전용 동작을 구현합니다.
 """
 
-from config.selenium_imports import By, EC
+from config.selenium_imports import By
 
 from pages.tools.base_tool_page import BaseToolPage
 

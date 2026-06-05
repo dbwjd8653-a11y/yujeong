@@ -7,7 +7,7 @@ import allure
 
 from pages.login.login_page import LoginPage
 from pages.logout.logout_page import LogoutPage
-from config.settings import LOGIN_URL, TEST_USER
+from config.settings import LOGIN_URL
 
 logger = logging.getLogger(__name__)
 

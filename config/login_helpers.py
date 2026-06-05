@@ -4,9 +4,8 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException
 
-from config.settings import LOGIN_URL, TEST_USER, SHORT_WAIT, DEFAULT_WAIT, BASE_UI_URL
+from config.settings import LOGIN_URL, TEST_USER, SHORT_WAIT, BASE_UI_URL
 
 
 def do_login(driver, wait, user: dict = None):

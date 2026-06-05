@@ -16,7 +16,7 @@ from config.browser_factory import (
     make_firefox_driver, make_simple_firefox_driver,
     make_chrome_driver, make_simple_chrome_driver,
 )
-from config.login_helpers import do_login, close_token_banner
+from config.login_helpers import do_login
 from utils.jira_helper import create_jira_bug_ticket, attach_image_to_jira
 
 logger = logging.getLogger(__name__)

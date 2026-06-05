@@ -23,7 +23,7 @@ def recreate_account():
     wait   = WebDriverWait(driver, 15)
 
     try:
-        print(f"[1] 회원가입 방법 선택 페이지 이동 (org=qaproject)")
+        print("[1] 회원가입 방법 선택 페이지 이동 (org=qaproject)")
         driver.get(SIGNUP_URL)
         wait.until(EC.url_contains("signup/method"))
 

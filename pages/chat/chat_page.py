@@ -3,7 +3,6 @@
 # FHC-020 / FHC-021 / FHC-022 / FHC-023 / FHC-024 / FHC-025
 
 import random
-import time
 
 from selenium.webdriver.common.keys import Keys
 
