@@ -75,6 +75,10 @@ class MyPage05(MyPage):
 
     def click_password_edit(self):
         """비밀번호 옆 편집 아이콘 클릭 (JS — SVG 네임스페이스 문제 우회)"""
+        from config.selenium_imports import WebDriverWait
+        WebDriverWait(self.driver, 10).until(
+            lambda d: len(d.find_elements(By.CSS_SELECTOR, 'svg[data-testid="EditOutlinedIcon"]')) >= 4
+        )
         result = self.driver.execute_script("""
             var s = document.querySelectorAll('svg[data-testid="EditOutlinedIcon"]');
             if (s.length >= 4 && s[3].closest('button')) {
