@@ -1,4 +1,3 @@
-# tests/test_agents_01.py
 # 에이전트 탐색 기능 E2E 테스트 — FHC-065 ~ FHC-067
 
 import pytest

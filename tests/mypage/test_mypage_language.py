@@ -1,4 +1,3 @@
-# tests/test_mypage_08.py
 # 마이페이지 > 언어 설정 E2E 테스트 — FHC-097 ~ FHC-099
 
 import pytest

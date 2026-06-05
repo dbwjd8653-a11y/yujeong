@@ -1,4 +1,3 @@
-# tests/test_tools_01.py
 # '세부 특기사항' 도구 E2E 테스트 — FHC-028 ~ FHC-036
 
 import logging

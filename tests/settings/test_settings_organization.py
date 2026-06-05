@@ -7,7 +7,7 @@ import allure
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
-from config.settings import DEFAULT_WAIT
+from config.settings import DEFAULT_WAIT, NON_ADMIN_USER
 from config.browser_factory import make_simple_firefox_driver
 from config.login_helpers import do_login, close_token_banner
 
@@ -17,11 +17,6 @@ pytestmark = [
     allure.epic("Settings"),
     allure.feature("조직 설정"),
 ]
-
-NON_ADMIN_USER = {
-    "id": "elice_3@naver.com",
-    "pw": "asd123!!"
-}
 
 
 # ── fixture ────────────────────────────────────────────────────────

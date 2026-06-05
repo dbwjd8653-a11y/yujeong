@@ -1,4 +1,3 @@
-# tests/test_mypage_09.py
 # 마이페이지 > 고객 센터 E2E 테스트 — FHC-100
 
 import pytest

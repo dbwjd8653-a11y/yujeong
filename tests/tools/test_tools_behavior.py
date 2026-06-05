@@ -1,4 +1,3 @@
-# tests/test_tools_02.py
 # '행동특성 및 종합의견' 도구 E2E 테스트 — FHC-037 ~ FHC-044
 
 import logging

@@ -1,4 +1,3 @@
-# tests/test_mypage_06.py
 # 마이페이지 > 계정 관리 — 계정 탈퇴 E2E 테스트 — FHC-090 ~ FHC-092
 # ※ FHC-092 계정 탈퇴 후 동일 함수 내에서 동일 계정으로 재가입하여 복구
 
@@ -8,6 +7,7 @@ import pytest
 import allure
 
 from pages.mypage.mypage_withdraw_page import MyPage06
+from config.settings import MYPAGE_USER
 
 logger = logging.getLogger(__name__)
 
@@ -17,9 +17,9 @@ pytestmark = [
     allure.story("계정 탈퇴 해피 케이스"),
 ]
 
-MAIN_EMAIL    = "test_dummy@naver.com"
-MAIN_PASSWORD = "test@1234"
-MAIN_NAME     = "포커스 테스트"
+MAIN_EMAIL    = MYPAGE_USER["id"]
+MAIN_PASSWORD = MYPAGE_USER["pw"]
+MAIN_NAME     = MYPAGE_USER["name"]
 
 
 # ── fixture ────────────────────────────────────────────────────────

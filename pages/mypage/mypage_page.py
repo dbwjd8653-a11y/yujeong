@@ -5,7 +5,7 @@
 import time
 
 from config.selenium_imports import By, EC, WebDriverWait
-from config.settings import BASE_URL, SIGNUP_FORM_URL
+from config.settings import BASE_URL, SIGNUP_FORM_URL, MYPAGE_USER
 
 from pages.base_page import BasePage
 
@@ -20,9 +20,9 @@ class MyPage(BasePage):
     SUPPORT_URL      = "https://accounts.elice.io/members/support"
     SIGNUP_FORM_URL  = SIGNUP_FORM_URL
 
-    # ========== 계정 정보 ==========
-    MAIN_EMAIL    = "test_dummy@naver.com"
-    MAIN_PASSWORD = "test@1234"
+    # ========== 계정 정보 (마이페이지 전용 더미 계정 — settings.MYPAGE_USER) ==========
+    MAIN_EMAIL    = MYPAGE_USER["id"]
+    MAIN_PASSWORD = MYPAGE_USER["pw"]
 
     # ========== Locators — 로그인 ==========
     EMAIL_INPUT    = (By.CSS_SELECTOR, "input[type='email']")

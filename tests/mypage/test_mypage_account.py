@@ -1,4 +1,3 @@
-# tests/test_mypage_05.py
 # 마이페이지 > 계정 관리 — 기본 정보 E2E 테스트 — FHC-080, FHC-083, FHC-088, FHC-089
 # ※ FHC-081, 082 (인증), FHC-084~087 (계정보안/본인확인/소셜연결) 은 비자동화 항목
 
@@ -6,15 +5,16 @@ import pytest
 import allure
 
 from pages.mypage.mypage_account_page import MyPage05
+from config.settings import MYPAGE_USER, MYPAGE_NEW_PASSWORD
 
 pytestmark = [
     allure.epic("MyPage"),
     allure.feature("계정 관리"),
 ]
 
-MAIN_EMAIL    = "test_dummy@naver.com"
-MAIN_PASSWORD = "test@1234"
-NEW_PASSWORD  = "test@4321"
+MAIN_EMAIL    = MYPAGE_USER["id"]
+MAIN_PASSWORD = MYPAGE_USER["pw"]
+NEW_PASSWORD  = MYPAGE_NEW_PASSWORD
 NEW_NAME      = "포커스 테스트"
 
 

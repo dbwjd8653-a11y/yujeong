@@ -11,11 +11,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from config.browser_factory import make_simple_firefox_driver
-from config.settings import SIGNUP_URL, BASE_UI_URL
+from config.settings import SIGNUP_URL, BASE_UI_URL, MYPAGE_USER
 
-EMAIL    = "test_dummy@naver.com"
-PASSWORD = "test@1234"
-NAME     = "포커스 테스트"
+EMAIL    = MYPAGE_USER["id"]
+PASSWORD = MYPAGE_USER["pw"]
+NAME     = MYPAGE_USER["name"]
 
 
 def recreate_account():

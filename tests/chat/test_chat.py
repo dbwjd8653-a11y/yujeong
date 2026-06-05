@@ -1,4 +1,3 @@
-# tests/test_chat_01.py
 # 메인 채팅 / 검색 / 대화 목록 E2E 테스트 — FHC-022 ~ FHC-027
 
 import pytest

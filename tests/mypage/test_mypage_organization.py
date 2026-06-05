@@ -1,4 +1,3 @@
-# tests/test_mypage_07.py
 # 마이페이지 > 내 기관 E2E 테스트 — FHC-093 ~ FHC-095
 
 import pytest

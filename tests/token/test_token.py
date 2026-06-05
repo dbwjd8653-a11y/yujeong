@@ -1,4 +1,3 @@
-# tests/test_token_01.py
 # 토큰 사용량 E2E 테스트 — FHC-018 ~ FHC-021
 
 import pytest
