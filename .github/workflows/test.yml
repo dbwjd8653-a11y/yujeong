@@ -54,6 +54,8 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -73,10 +75,14 @@ jobs:
           path: allure-history/
           key: allure-history-${{ github.ref_name }}
 
-      - name: Generate Allure report
+      - name: Install Allure CLI
         run: |
-          pip install allure-pytest
-          python scripts/ci_allure.py
+          wget -qO allure.tgz https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
+          sudo tar -xzf allure.tgz -C /opt
+          sudo ln -s /opt/allure-2.27.0/bin/allure /usr/local/bin/allure
+
+      - name: Generate Allure report
+        run: python scripts/ci_allure.py
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

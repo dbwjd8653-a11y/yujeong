@@ -102,7 +102,8 @@ def build_message(stats: dict, failed_names: list[str]) -> str:
     project      = os.environ.get("CI_PROJECT_NAME", "프로젝트")
     branch       = os.environ.get("CI_COMMIT_BRANCH", "")
     user         = os.environ.get("GITLAB_USER_NAME", "")
-    commit_title = os.environ.get("CI_COMMIT_TITLE", "")
+    commit_msg   = os.environ.get("CI_COMMIT_TITLE", "")
+    commit_title = commit_msg.splitlines()[0] if commit_msg else ""
     pages_url    = os.environ.get("CI_PAGES_URL", "")
     pipeline_url = os.environ.get("CI_PIPELINE_URL", "")
 
@@ -110,11 +111,9 @@ def build_message(stats: dict, failed_names: list[str]) -> str:
     date = datetime.now(KST).strftime("%Y-%m-%d %H:%M KST")
 
     lines = [
-        f"{icon} **{project}** — `{branch}` 테스트 완료",
+        f"{icon} **{project}** `{branch}` — {commit_title}",
         f"📅 {date}  |  👤 {user}",
-        f"💬 {commit_title}",
-        "",
-        f"✅ 성공: **{passed}**  ❌ 실패: **{failed + broken}**  ⏭ 스킵: **{skipped}**  합계: **{total}**",
+        f"✅ {passed}  ❌ {failed + broken}  ⏭ {skipped}  / {total}",
     ]
 
     if failed_names:
