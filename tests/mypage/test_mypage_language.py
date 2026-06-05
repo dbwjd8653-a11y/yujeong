@@ -1,7 +1,6 @@
 # tests/test_mypage_08.py
 # 마이페이지 > 언어 설정 E2E 테스트 — FHC-097 ~ FHC-099
 
-import time
 import pytest
 import allure
 
@@ -50,7 +49,7 @@ def test_language_setting(mypage):
         assert mypage.is_language_setting_displayed(), \
             "언어 설정 드롭다운이 표시되지 않았습니다"
         mypage.change_language("ko-KR")
-        time.sleep(1)
+        mypage.is_saved_successfully_displayed()
         mypage.change_language("en-US")
     with allure.step("[FHC-097] 저장 성공 확인 후 한국어 복구"):
         assert mypage.is_saved_successfully_displayed(), \

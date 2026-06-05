@@ -2,8 +2,6 @@
 # 마이페이지 > 언어 설정 전용 Page 클래스
 # FHC-086(언어 변경) / FHC-087(로그아웃 후 언어 확인) / FHC-088(재로그인 후 언어 유지)
 
-import time
-
 from config.selenium_imports import By, EC, WebDriverWait
 
 from pages.mypage.mypage_page import MyPage
@@ -27,7 +25,6 @@ class MyPage08(MyPage):
         # accounts.elice.io로 이동 (헤더에 아바타 버튼 있음)
         self.driver.get(self.ACCOUNT_URL)
         self.wait.until(EC.url_contains("members"))
-        time.sleep(1)
 
         # header 안의 MuiAvatar 버튼 클릭 (Selenium 네이티브 click)
         avatar_btn = WebDriverWait(self.driver, 10).until(
@@ -37,7 +34,6 @@ class MyPage08(MyPage):
         )
         avatar_btn.click()
         self.logger.info("accounts.elice.io 아바타 버튼 클릭 완료")
-        time.sleep(0.8)  # MUI 드롭다운 렌더링 대기
 
         # 로그아웃 menuitem 클릭 (normalize-space로 중첩 텍스트 포함)
         logout_item = WebDriverWait(self.driver, 10).until(
@@ -53,7 +49,6 @@ class MyPage08(MyPage):
         before_url = self.driver.current_url
         logout_item.click()
         self.logger.info("로그아웃 메뉴 클릭 완료")
-        time.sleep(1.5)  # 리다이렉트 완료 대기
 
         # URL이 members 페이지를 벗어나거나 signin/login 포함 시 완료
         WebDriverWait(self.driver, 10).until(

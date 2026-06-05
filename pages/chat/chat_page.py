@@ -150,14 +150,11 @@ class ChatPage(BasePage):
         """메시지 입력 후 전송"""
         chat_input = self.wait.until(EC.visibility_of_element_located(self.CHAT_INPUT))
         self.js_input(chat_input, text)
-        time.sleep(0.3)  # React 상태 반영 대기
-
         try:
-            send_btn = self.driver.find_element(*self.SEND_BUTTON)
-            if send_btn.is_enabled():
-                self.js_click(send_btn)
-                self.logger.info(f"전송 버튼 클릭 (메시지: '{text}')")
-                return
+            send_btn = WebDriverWait(self.driver, 2).until(EC.element_to_be_clickable(self.SEND_BUTTON))
+            self.js_click(send_btn)
+            self.logger.info(f"전송 버튼 클릭 (메시지: '{text}')")
+            return
         except Exception:
             pass
 
@@ -243,7 +240,9 @@ class ChatPage(BasePage):
             modal = self.driver.find_element(*self.SEARCH_MODAL)
             modal.click()
             modal.send_keys(keyword)
-        time.sleep(0.5)  # 검색 결과 필터링 반영 대기
+        WebDriverWait(self.driver, 5).until(
+            EC.presence_of_element_located(self.SEARCH_RESULT_ITEMS)
+        )
         self.logger.info(f"검색 키워드 입력: '{keyword}'")
 
     def is_search_results_displayed(self) -> bool:

@@ -1,6 +1,4 @@
-import time
-
-from config.selenium_imports import By, EC
+from config.selenium_imports import By, EC, WebDriverWait
 
 from pages.settings.settings_general_page import SettingsPage
 
@@ -28,7 +26,9 @@ class SettingsMemberPage(SettingsPage):
         toggle = self.get_toggle()
         if self.is_toggle_checked(toggle) != activate:
             self.js_click(toggle)
-            time.sleep(1)
+            WebDriverWait(self.driver, 5).until(
+                lambda d: self.is_toggle_checked(d.find_element(*self._TOKEN_LIMIT_TOGGLE)) == activate
+            )
 
     def save_and_verify_toast(self):
         try:

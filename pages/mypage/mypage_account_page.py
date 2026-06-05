@@ -2,8 +2,6 @@
 # 마이페이지 > 계정 관리 — 기본 정보 전용 Page 클래스
 # FHC-073(이름 변경) / FHC-074(비밀번호 변경) / FHC-075(프로모션 알림) / FHC-076(선호 언어)
 
-import time
-
 from config.selenium_imports import By, EC
 
 from pages.mypage.mypage_page import MyPage
@@ -107,7 +105,7 @@ class MyPage05(MyPage):
             self.wait.until(EC.element_to_be_clickable(self.COMPLETE_BUTTON))
         )
         self.logger.info(f"비밀번호 변경 완료: {current_pw} → {new_pw}")
-        time.sleep(1)
+        self.wait.until(EC.presence_of_element_located(self.SAVE_SUCCESS_TOAST))
 
     # ========== FHC-075: 프로모션 알림 토글 ==========
 
@@ -124,5 +122,5 @@ class MyPage05(MyPage):
             EC.presence_of_element_located(self.PROMOTION_TOGGLE)
         )
         self.driver.execute_script("arguments[0].click();", checkbox)
-        time.sleep(0.5)
+        self.wait.until(EC.presence_of_element_located(self.SAVE_SUCCESS_TOAST))
         self.logger.info("프로모션 알림 토글 클릭 완료")

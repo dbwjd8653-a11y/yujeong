@@ -73,7 +73,7 @@ class MyPage06(MyPage):
             if (target) { target.scrollIntoView({behavior:'auto', block:'center'}); }
             else { window.scrollTo(0, document.body.scrollHeight); }
         """)
-        time.sleep(0.5)
+        self.wait.until(lambda d: self.is_withdraw_area_displayed())
         self.logger.info("탈퇴 영역으로 스크롤 완료")
 
     def is_withdraw_area_displayed(self) -> bool:
@@ -109,7 +109,7 @@ class MyPage06(MyPage):
         """)
         if result == 'not-found':
             raise Exception("탈퇴 버튼을 찾을 수 없습니다")
-        time.sleep(0.5)
+        self.wait.until(lambda d: self.is_withdraw_confirm_message_displayed())
         self.logger.info(f"탈퇴하기 버튼 클릭 완료 ({result})")
 
     def is_withdraw_confirm_message_displayed(self) -> bool:
@@ -184,7 +184,6 @@ class MyPage06(MyPage):
 
         agree_checkbox = self.wait.until(EC.element_to_be_clickable(self.AGREE_ALL_CHECKBOX))
         self.js_click(agree_checkbox)
-        time.sleep(0.3)
         self.logger.info("전체 동의 클릭 완료")
 
         self.js_click(

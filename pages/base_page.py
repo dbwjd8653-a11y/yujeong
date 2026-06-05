@@ -111,4 +111,3 @@ class BasePage:
             )
         except Exception:
             pass
-        time.sleep(0.3)

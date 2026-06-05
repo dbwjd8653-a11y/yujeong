@@ -1,8 +1,6 @@
 # tests/test_token_01.py
 # 토큰 사용량 E2E 테스트 — FHC-018 ~ FHC-021
 
-import time
-
 import pytest
 import allure
 
@@ -70,7 +68,7 @@ def test_token_increases_after_chat(token):
     기대: 토큰 이용 내역 행 수가 증가한다
     """
     token.driver.get(token.ADMIN_URL)
-    time.sleep(1)
+    token.wait.until(EC.presence_of_element_located(token.ALL_HISTORY_BUTTON))
     token.click_all_history_button()
     token.wait.until(
         EC.presence_of_element_located(token.TOKEN_TABLE)
@@ -82,12 +80,14 @@ def test_token_increases_after_chat(token):
     assert token.wait_for_ai_response(), "AI 응답 생성 실패"
 
     token.driver.get(token.ADMIN_URL)
-    time.sleep(1)
+    token.wait.until(EC.presence_of_element_located(token.ALL_HISTORY_BUTTON))
     token.click_all_history_button()
     WebDriverWait(token.driver, 15).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, "table.MuiTable-root"))
     )
-    time.sleep(2)
+    WebDriverWait(token.driver, 10).until(
+        lambda d: len(d.find_elements(By.CSS_SELECTOR, "table.MuiTable-root tr.MuiTableRow-root")) > before_rows
+    )
     after_rows = len(token.driver.find_elements(By.CSS_SELECTOR, "table.MuiTable-root tr.MuiTableRow-root"))
     after_text = token.get_lnb_token_text()
 

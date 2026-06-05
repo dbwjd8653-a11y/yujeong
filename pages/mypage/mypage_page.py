@@ -119,7 +119,6 @@ class MyPage(BasePage):
         self.wait.until(EC.element_to_be_clickable(self.LANGUAGE_SELECT)).click()
         option = (By.CSS_SELECTOR, f"li[data-value='{lang_code}']")
         self.wait.until(EC.element_to_be_clickable(option)).click()
-        time.sleep(0.3)
         self.logger.info(f"언어 변경 완료: {lang_code}")
 
     def is_saved_successfully_displayed(self) -> bool:
