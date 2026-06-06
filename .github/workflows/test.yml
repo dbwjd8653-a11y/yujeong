@@ -29,6 +29,12 @@ jobs:
         env:
           TEST_USER_ID: ${{ secrets.TEST_USER_ID }}
           TEST_USER_PW: ${{ secrets.TEST_USER_PW }}
+          MYPAGE_USER_ID: ${{ secrets.MYPAGE_USER_ID }}
+          MYPAGE_USER_PW: ${{ secrets.MYPAGE_USER_PW }}
+          MYPAGE_USER_NAME: ${{ secrets.MYPAGE_USER_NAME }}
+          MYPAGE_NEW_PASSWORD: ${{ secrets.MYPAGE_NEW_PASSWORD }}
+          NON_ADMIN_USER_ID: ${{ secrets.NON_ADMIN_USER_ID }}
+          NON_ADMIN_USER_PW: ${{ secrets.NON_ADMIN_USER_PW }}
           JIRA_URL: ${{ secrets.JIRA_URL }}
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}

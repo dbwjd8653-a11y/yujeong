@@ -11,6 +11,17 @@ from config.settings import LOGIN_URL, TEST_USER, SHORT_WAIT, BASE_UI_URL
 def do_login(driver, wait, user: dict = None):
     """로그인 페이지(한글)에서 지정 계정으로 로그인"""
     user = user or TEST_USER
+
+    # ── 계정 정보 가드 ──────────────────────────────────────────────
+    # id/pw 가 None이면 send_keys(None)에서 'NoneType is not iterable'로
+    # 죽어 원인 파악이 어려움 → 환경변수(.env / CI secret) 누락을 명확히 알림
+    if not user.get("id") or not user.get("pw"):
+        raise ValueError(
+            "로그인 계정 정보가 비어 있습니다. 환경변수(.env / CI secret)를 확인하세요. "
+            f"id={'설정됨' if user.get('id') else '없음'}, "
+            f"pw={'설정됨' if user.get('pw') else '없음'}"
+        )
+
     driver.get(LOGIN_URL)
     email_input = wait.until(
         EC.presence_of_element_located((By.NAME, "loginId"))
