@@ -4,7 +4,7 @@
 import os
 
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 
 from config.settings import DOWNLOAD_DIR
@@ -12,41 +12,32 @@ from config.settings import DOWNLOAD_DIR
 WINDOW_WIDTH  = 1920
 WINDOW_HEIGHT = 1080
 
-def _base_opts() -> FirefoxOptions:
-    opts = FirefoxOptions()
+def _base_opts() -> EdgeOptions:
+    opts = EdgeOptions()
+    opts.add_argument(f"--window-size={WINDOW_WIDTH},{WINDOW_HEIGHT}")
     if os.environ.get("CI"):
-        opts.add_argument("--headless")
+        opts.add_argument("--headless=new")
+        opts.add_argument("--no-sandbox")
+        opts.add_argument("--disable-dev-shm-usage")
     return opts
 
-# ── Firefox ───────────────────────────────────────────────────────
+# ── Edge (Chromium 기반) ──────────────────────────────────────────
 
-def make_firefox_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Firefox:
-    """파일 다운로드 설정이 포함된 Firefox 드라이버 생성"""
+def make_edge_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Edge:
+    """파일 다운로드 설정이 포함된 Edge 드라이버 생성"""
     opts = _base_opts()
-    opts.set_preference("browser.download.folderList", 2)
-    opts.set_preference("browser.download.dir", download_dir)
-    opts.set_preference("browser.download.useDownloadDir", True)
-    opts.set_preference("browser.download.alwaysOpenPanel", False)
-    opts.set_preference("browser.helperApps.alwaysAsk.force", False)
-    opts.set_preference(
-        "browser.helperApps.neverAsk.saveToDisk",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,"
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation,"
-        "application/octet-stream,"
-        "application/zip,"
-        "binary/octet-stream,"
-        "application/x-download",
-    )
-    driver = webdriver.Firefox(options=opts)
-    driver.set_window_size(WINDOW_WIDTH, WINDOW_HEIGHT)
-    return driver
+    opts.add_experimental_option("prefs", {
+        "download.default_directory": download_dir,
+        "download.prompt_for_download": False,
+        "download.directory_upgrade": True,
+        "safebrowsing.enabled": True,
+    })
+    return webdriver.Edge(options=opts)
 
 
-def make_simple_firefox_driver() -> webdriver.Firefox:
-    """다운로드 설정 없는 기본 Firefox 드라이버 생성"""
-    driver = webdriver.Firefox(options=_base_opts())
-    driver.set_window_size(WINDOW_WIDTH, WINDOW_HEIGHT)
-    return driver
+def make_simple_edge_driver() -> webdriver.Edge:
+    """다운로드 설정 없는 기본 Edge 드라이버 생성"""
+    return webdriver.Edge(options=_base_opts())
 
 
 # ── Chrome ────────────────────────────────────────────────────────

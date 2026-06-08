@@ -13,7 +13,7 @@ from config.selenium_imports import WebDriverWait
 
 from config.settings import DEFAULT_WAIT, DOWNLOAD_DIR
 from config.browser_factory import (
-    make_firefox_driver, make_simple_firefox_driver,
+    make_edge_driver, make_simple_edge_driver,
     make_chrome_driver, make_simple_chrome_driver,
 )
 from config.login_helpers import do_login
@@ -65,11 +65,11 @@ def pytest_sessionfinish(session, exitstatus):
     import subprocess
     import platform
     if platform.system() == "Windows":
-        subprocess.run(["taskkill", "/F", "/IM", "firefox.exe"], capture_output=True)
-        subprocess.run(["taskkill", "/F", "/IM", "geckodriver.exe"], capture_output=True)
+        subprocess.run(["taskkill", "/F", "/IM", "msedge.exe"], capture_output=True)
+        subprocess.run(["taskkill", "/F", "/IM", "msedgedriver.exe"], capture_output=True)
     else:
-        subprocess.run(["pkill", "-f", "firefox"], capture_output=True)
-        subprocess.run(["pkill", "-f", "geckodriver"], capture_output=True)
+        subprocess.run(["pkill", "-f", "msedge"], capture_output=True)
+        subprocess.run(["pkill", "-f", "msedgedriver"], capture_output=True)
 
 
 # ── 테스트 실패 자동 로깅 + Jira 이슈 생성 및 스크린샷 첨부 Hook ──
@@ -197,20 +197,20 @@ def pytest_addoption(parser):
     parser.addoption(
         "--browser",
         action="store",
-        default="firefox",
-        choices=["firefox", "chrome"],
-        help="테스트 브라우저 선택 (firefox | chrome)",
+        default="edge",
+        choices=["edge", "chrome"],
+        help="테스트 브라우저 선택 (edge | chrome)",
     )
 
 
 # ── 브라우저 fixtures (테스트마다 독립 실행) ───────────────────────
 
 def _make_simple_driver(browser: str):
-    return make_simple_chrome_driver() if browser == "chrome" else make_simple_firefox_driver()
+    return make_simple_chrome_driver() if browser == "chrome" else make_simple_edge_driver()
 
 
 def _make_driver(browser: str, download_dir: str = DOWNLOAD_DIR):
-    return make_chrome_driver(download_dir) if browser == "chrome" else make_firefox_driver(download_dir)
+    return make_chrome_driver(download_dir) if browser == "chrome" else make_edge_driver(download_dir)
 
 
 @pytest.fixture

@@ -35,7 +35,7 @@ class BasePage:
     # ========== 입력 유틸리티 ==========
 
     def enter_text(self, locator, text):
-        """요소가 보일 때까지 대기 후 텍스트 입력 (JS setValue로 React state 직접 갱신 — Chrome/Firefox 공통)"""
+        """요소가 보일 때까지 대기 후 텍스트 입력 (JS setValue로 React state 직접 갱신 — Chrome/Edge 공통)"""
         element = self.wait_for_visible(locator)
         element.click()
         self.js_input(element, text)

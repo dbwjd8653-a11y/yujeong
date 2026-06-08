@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from config.browser_factory import make_simple_firefox_driver
+from config.browser_factory import make_simple_edge_driver
 from config.settings import SIGNUP_URL, BASE_UI_URL, MYPAGE_USER
 
 EMAIL    = MYPAGE_USER["id"]
@@ -19,7 +19,7 @@ NAME     = MYPAGE_USER["name"]
 
 
 def recreate_account():
-    driver = make_simple_firefox_driver()
+    driver = make_simple_edge_driver()
     wait   = WebDriverWait(driver, 15)
 
     try:

@@ -118,7 +118,7 @@ class PPTPage(BaseToolPage):
 
     # ========== 다운로드 ==========
 
-    def download_result(self, download_dir: str, browser: str = "firefox"):
+    def download_result(self, download_dir: str, browser: str = "edge"):
         before_mtime = {}
         for f in glob.glob(os.path.join(download_dir, "*.pptx")):
             try:

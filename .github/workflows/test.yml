@@ -19,11 +19,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r config/requirements.txt
 
-      - name: Install Firefox
-        uses: browser-actions/setup-firefox@latest
-
-      - name: Install geckodriver
-        uses: browser-actions/setup-geckodriver@latest
+      - name: Install Edge
+        uses: browser-actions/setup-edge@latest
 
       - name: Run tests
         env:

@@ -330,7 +330,7 @@ class BaseToolPage(BasePage):
         )
         self.logger.info("학생 추가 버튼 클릭 완료 (생성 트리거)")
 
-    def download_result(self, download_dir: str, browser: str = "firefox"):
+    def download_result(self, download_dir: str, browser: str = "edge"):
         """생성 결과 받기 버튼 클릭 후 xlsx 다운로드 완료 대기"""
         self.logger.info("생성 결과 받기 버튼 활성화 대기 중 (최대 120초)...")
         try:

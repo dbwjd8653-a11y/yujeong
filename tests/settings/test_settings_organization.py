@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
 from config.settings import DEFAULT_WAIT, NON_ADMIN_USER
-from config.browser_factory import make_simple_firefox_driver
+from config.browser_factory import make_simple_edge_driver
 from config.login_helpers import do_login, close_token_banner
 
 logger = logging.getLogger(__name__)
@@ -28,10 +28,10 @@ def non_admin_login():
 
     전제: 권한 없는 계정으로 로그인
     단계:
-      1. Firefox 브라우저 실행
+      1. Edge 브라우저 실행
       2. 비관리자 계정(elice_3@naver.com)으로 로그인
     """
-    driver = make_simple_firefox_driver()
+    driver = make_simple_edge_driver()
     wait = WebDriverWait(driver, DEFAULT_WAIT)
     do_login(driver, wait, user=NON_ADMIN_USER)
     close_token_banner(driver, wait)

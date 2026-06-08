@@ -8,7 +8,7 @@ import allure
 from selenium.webdriver.support.ui import WebDriverWait
 
 from config.settings import DEFAULT_WAIT, BASE_URL
-from config.browser_factory import make_simple_firefox_driver
+from config.browser_factory import make_simple_edge_driver
 from config.login_helpers import do_login
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ REPEAT = 5
 
 @pytest.fixture(scope="module")
 def login_load():
-    driver = make_simple_firefox_driver()
+    driver = make_simple_edge_driver()
     wait = WebDriverWait(driver, DEFAULT_WAIT)
     yield driver, wait
     driver.quit()
