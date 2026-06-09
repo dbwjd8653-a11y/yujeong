@@ -26,8 +26,12 @@ class LogoutPage(BasePage):
         self.click(self.PROFILE_BTN)
 
     def click_logout(self):
-        """계정 메뉴에서 로그아웃 버튼을 클릭한다."""
-        self.click(self.LOGOUT_BTN)
+        """계정 메뉴에서 로그아웃 버튼을 클릭한다.
+
+        메뉴 열림 애니메이션 중 클릭 가로채임이 간헐 발생하므로
+        click_when_stable로 재시도한다.
+        """
+        self.click_when_stable(self.LOGOUT_BTN)
 
     def is_logout_url(self):
         """

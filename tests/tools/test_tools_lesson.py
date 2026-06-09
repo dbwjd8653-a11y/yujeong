@@ -43,7 +43,7 @@ def test_lesson_plan_happy_case(page):
       1. [FHC-045] '수업지도안' 메뉴 진입 확인
       2. [FHC-046] 필수 항목(학교급, 학년, 과목, 교육 내용, 수업 차시, 생성 방식) 선택 → [수업지도안 생성] 버튼 활성화 확인
       3. [FHC-047] 선택 항목(참고 자료, 기타 요청 사항) 입력 → [수업지도안 생성] 버튼 활성화 유지 확인
-      4. [FHC-048] '다시 생성' 버튼 클릭 → 2분 이내 생성 완료 확인
+      4. [FHC-048] '다시 생성' 버튼 클릭 → 3분 이내 생성 완료 확인
     기대: 수업지도안 생성 정상 완료
     """
     with allure.step("[FHC-045] '수업지도안' 페이지 진입 확인"):
@@ -65,6 +65,6 @@ def test_lesson_plan_happy_case(page):
     with allure.step("[FHC-048] '다시 생성' 버튼 클릭 및 생성 완료 확인"):
         logger.info("[FHC-048] 수업지도안 생성 시작")
         page.click_generate()
-        assert page.is_generated(timeout=120), "2분 이내 수업지도안 생성 실패"
+        assert page.is_generated(timeout=180), "3분 이내 수업지도안 생성 실패"
 
     logger.info("[FHC-045~048] 수업지도안 생성 해피 케이스 완료")

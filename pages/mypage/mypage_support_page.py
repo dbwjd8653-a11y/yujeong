@@ -73,9 +73,9 @@ class MyPage09(MyPage):
         """AI 답변 또는 채팅창이 표시되는지 확인 (메인 페이지 + iframe 모두 검색)"""
         kws = ["안녕하세요", "Hello", "무엇을 도와", "How can I help",
                "Hi there", "chat", "Chat", "메시지"]
-        # 1) 메인 페이지
+        # 1) 메인 페이지 (AI 답변 생성까지 시간이 걸리므로 충분히 대기 — 충족 시 즉시 반환)
         try:
-            WebDriverWait(self.driver, 5).until(
+            WebDriverWait(self.driver, 25).until(
                 lambda d: any(kw in d.find_element(By.TAG_NAME, "body").text for kw in kws)
             )
             return True
