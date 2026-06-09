@@ -32,6 +32,7 @@ def page(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@pytest.mark.skip(reason="레거시 헬피챗 테스트 서버 종료 예정 — AI 생성 백엔드 미동작 (신버전 UI 재작성 필요)")
 @allure.title("[FHC-045~048] 수업지도안 생성 해피 케이스")
 @allure.severity(allure.severity_level.NORMAL)
 def test_lesson_plan_happy_case(page):
