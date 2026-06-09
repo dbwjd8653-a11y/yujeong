@@ -3,7 +3,7 @@
 BasePage를 상속받아 공통 동작을 재사용합니다.
 """
 
-from config.selenium_imports import By, TimeoutException
+from config.selenium_imports import By, EC, TimeoutException
 
 from pages.base_page import BasePage
 
@@ -28,10 +28,11 @@ class LogoutPage(BasePage):
     def click_logout(self):
         """계정 메뉴에서 로그아웃 버튼을 클릭한다.
 
-        메뉴 열림 애니메이션 중 클릭 가로채임이 간헐 발생하므로
-        click_when_stable로 재시도한다.
+        메뉴 열림 애니메이션 중 다른 요소(MUI Typography)가 클릭을 가로채므로,
+        포인터 클릭 대신 JS 클릭으로 인터셉트를 우회한다.
         """
-        self.click_when_stable(self.LOGOUT_BTN)
+        el = self.wait.until(EC.element_to_be_clickable(self.LOGOUT_BTN))
+        self.js_click(el)
 
     def is_logout_url(self):
         """

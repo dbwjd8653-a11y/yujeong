@@ -2,11 +2,8 @@
 # 모든 Page 클래스가 공통으로 상속받는 베이스 클래스
 
 import logging
-import time
 
-from config.selenium_imports import (
-    By, EC, WebDriverWait, ElementClickInterceptedException,
-)
+from config.selenium_imports import By, EC, WebDriverWait
 from config.login_helpers import close_token_banner
 
 class BasePage:
@@ -33,19 +30,6 @@ class BasePage:
 
     def click(self, locator):
         """요소가 클릭 가능해질 때까지 대기 후 클릭"""
-        self.wait.until(EC.element_to_be_clickable(locator)).click()
-
-    def click_when_stable(self, locator, retries=10, interval=0.3):
-        """클릭 가능 대기 후 클릭. 애니메이션(MUI 팝오버/메뉴) 중 클릭이
-        가로채이면(ElementClickInterceptedException) 짧게 재시도한다."""
-        for _ in range(retries):
-            element = self.wait.until(EC.element_to_be_clickable(locator))
-            try:
-                element.click()
-                return
-            except ElementClickInterceptedException:
-                time.sleep(interval)
-        # 마지막 시도 (여기서도 실패하면 예외를 그대로 전파)
         self.wait.until(EC.element_to_be_clickable(locator)).click()
 
     # ========== 입력 유틸리티 ==========

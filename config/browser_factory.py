@@ -12,6 +12,20 @@ from config.settings import DOWNLOAD_DIR
 WINDOW_WIDTH  = 1920
 WINDOW_HEIGHT = 1080
 
+
+def _enable_headless_downloads(driver, download_dir: str) -> None:
+    """headless Chromium/Edge는 prefs의 download.default_directory를 무시하므로
+    CDP로 다운로드 동작을 명시적으로 허용한다 (CI 환경 다운로드 핵심 설정)."""
+    os.makedirs(download_dir, exist_ok=True)
+    try:
+        driver.execute_cdp_cmd("Page.setDownloadBehavior", {
+            "behavior": "allow",
+            "downloadPath": download_dir,
+        })
+    except Exception:
+        pass
+
+
 def _base_opts() -> EdgeOptions:
     opts = EdgeOptions()
     opts.add_argument(f"--window-size={WINDOW_WIDTH},{WINDOW_HEIGHT}")
@@ -32,7 +46,9 @@ def make_edge_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Edge:
         "download.directory_upgrade": True,
         "safebrowsing.enabled": True,
     })
-    return webdriver.Edge(options=opts)
+    driver = webdriver.Edge(options=opts)
+    _enable_headless_downloads(driver, download_dir)
+    return driver
 
 
 def make_simple_edge_driver() -> webdriver.Edge:
@@ -54,7 +70,9 @@ def make_chrome_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Chrome:
         "download.directory_upgrade": True,
         "safebrowsing.enabled": True,
     })
-    return webdriver.Chrome(options=opts)
+    driver = webdriver.Chrome(options=opts)
+    _enable_headless_downloads(driver, download_dir)
+    return driver
 
 
 def make_simple_chrome_driver() -> webdriver.Chrome:
