@@ -9,6 +9,10 @@ jobs:
   # ── 1) 테스트 실행 ────────────────────────────────────────────────
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [edge, chrome]
     steps:
       - uses: actions/checkout@v4
 
@@ -19,8 +23,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r config/requirements.txt
 
-      - name: Install Edge
-        uses: browser-actions/setup-edge@latest
+      - name: Install browser (${{ matrix.browser }})
+        uses: browser-actions/setup-${{ matrix.browser }}@latest
 
       - name: Run tests
         env:
@@ -40,13 +44,13 @@ jobs:
           python -m pytest tests/ \
             --override-ini="addopts=-v -s --tb=short --alluredir=allure-results --clean-alluredir --continue-on-collection-errors" \
             -m "not slow and not xfail" \
-            --jira
+            --browser ${{ matrix.browser }}
 
       - name: Upload allure-results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results
+          name: allure-results-${{ matrix.browser }}
           path: allure-results/
           retention-days: 7
 
@@ -71,11 +75,12 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Download allure-results
+      - name: Download allure-results (all browsers)
         uses: actions/download-artifact@v4
         with:
-          name: allure-results
+          pattern: allure-results-*
           path: allure-results/
+          merge-multiple: true
 
       - name: Restore allure history cache
         uses: actions/cache@v4
@@ -116,11 +121,12 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Download allure-results
+      - name: Download allure-results (all browsers)
         uses: actions/download-artifact@v4
         with:
-          name: allure-results
+          pattern: allure-results-*
           path: allure-results/
+          merge-multiple: true
         continue-on-error: true
 
       - name: Send Discord notification

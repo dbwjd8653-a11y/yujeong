@@ -8,6 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
+import allure
 
 from config.selenium_imports import WebDriverWait
 
@@ -201,6 +202,13 @@ def pytest_addoption(parser):
         choices=["edge", "chrome"],
         help="테스트 브라우저 선택 (edge | chrome)",
     )
+
+
+# ── 모든 테스트에 실행 브라우저를 Allure 파라미터로 기록 ───────────
+@pytest.fixture(autouse=True)
+def _tag_browser_param(request):
+    """멀티 브라우저 실행 시 Allure 리포트에서 edge/chrome 결과를 구분하기 위함."""
+    allure.dynamic.parameter("browser", request.config.getoption("--browser"))
 
 
 # ── 브라우저 fixtures (테스트마다 독립 실행) ───────────────────────
