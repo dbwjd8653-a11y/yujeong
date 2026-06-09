@@ -42,6 +42,12 @@ class TokenPage(BasePage):
         "table.MuiTable-root",
     )
 
+    # 토큰 이용 내역 테이블의 행
+    TOKEN_TABLE_ROWS = (
+        By.CSS_SELECTOR,
+        "table.MuiTable-root tr.MuiTableRow-root",
+    )
+
     # '전체 이용 내역' 버튼 (텍스트 기반 — href 기반은 개별 채팅 링크와 혼동될 수 있음)
     ALL_HISTORY_BUTTON = (
         By.XPATH,
@@ -179,6 +185,25 @@ class TokenPage(BasePage):
         btn = self.wait.until(EC.element_to_be_clickable(self.ALL_HISTORY_BUTTON))
         self.js_click(btn)
         self.logger.info("전체 이용 내역 버튼 클릭 완료")
+
+    # ========== 토큰 이용 내역 테이블 ==========
+
+    def wait_for_token_table(self, timeout: int = 10):
+        """토큰 사용량 테이블이 나타날 때까지 대기"""
+        WebDriverWait(self.driver, timeout).until(
+            EC.presence_of_element_located(self.TOKEN_TABLE)
+        )
+
+    def get_token_row_count(self) -> int:
+        """토큰 이용 내역 테이블의 행 수 반환"""
+        return len(self.driver.find_elements(*self.TOKEN_TABLE_ROWS))
+
+    def wait_for_token_rows_increase(self, before_rows: int, timeout: int = 10) -> int:
+        """행 수가 before_rows보다 증가할 때까지 대기 후 현재 행 수 반환"""
+        WebDriverWait(self.driver, timeout).until(
+            lambda d: len(d.find_elements(*self.TOKEN_TABLE_ROWS)) > before_rows
+        )
+        return self.get_token_row_count()
 
     def is_on_history_page(self) -> bool:
         """전체 이용 내역 페이지 이동 확인"""

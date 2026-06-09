@@ -3,7 +3,7 @@
 import pytest
 import allure
 
-from config.selenium_imports import By, EC, WebDriverWait
+from config.selenium_imports import EC
 
 from pages.token.token_page import TokenPage
 from pages.tools.base_tool_page import BaseToolPage
@@ -69,10 +69,8 @@ def test_token_increases_after_chat(token):
     token.driver.get(token.ADMIN_URL)
     token.wait.until(EC.presence_of_element_located(token.ALL_HISTORY_BUTTON))
     token.click_all_history_button()
-    token.wait.until(
-        EC.presence_of_element_located(token.TOKEN_TABLE)
-    )
-    before_rows = len(token.driver.find_elements(By.CSS_SELECTOR, "table.MuiTable-root tr.MuiTableRow-root"))
+    token.wait_for_token_table()
+    before_rows = token.get_token_row_count()
     before_text = token.get_lnb_token_text()
 
     token.send_chat_message(TEST_MESSAGE)
@@ -81,13 +79,8 @@ def test_token_increases_after_chat(token):
     token.driver.get(token.ADMIN_URL)
     token.wait.until(EC.presence_of_element_located(token.ALL_HISTORY_BUTTON))
     token.click_all_history_button()
-    WebDriverWait(token.driver, 15).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "table.MuiTable-root"))
-    )
-    WebDriverWait(token.driver, 10).until(
-        lambda d: len(d.find_elements(By.CSS_SELECTOR, "table.MuiTable-root tr.MuiTableRow-root")) > before_rows
-    )
-    after_rows = len(token.driver.find_elements(By.CSS_SELECTOR, "table.MuiTable-root tr.MuiTableRow-root"))
+    token.wait_for_token_table(timeout=15)
+    after_rows = token.wait_for_token_rows_increase(before_rows, timeout=10)
     after_text = token.get_lnb_token_text()
 
     assert after_rows > before_rows, \

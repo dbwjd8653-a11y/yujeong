@@ -11,6 +11,9 @@ from pages.mypage.mypage_page import MyPage
 
 class MyPage06(MyPage):
 
+    # JS 주입용 탈퇴 키워드 (한/영) — execute_script에 f-string으로 주입
+    JS_WITHDRAW_KEYWORDS = "['탈퇴하기', '탈퇴', 'Leave', 'Delete Account', 'Delete account', 'Withdraw', 'Deactivate', 'Close Account']"
+
     # ========== Locators — FHC-077~079: 계정 탈퇴 (한/영 모두) ==========
     WITHDRAW_AREA = (By.XPATH,
         "//*[contains(text(),'계정 탈퇴') or contains(text(),'탈퇴')"
@@ -60,16 +63,15 @@ class MyPage06(MyPage):
 
     def scroll_to_withdraw_area(self):
         """JS로 탈퇴 관련 버튼/섹션 찾아 스크롤"""
-        self.driver.execute_script("""
-            var kws = ['탈퇴', 'Leave', 'Delete Account', 'Delete account',
-                       'Withdraw', 'Deactivate', 'Close Account'];
+        self.driver.execute_script(f"""
+            var kws = {self.JS_WITHDRAW_KEYWORDS};
             var els = Array.from(document.querySelectorAll('button, h2, h3, h4, span, p'));
-            var target = els.find(function(el) {
+            var target = els.find(function(el) {{
                 var txt = (el.innerText || '').trim();
-                return kws.some(function(k){ return txt === k || txt.includes(k); });
-            });
-            if (target) { target.scrollIntoView({behavior:'auto', block:'center'}); }
-            else { window.scrollTo(0, document.body.scrollHeight); }
+                return kws.some(function(k){{ return txt === k || txt.includes(k); }});
+            }});
+            if (target) {{ target.scrollIntoView({{behavior:'auto', block:'center'}}); }}
+            else {{ window.scrollTo(0, document.body.scrollHeight); }}
         """)
         self.wait.until(lambda d: self.is_withdraw_area_displayed())
         self.logger.info("탈퇴 영역으로 스크롤 완료")
@@ -77,14 +79,13 @@ class MyPage06(MyPage):
     def is_withdraw_area_displayed(self) -> bool:
         """JS로 탈퇴 버튼 존재 여부 확인"""
         try:
-            result = self.driver.execute_script("""
-                var kws = ['탈퇴', 'Leave', 'Delete Account', 'Delete account',
-                           'Withdraw', 'Deactivate', 'Close Account'];
+            result = self.driver.execute_script(f"""
+                var kws = {self.JS_WITHDRAW_KEYWORDS};
                 var btns = Array.from(document.querySelectorAll('button'));
-                return btns.some(function(btn) {
+                return btns.some(function(btn) {{
                     var txt = (btn.innerText || '').trim();
-                    return kws.some(function(k){ return txt === k || txt.includes(k); });
-                });
+                    return kws.some(function(k){{ return txt === k || txt.includes(k); }});
+                }});
             """)
             return bool(result)
         except Exception:
@@ -94,15 +95,14 @@ class MyPage06(MyPage):
 
     def click_withdraw_button(self):
         """JS로 탈퇴 버튼 찾아 클릭 (한/영 모두)"""
-        result = self.driver.execute_script("""
-            var kws = ['탈퇴하기', '탈퇴', 'Leave', 'Delete Account', 'Delete account',
-                       'Withdraw', 'Deactivate', 'Close Account'];
+        result = self.driver.execute_script(f"""
+            var kws = {self.JS_WITHDRAW_KEYWORDS};
             var btns = Array.from(document.querySelectorAll('button'));
-            var found = btns.find(function(btn) {
+            var found = btns.find(function(btn) {{
                 var txt = (btn.innerText || '').trim();
-                return kws.some(function(k){ return txt === k || txt.includes(k); });
-            });
-            if (found) { found.click(); return 'clicked: ' + found.innerText.trim(); }
+                return kws.some(function(k){{ return txt === k || txt.includes(k); }});
+            }});
+            if (found) {{ found.click(); return 'clicked: ' + found.innerText.trim(); }}
             return 'not-found';
         """)
         if result == 'not-found':

@@ -49,9 +49,6 @@ class SignupPage(BasePage):
     def get_required_checkboxes(self):
         return self.wait.until(EC.presence_of_all_elements_located(self.REQ_CHECKBOXES))
 
-    # def get_create_account_button(self):
-    #     return self.wait.until(EC.element_to_be_clickable(self.CREATE_ACCOUNT_BUTTON))
-
     def get_email_error_message(self):
         return self.wait.until(EC.visibility_of_element_located(self.EMAIL_ERROR_MESSAGE))
 
@@ -64,23 +61,15 @@ class SignupPage(BasePage):
     def click_create_account_with_email(self):
         self.wait.until(EC.element_to_be_clickable(self.CREATE_EMAIL_BUTTON)).click()
     
-    # input_text 함수: locator 입력을 함수화
-    # locator 자체를 입력 -> 입력 필드에 텍스트 입력을 동작 함수 생성
-    def input_text(self, locator, text):
-        element = self.wait.until(
-            EC.visibility_of_element_located(locator)
-        )
-        self.js_input(element, text)
-    
-    # email, pw, name 입력
+    # email, pw, name 입력 (BasePage.enter_text 재사용)
     def enter_email(self, email):
-        self.input_text(self.EMAIL_INPUT, email)
+        self.enter_text(self.EMAIL_INPUT, email)
 
     def enter_password(self, password):
-        self.input_text(self.PASSWORD_INPUT, password)
+        self.enter_text(self.PASSWORD_INPUT, password)
 
     def enter_name(self, name):
-        self.input_text(self.NAME_INPUT, name)  
+        self.enter_text(self.NAME_INPUT, name)
 
     # 전체 동의 체크박스 클릭
     def click_agree_checkbox(self):
