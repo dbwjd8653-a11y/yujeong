@@ -1,7 +1,8 @@
-import glob
 import os
 import random
-import time
+from urllib.parse import urlparse
+
+import requests
 
 from config.selenium_imports import By, EC
 from pages.tools.base_tool_page import BaseToolPage
@@ -119,37 +120,43 @@ class PPTPage(BaseToolPage):
     # ========== 다운로드 ==========
 
     def download_result(self, download_dir: str, browser: str = "edge"):
-        before_mtime = {}
-        for f in glob.glob(os.path.join(download_dir, "*.pptx")):
-            try:
-                before_mtime[f] = os.path.getmtime(f)
-            except OSError:
-                pass
+        """'생성 결과 다운받기' 링크(href)를 직접 받아 저장한다.
 
+        href는 Azure Blob Storage의 SAS 서명 포함 직접 파일 URL이라 쿠키 없이
+        접근 가능하다. 클릭 방식은 Edge 내장 Office 뷰어가 .pptx를 새 탭에서
+        열어버려(다운로드 대신) 실패하므로, href를 HTTP GET으로 직접 받는다.
+        """
         btn = self.wait.until(EC.element_to_be_clickable(self.DOWNLOAD_BTN))
-        self.driver.execute_script(
-            "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", btn
-        )
-        self.js_click(btn)
-        self.logger.info("생성 결과 다운받기 버튼 클릭 완료")
-        click_time = time.time()
+        href = btn.get_attribute("href")
+        if not href:
+            self.logger.warning("다운로드 링크(href)를 찾을 수 없습니다")
+            return False
+        self.logger.info("생성 결과 다운로드 URL 획득")
 
-        self.logger.info("파일 다운로드 대기 중...")
-        deadline = time.time() + 60
-        while time.time() < deadline:
-            time.sleep(0.5)
-            for f in glob.glob(os.path.join(download_dir, "*.pptx")):
-                if os.path.exists(f + ".part"):
-                    continue
-                try:
-                    mtime = os.path.getmtime(f)
-                except OSError:
-                    continue
-                if f not in before_mtime or mtime > click_time:
-                    self.logger.info(f"다운로드 완료: {f}")
-                    return True
-        self.logger.warning("다운로드 타임아웃 (60초 초과)")
-        return False
+        os.makedirs(download_dir, exist_ok=True)
+        filename = os.path.basename(urlparse(href).path) or "result.pptx"
+        dest = os.path.join(download_dir, filename)
+
+        try:
+            resp = requests.get(href, timeout=60)
+            resp.raise_for_status()
+        except Exception as e:
+            self.logger.warning(f"파일 다운로드 요청 실패: {e}")
+            return False
+
+        if not resp.content:
+            self.logger.warning("다운로드 응답이 비어 있습니다")
+            return False
+
+        # pptx는 zip 컨테이너 — PK 시그니처로 산출물 무결성 검증 (HTML 에러 페이지 등 false pass 방지)
+        if resp.content[:4] != b"PK\x03\x04":
+            self.logger.warning("받은 파일이 유효한 pptx(zip)가 아닙니다")
+            return False
+
+        with open(dest, "wb") as f:
+            f.write(resp.content)
+        self.logger.info(f"다운로드 완료: {dest} ({len(resp.content)} bytes)")
+        return True
 
     # ========== 생성 버튼 활성화 확인 / 클릭 / 결과 대기 ==========
 

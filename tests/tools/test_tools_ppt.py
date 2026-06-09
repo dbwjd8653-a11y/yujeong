@@ -32,7 +32,6 @@ def ppt(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
-@pytest.mark.skip(reason="레거시 헬피챗 테스트 서버 종료 예정 — 생성 결과가 파일 다운로드가 아닌 새 창 HTML (신버전 UI 재작성 필요)")
 @allure.title("[FHC-049~054] PPT 생성 해피 케이스 (다운로드 포함)")
 @allure.severity(allure.severity_level.NORMAL)
 def test_ppt_happy_case(ppt):
