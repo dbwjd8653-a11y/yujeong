@@ -35,6 +35,18 @@ def _base_opts() -> EdgeOptions:
         opts.add_argument("--disable-dev-shm-usage")
     return opts
 
+
+def _chrome_base_opts() -> ChromeOptions:
+    """Edge `_base_opts()`와 동일하게 — CI에서는 headless로 실행한다.
+    (CI는 디스플레이가 없어 headless 없이는 Chrome이 즉시 종료됨)"""
+    opts = ChromeOptions()
+    opts.add_argument(f"--window-size={WINDOW_WIDTH},{WINDOW_HEIGHT}")
+    if os.environ.get("CI"):
+        opts.add_argument("--headless=new")
+        opts.add_argument("--no-sandbox")
+        opts.add_argument("--disable-dev-shm-usage")
+    return opts
+
 # ── Edge (Chromium 기반) ──────────────────────────────────────────
 
 def make_edge_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Edge:
@@ -60,10 +72,7 @@ def make_simple_edge_driver() -> webdriver.Edge:
 
 def make_chrome_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Chrome:
     """파일 다운로드 설정이 포함된 Chrome 드라이버 생성"""
-    opts = ChromeOptions()
-    opts.add_argument("--no-sandbox")
-    opts.add_argument("--disable-dev-shm-usage")
-    opts.add_argument(f"--window-size={WINDOW_WIDTH},{WINDOW_HEIGHT}")
+    opts = _chrome_base_opts()
     opts.add_experimental_option("prefs", {
         "download.default_directory": download_dir,
         "download.prompt_for_download": False,
@@ -77,8 +86,4 @@ def make_chrome_driver(download_dir: str = DOWNLOAD_DIR) -> webdriver.Chrome:
 
 def make_simple_chrome_driver() -> webdriver.Chrome:
     """다운로드 설정 없는 기본 Chrome 드라이버 생성"""
-    opts = ChromeOptions()
-    opts.add_argument("--no-sandbox")
-    opts.add_argument("--disable-dev-shm-usage")
-    opts.add_argument(f"--window-size={WINDOW_WIDTH},{WINDOW_HEIGHT}")
-    return webdriver.Chrome(options=opts)
+    return webdriver.Chrome(options=_chrome_base_opts())
