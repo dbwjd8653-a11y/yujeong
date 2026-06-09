@@ -23,8 +23,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r config/requirements.txt
 
-      - name: Install browser (${{ matrix.browser }})
-        uses: browser-actions/setup-${{ matrix.browser }}@latest
+      - name: Install Edge
+        if: matrix.browser == 'edge'
+        uses: browser-actions/setup-edge@latest
+
+      - name: Install Chrome
+        if: matrix.browser == 'chrome'
+        uses: browser-actions/setup-chrome@latest
 
       - name: Run tests
         env:
