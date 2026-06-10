@@ -49,6 +49,7 @@ jobs:
           python -m pytest tests/ \
             --override-ini="addopts=-v -s --tb=short --alluredir=allure-results --clean-alluredir --continue-on-collection-errors" \
             -m "not slow and not xfail" \
+            --jira \
             --browser ${{ matrix.browser }}
 
       - name: Upload allure-results
