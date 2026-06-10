@@ -1,6 +1,7 @@
 # tests/conftest.py
 # 통합 conftest — 팀 전체 공통 fixture
 
+import inspect
 import logging
 import os
 import re
@@ -141,25 +142,18 @@ def pytest_runtest_makereport(item, call):
         # ③ Jira 이슈 생성
         test_file = item.location[0]
         error_message = str(call.excinfo.value)
+        # 테스트 docstring(전제/단계/기대)을 재현 정보로 사용
+        doc = inspect.getdoc(item.function) or "(docstring 없음)"
         summary = f"[자동화 테스트 실패] {item.name}"
-        description = f"""
-                    자동화 테스트 실패
-
-                    [Test Case]
-                    {item.name}
-
-                    [Test File]
-                    {test_file}
-
-                    [Browser]
-                    {browser_name}
-
-                    [URL]
-                    {current_url}
-
-                    [Error]
-                    {error_message}
-                    """
+        description = (
+            "자동화 테스트 실패\n\n"
+            f"[Test Case]\n{item.name}\n\n"
+            f"[설명 / 재현 단계]\n{doc}\n\n"
+            f"[Test File]\n{test_file}\n\n"
+            f"[Browser]\n{browser_name}\n\n"
+            f"[URL]\n{current_url}\n\n"
+            f"[Error]\n{error_message}\n"
+        )
 
         issue_key = create_jira_bug_ticket(summary=summary, description=description)
 
