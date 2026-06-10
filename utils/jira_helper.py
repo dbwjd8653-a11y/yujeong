@@ -17,11 +17,40 @@ from config.jira_config import (
 
 logger = logging.getLogger(__name__)
 
+# ── 평문 → ADF(Atlassian Document Format) 변환 ───────────────────
+# v3 이슈 API는 description을 평문이 아닌 ADF 문서로 받는다.
+
+def _text_to_adf(text):
+
+    content = []
+
+    for line in (text or "").split("\n"):
+
+        if line:
+            content.append({
+                "type": "paragraph",
+                "content": [
+                    {"type": "text", "text": line}
+                ]
+            })
+        else:
+            # 빈 줄은 빈 문단으로 (text 노드는 빈 문자열 불가)
+            content.append({"type": "paragraph"})
+
+    if not content:
+        content.append({"type": "paragraph"})
+
+    return {
+        "type": "doc",
+        "version": 1,
+        "content": content
+    }
+
 # ── Jira Bug 생성 ────────────────────────────────────────────────
 
 def create_jira_bug_ticket(summary, description):
 
-    url = f"{JIRA_URL}/rest/api/2/issue"
+    url = f"{JIRA_URL}/rest/api/3/issue"
 
     auth = HTTPBasicAuth(
         JIRA_EMAIL,
@@ -39,7 +68,7 @@ def create_jira_bug_ticket(summary, description):
                 "key": JIRA_PROJECT_KEY
             },
             "summary": summary,
-            "description": description,
+            "description": _text_to_adf(description),
             "issuetype": {
                 "name": "작업"
             },
@@ -90,7 +119,7 @@ def create_jira_bug_ticket(summary, description):
 def attach_image_to_jira(issue_key, image_bytes):
 
     url = (
-        f"{JIRA_URL}/rest/api/2/issue/"
+        f"{JIRA_URL}/rest/api/3/issue/"
         f"{issue_key}/attachments"
     )
 

@@ -3,8 +3,6 @@
 > 기업용 AI 통합 플랫폼 **Helpy Chat**의 핵심 기능 품질 검증 및 E2E 테스트 자동화 구축
 > *팀 프로젝트 진행 후, 개인 포트폴리오로 전환하여 지속 개발 중*
 
-<!-- TODO: 코드/스크린샷 확정 후 채울 항목은 "TODO" 검색으로 일괄 처리 -->
-
 ---
 
 ## 📌 프로젝트 개요
@@ -45,20 +43,29 @@
 
 ## 📊 테스트 성과
 
+### 팀 프로젝트 (2025.05.13~06.01) — 성능·유지보수 최적화
+
 | 지표 | 결과 |
 |------|------|
-| 총 테스트 케이스 수 | **58개** |
+| 총 테스트 케이스 수 | **58개** (Chrome·Firefox · 교차 실행 미적용) |
 | 테스트 실행 시간 단축률 | **48.1%** (약 1.93배 성능 개선) |
 | 전체 테스트 실행 시간 | 약 46분 → **23분** |
 | 로그인 횟수 절감 | 57회 → 23회 (**34회 감소**) |
 | setup 시간 절감 | 628초 → 253초 (**374초, 약 6분 14초 단축**) |
 | POM 도입 후 유지보수 효율 | 수정 파일 수 최대 **96.6% 절감** |
 
-<!-- TODO: Allure 리포트 그래프 스크린샷 추가
-     allure serve 로 리포트 띄운 뒤 캡처 → docs/ 폴더에 저장 후 아래처럼 삽입
-     (주의: images/ 폴더는 테스트 픽스처용이므로 스크린샷을 섞지 말 것)
-![Allure Report](./docs/allure-report.png)
--->
+### 개인 프로젝트 (지속 개발) — 커버리지 확장 · 크로스 브라우저 도입
+
+| 지표 | 결과 |
+|------|------|
+| 총 테스트 케이스 수 (현재) | **116개** (Edge·Chrome 교차 실행 / 고유 케이스 약 67개) |
+| 크로스 브라우저 매트릭스 | **Edge · Chrome 병렬 교차 실행** (`fail-fast: false` — 팀 시절 대비 신규 도입) |
+| 최근 CI 테스트 통과율 | **104 / 116 (약 89.7%)** — 실패 2 · 스킵 10 |
+| CI 실행 시간 | 브라우저당 **약 11분** (Edge · Chrome 병렬 잡) |
+
+> 지표 출처: 테스트 수는 `pytest` 수집 × 브라우저 매트릭스, 매트릭스/파이프라인은 `.github/workflows/test.yml`, 통과율·실행 시간은 GitHub Actions 실행 기록 기준.
+>
+> ⏭ **스킵 10건**은 ① 레거시 헬피챗 테스트 서버 종료 예정으로 AI 생성 백엔드가 미동작하는 도구 테스트, ② 서비스에서 제거된 기능(기관 페이지 링크), ③ headless CI 한정 위젯 미초기화(고객센터) 등 **환경·서비스 변경에 따른 의도적 스킵**으로, 테스트 자체 결함이 아닙니다.
 
 ---
 
@@ -115,10 +122,6 @@ CI 기본 동작으로 이전 stage 실패 시 이후 job 전체 스킵
 Chrome에서 입력값 누적 및 브라우저 상태 공유 문제 발생
 → JavaScript 직접 입력 처리 + 테스트마다 브라우저 새로 초기화
 
-**4. Jira 자동 등록 Hook 구조 개선**
-Jira 생성 Hook이 특정 fixture에 종속되어 공통 동작 불가
-→ Driver 기반 공통 Hook 구조로 전환
-
 ---
 
 ## 📁 프로젝트 구조
@@ -129,25 +132,31 @@ focus/
 │   ├── browser_factory.py    # Edge/Chrome 드라이버 생성
 │   ├── settings.py           # URL·타임아웃·테스트 계정 설정
 │   ├── login_helpers.py      # 공통 로그인/배너 처리
+│   ├── selenium_imports.py   # Selenium 공통 import 모음
 │   ├── jira_config.py        # Jira 연동 설정
 │   └── requirements.txt      # 의존성 패키지
-├── pages/                    # Page Object Model
+├── pages/                    # Page Object Model (3계층)
 │   ├── base_page.py          # 1계층: 공통 동작
-│   ├── tools/                # 3계층: Tools 세부 Page
-│   ├── settings/             # 3계층: Settings 세부 Page
-│   ├── agents/               # Agents Page
-│   └── mypage/               # 마이페이지 Page
+│   ├── tools/                # ✅ 담당: Tools lesson·ppt
+│   ├── settings/             # ✅ 담당: Settings 세부 Page
+│   ├── agents/  mypage/  token/
+│   └── login/  logout/  signup/  chat/  performance/
 ├── tests/                    # 테스트 코드
-│   ├── login/  logout/  signup/  chat/
-│   ├── tools/                # ✅ 담당
+│   ├── tools/                # ✅ 담당: Tools lesson·ppt
 │   ├── settings/             # ✅ 담당
-│   ├── agent/  mypage/  performance/
+│   ├── agent/  mypage/  token/
+│   └── login/  logout/  signup/  chat/
+├── performance/              # 성능 부하 테스트 (top-level, testpaths 등록)
+├── utils/
+│   ├── jira_helper.py        # Jira 이슈 생성·스크린샷 첨부 (REST API v3)
+│   └── random_generator.py   # 테스트 데이터 생성
 ├── scripts/
-│   ├── ci_allure.py          # Allure 리포트 생성 스크립트
-│   └── ci_notify.py          # Discord 알림 스크립트
+│   ├── ci_allure.py          # ✅ 담당: Allure 리포트 생성 스크립트
+│   ├── ci_notify.py          # ✅ 담당: Discord 알림 스크립트
+│   └── recreate_test_account.py  # 테스트 계정 재생성 CLI
 ├── .github/workflows/
-│   └── test.yml              # GitHub Actions 워크플로우
-├── conftest.py               # 공통 fixture 및 Jira 연동 훅
+│   └── test.yml              # ✅ 담당: GitHub Actions CI/CD (Test→Deploy→Notify)
+├── conftest.py               # 공통 fixture + 실패 시 Jira 자동 등록 훅
 └── pytest.ini
 ```
 
@@ -163,6 +172,10 @@ cp .env.example .env
 ```
 
 ```env
+# 테스트 계정 (TEST_USER_*, MYPAGE_USER_*, NON_ADMIN_USER_*) — .env.example 참고, 로그인 테스트에 필수
+TEST_USER_ID=your_email@example.com
+TEST_USER_PW=your_password
+
 JIRA_URL=https://your-domain.atlassian.net/
 JIRA_EMAIL=your-email@example.com
 JIRA_API_TOKEN=your-api-token
@@ -207,13 +220,15 @@ allure open allure-report
 
 | 변수명 | 설명 |
 |--------|------|
+| `TEST_USER_ID` / `TEST_USER_PW` | 메인 테스트 계정 (로그인 필수 — 미설정 시 `do_login`에서 `ValueError`) |
+| `MYPAGE_USER_ID` / `MYPAGE_USER_PW` / `MYPAGE_USER_NAME` | 마이페이지 전용 더미 계정 (탈퇴/재가입·비밀번호 변경 테스트용, 메인 계정과 분리 필수) |
+| `MYPAGE_NEW_PASSWORD` | 비밀번호 변경 테스트에서 사용 후 원복하는 임시 비밀번호 |
+| `NON_ADMIN_USER_ID` / `NON_ADMIN_USER_PW` | 비관리자 계정 (조직 설정 권한 테스트용) |
 | `JIRA_URL` | Jira 인스턴스 URL |
 | `JIRA_EMAIL` | Jira 계정 이메일 |
 | `JIRA_API_TOKEN` | Jira API 토큰 |
 | `JIRA_PROJECT_KEY` | Jira 프로젝트 키 |
 | `DISCORD_WEBHOOK_URL` | Discord 웹훅 URL |
-| `TEST_USER_ID` | 테스트 계정 이메일 (선택) |
-| `TEST_USER_PW` | 테스트 계정 비밀번호 (선택) |
 
 ---
 

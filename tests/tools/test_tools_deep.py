@@ -109,7 +109,7 @@ def test_deep_research_happy_path(deep):
 
 
 @pytest.mark.slow
-@pytest.mark.xfail(reason="딥리서치 생성이 10분을 초과하는 서비스 응답 지연 이슈", strict=False)
+@pytest.mark.xfail(reason="KAN-4: 딥리서치 생성이 10분을 초과하는 서비스 응답 지연 이슈", strict=False)
 @allure.story("심층 조사 해피패스")
 @allure.title("[FHC-061s] 심층 조사 생성 완료 확인")
 @allure.severity(allure.severity_level.CRITICAL)
