@@ -75,16 +75,24 @@ def test_change_password(mypage):
       4. 검증 후 원래 비밀번호로 복구
     기대: '저장되었습니다' 메시지 출력 후 비밀번호 변경 적용됨
     """
-    with allure.step("[FHC-081] 계정 관리 페이지 이동 후 비밀번호 변경"):
-        mypage.navigate_to_account()
-        mypage.click_password_edit()
-        mypage.change_password(MAIN_PASSWORD, NEW_PASSWORD)
-    with allure.step("[FHC-081] 저장 성공 확인 후 원래 비밀번호 복구"):
-        assert mypage.is_save_success_toast_displayed(), \
-            "비밀번호 변경 후 '저장되었습니다' 메시지가 표시되지 않았습니다"
-        mypage.navigate_to_account()
-        mypage.click_password_edit()
-        mypage.change_password(NEW_PASSWORD, MAIN_PASSWORD)
+    changed = False
+    try:
+        with allure.step("[FHC-081] 계정 관리 페이지 이동 후 비밀번호 변경"):
+            mypage.navigate_to_account()
+            mypage.click_password_edit()
+            mypage.change_password(MAIN_PASSWORD, NEW_PASSWORD)
+            changed = True  # 저장 토스트까지 확인됨(change_password 내부 대기) → 변경 확정
+        with allure.step("[FHC-081] 저장 성공 확인"):
+            assert mypage.is_save_success_toast_displayed(), \
+                "비밀번호 변경 후 '저장되었습니다' 메시지가 표시되지 않았습니다"
+    finally:
+        # 변경됐다면 어떤 단계에서 실패하든 반드시 원래 비밀번호로 원복한다.
+        # (원복이 본문에만 있으면 중간 실패 시 계정이 NEW_PASSWORD에 묶여 이후 모든 mypage 로그인이 깨짐)
+        if changed:
+            with allure.step("[FHC-081] 원래 비밀번호로 복구"):
+                mypage.navigate_to_account()
+                mypage.click_password_edit()
+                mypage.change_password(NEW_PASSWORD, MAIN_PASSWORD)
 
 
 @allure.story("프로모션 알림 설정 변경")
