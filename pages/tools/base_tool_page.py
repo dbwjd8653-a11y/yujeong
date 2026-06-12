@@ -9,23 +9,16 @@ import time
 from config.selenium_imports import By, EC, WebDriverWait, TimeoutException
 
 from pages.base_page import BasePage
-from config.settings import BASE_URL, BASE_UI_URL, LOGIN_URL, TEST_USER, DEFAULT_WAIT, SHORT_WAIT
-from config.login_helpers import close_token_banner
+from config.settings import BASE_URL, DEFAULT_WAIT, SHORT_WAIT
+from config.login_helpers import do_login, close_token_banner
 
 
 class BaseToolPage(BasePage):
 
     BASE_URL       = BASE_URL
     TOOLS_URL      = BASE_URL + "/tools"
-    LOGIN_URL      = LOGIN_URL
-    LOGIN_EMAIL    = TEST_USER["id"]
-    LOGIN_PASSWORD = TEST_USER["pw"]
 
     # ========== Locators ==========
-
-    EMAIL_INPUT    = (By.CSS_SELECTOR, "input[type='email']")
-    PASSWORD_INPUT = (By.CSS_SELECTOR, "input[type='password']")
-    SUBMIT_BUTTON  = (By.CSS_SELECTOR, "button[type='submit']")
 
     RESET_BUTTON   = (By.XPATH, "//button[contains(text(),'입력 내역 초기화') or contains(text(),'Reset')]")
     CONFIRM_RESET  = (By.XPATH, "//*[@role='dialog']//button[contains(text(),'초기화 하기') or contains(text(),'Reset')]")
@@ -109,23 +102,9 @@ class BaseToolPage(BasePage):
         super().__init__(driver, wait_or_timeout)
 
     def login(self):
-        self.driver.get(self.LOGIN_URL)
-        self.wait.until(EC.presence_of_element_located(self.EMAIL_INPUT))
-        self.driver.find_element(*self.EMAIL_INPUT).send_keys(self.LOGIN_EMAIL)
-        self.driver.find_element(*self.PASSWORD_INPUT).send_keys(self.LOGIN_PASSWORD)
-        submit = self.driver.find_element(*self.SUBMIT_BUTTON)
-        submit.click()
-        self.wait.until(EC.staleness_of(submit))
-        # 리다이렉트가 qaproject로 완전히 완료될 때까지 추가 대기
-        self.wait.until(EC.url_contains(BASE_UI_URL))
-        # LNB 링크가 렌더링될 때까지 대기 — 세션 쿠키 완전히 설정된 후에만 나타남
-        self.wait.until(
-            EC.presence_of_element_located(
-                (By.XPATH, "//a[contains(@href,'ai-helpy-chat')]")
-            )
-        )
+        """TEST_USER로 로그인 (공통 do_login 사용 — URL/LNB 대기·배너 닫기 포함)"""
+        do_login(self.driver, self.wait)
         self.logger.info("로그인 성공")
-        close_token_banner(self.driver, self.wait)  # BaseToolPage 자체 login() 전용
 
     # ========== 페이지 이동 ==========
 
@@ -205,19 +184,11 @@ class BaseToolPage(BasePage):
 
     def is_class_info_tab_visible(self) -> bool:
         """수업 정보 입력 탭이 화면에 표시되는지 확인"""
-        try:
-            self.wait.until(EC.presence_of_element_located(self.CLASS_INFO_TAB))
-            return True
-        except Exception:
-            return False
+        return self.is_present(self.CLASS_INFO_TAB)
 
     def is_school_level_combobox_visible(self) -> bool:
         """학교급 콤보박스가 화면에 표시되는지 확인"""
-        try:
-            self.wait.until(EC.presence_of_element_located(self.SCHOOL_COMBOBOX))
-            return True
-        except Exception:
-            return False
+        return self.is_present(self.SCHOOL_COMBOBOX)
 
     def is_next_button_enabled(self) -> bool:
         """'다음으로' 버튼이 활성화 상태인지 확인"""
@@ -306,11 +277,7 @@ class BaseToolPage(BasePage):
 
     def is_student_tab_visible(self) -> bool:
         """학생 정보 입력 탭이 화면에 표시되는지 확인"""
-        try:
-            self.wait.until(EC.presence_of_element_located(self.STUDENT_TAB))
-            return True
-        except Exception:
-            return False
+        return self.is_present(self.STUDENT_TAB)
 
     def is_student_name_entered(self, name: str) -> bool:
         """입력한 학생 이름이 footer 행에 반영되었는지 확인"""
@@ -384,11 +351,7 @@ class BaseToolPage(BasePage):
 
     def is_result_button_visible(self) -> bool:
         """'생성 결과 받기' 버튼이 화면에 표시되는지 확인"""
-        try:
-            self.wait.until(EC.presence_of_element_located(self.RESULT_BUTTON))
-            return True
-        except Exception:
-            return False
+        return self.is_present(self.RESULT_BUTTON)
 
     # ========== 페이지 진입 확인 ==========
 
@@ -407,11 +370,7 @@ class BaseToolPage(BasePage):
 
     def is_on_tool_page(self) -> bool:
         """현재 URL이 특정 도구 상세 페이지인지 확인"""
-        try:
-            self.wait.until(EC.url_contains("ai-helpy-chat/tools/"))
-            return True
-        except Exception:
-            return False
+        return self.is_url_contains("ai-helpy-chat/tools/")
 
     # ========== AI 생성 공통 (PPT·퀴즈·심층조사·수업지도안) ==========
 
