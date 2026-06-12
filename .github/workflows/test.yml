@@ -35,9 +35,12 @@ jobs:
         env:
           TEST_USER_ID: ${{ secrets.TEST_USER_ID }}
           TEST_USER_PW: ${{ secrets.TEST_USER_PW }}
-          MYPAGE_USER_ID: ${{ secrets.MYPAGE_USER_ID }}
-          MYPAGE_USER_PW: ${{ secrets.MYPAGE_USER_PW }}
-          MYPAGE_USER_NAME: ${{ secrets.MYPAGE_USER_NAME }}
+          # 파괴적 mypage 테스트(비번 변경/탈퇴)가 edge·chrome 병렬 잡에서
+          # 같은 계정을 동시에 건드리면 레이스로 깨지므로 브라우저별 전용 계정을 주입한다.
+          # (코드는 기존 env 변수명 그대로 사용 — 로컬 .env 단일 계정도 무변경)
+          MYPAGE_USER_ID: ${{ matrix.browser == 'edge' && secrets.MYPAGE_USER_ID_EDGE || secrets.MYPAGE_USER_ID_CHROME }}
+          MYPAGE_USER_PW: ${{ matrix.browser == 'edge' && secrets.MYPAGE_USER_PW_EDGE || secrets.MYPAGE_USER_PW_CHROME }}
+          MYPAGE_USER_NAME: ${{ matrix.browser == 'edge' && secrets.MYPAGE_USER_NAME_EDGE || secrets.MYPAGE_USER_NAME_CHROME }}
           MYPAGE_NEW_PASSWORD: ${{ secrets.MYPAGE_NEW_PASSWORD }}
           NON_ADMIN_USER_ID: ${{ secrets.NON_ADMIN_USER_ID }}
           NON_ADMIN_USER_PW: ${{ secrets.NON_ADMIN_USER_PW }}
