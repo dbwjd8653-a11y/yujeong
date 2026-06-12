@@ -122,9 +122,43 @@ CI 기본 동작으로 이전 stage 실패 시 이후 job 전체 스킵
 Chrome에서 입력값 누적 및 브라우저 상태 공유 문제 발생
 → JavaScript 직접 입력 처리 + 테스트마다 브라우저 새로 초기화
 
-**4. 크로스 브라우저 매트릭스의 공유 계정 레이스**
-Edge·Chrome 병렬 실행 시 마이페이지 파괴적 테스트(비밀번호 변경·탈퇴)가 동일 더미 계정을 동시에 변경해 로그인이 간헐 실패
-→ 워크플로우에서 `matrix.browser` 분기로 브라우저별 전용 더미 계정을 주입하여 계정 충돌 제거 (코드 무변경)
+### 🌐 Edge·Chrome 크로스 브라우저 안정화 *(개인 프로젝트)*
+
+> 팀 시절 Chrome 단일 실행 → 개인 프로젝트에서 **Edge·Chrome 병렬 매트릭스**를 도입하자 headless·동시성 이슈가 드러남. *Chrome은 통과하는데 Edge만 실패*하는 케이스를 재현·수정.
+
+**4. headless Edge — 토큰 한도 테스트 타임아웃**
+- **문제원인**: 두 원인이 겹침 — ① 저장 버튼 locator `//button[="저장"]`가 너무 광범위해 `element_to_be_clickable`이 DOM **첫 매치(숨겨진 버튼)**를 잡아 타임아웃, ② MUI 스위치의 숨은 `<input>`에 JS click이 headless Edge에서 **간헐적으로 React onChange로 전달 안 됨**
+- **해결**: 저장 버튼을 `type="submit"`로 좁히고 **보이고+활성화된 버튼만 선택**, 토글은 **반영될 때까지 최대 3회 재클릭**
+
+  ```python
+  # Before — 첫 매치(숨김) 선택 → timeout / 토글 1회 클릭 + 5초 대기
+  save_btn = self.wait.until(EC.element_to_be_clickable(self._SAVE_BTN))
+  self.js_click(toggle); WebDriverWait(self.driver, 5).until(...)
+
+  # After — 화면에 보이고 활성화된 버튼만 선택 / 토글은 반영될 때까지 재클릭
+  for btn in driver.find_elements(*self._SAVE_BTN):
+      if btn.is_displayed() and btn.is_enabled():
+          return btn
+  for _ in range(3):
+      if self.is_toggle_checked(self.get_toggle()) == activate:
+          return
+      self.js_click(self.get_toggle())   # 안 바뀌면 재클릭
+  ```
+- **결과**: 로컬 headless 재현 기준 **약 20분(1184초, 타임아웃 누적) → 22초**로 단축, Chrome·Edge 양쪽 통과
+
+**5. 회원가입 테스트 — 드라이버 행(hang)으로 인한 ReadTimeout**
+- **문제원인**: `driver.get()`이 기본 전략(`normal`)에서 `load` 이벤트 종료까지 블록 → 회원가입 페이지의 끝나지 않는 리소스(트래커/소켓)로 **드라이버가 120초간 응답 불능** → 세션 오염(cascade)
+- **해결**: `page_load_strategy="eager"`(DOMContentLoaded에서 반환) + `set_page_load_timeout(60)`(120초 ReadTimeout → 60초 TimeoutException으로 빠른 실패)
+- **결과**: 120초 ReadTimeout으로 **다수 테스트가 cascade 실패**하던 것을 **signup 단독 60초 TimeoutException으로 격리**(cascade 제거 — 이후 테스트 정상 실행). 로컬 headless 재현 시 회원가입 5건 42초 통과 *(단, headless CI에서 signup 자체는 드물게 렌더러 타임아웃이 남는 잔존 플레이크)*
+
+**6. 크로스 브라우저 매트릭스 — 공유 계정 레이스**
+- **문제원인**: Edge·Chrome 병렬 잡이 마이페이지 파괴적 테스트(비밀번호 변경·탈퇴)에서 **동일 더미 계정 1개를 동시에 변경** → 한쪽 로그인이 거부되어 setup 단계 `TimeoutException`
+- **해결**: 워크플로우에서 `matrix.browser` 분기로 **브라우저별 전용 더미 계정 주입** (테스트 코드·로컬 `.env` 무변경)
+
+  ```yaml
+  MYPAGE_USER_ID: ${{ matrix.browser == 'edge' && secrets.MYPAGE_USER_ID_EDGE || secrets.MYPAGE_USER_ID_CHROME }}
+  ```
+- **결과**: 마이페이지 간헐 setup ERROR **7~14건 → 0건**, Edge에서 마이페이지 **13개 케이스 스킵 → 정상 실행·통과**
 
 ---
 
