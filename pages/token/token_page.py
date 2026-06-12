@@ -162,21 +162,17 @@ class TokenPage(BasePage):
 
     def is_on_settings_general_page(self) -> bool:
         """설정 > 일반 페이지 이동 확인"""
-        try:
-            self.wait.until(EC.url_contains("/admin/general"))
+        if self.is_url_contains("/admin/general"):
             self.logger.info("설정 > 일반 페이지 이동 확인")
             return True
-        except Exception:
-            return False
+        return False
 
     def is_token_table_displayed(self) -> bool:
         """기능별 토큰 사용량 테이블 표시 확인"""
-        try:
-            self.wait.until(EC.presence_of_element_located(self.TOKEN_TABLE))
+        if self.is_present(self.TOKEN_TABLE):
             self.logger.info("토큰 사용량 테이블 확인")
             return True
-        except Exception:
-            return False
+        return False
 
     # ========== 전체 이용 내역 ==========
 
@@ -207,9 +203,7 @@ class TokenPage(BasePage):
 
     def is_on_history_page(self) -> bool:
         """전체 이용 내역 페이지 이동 확인"""
-        try:
-            self.wait.until(EC.url_contains("/admin/history"))
+        if self.is_url_contains("/admin/history"):
             self.logger.info("전체 이용 내역 페이지 이동 확인")
             return True
-        except Exception:
-            return False
+        return False

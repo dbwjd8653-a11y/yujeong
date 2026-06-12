@@ -3,7 +3,7 @@
 
 import logging
 
-from config.selenium_imports import By, EC, WebDriverWait
+from config.selenium_imports import By, EC, WebDriverWait, TimeoutException
 from config.login_helpers import close_token_banner
 
 class BasePage:
@@ -77,6 +77,35 @@ class BasePage:
     def wait_for_url_contains(self, text):
         """URL에 특정 텍스트가 포함될 때까지 대기"""
         self.wait.until(EC.url_contains(text))
+
+    # ========== 상태 확인 (bool 반환 — 검증용) ==========
+
+    def _wait(self, timeout):
+        return self.wait if timeout is None else WebDriverWait(self.driver, timeout)
+
+    def is_visible(self, locator, timeout=None):
+        """요소가 화면에 보이면 True, 제한 시간 내 안 보이면 False"""
+        try:
+            self._wait(timeout).until(EC.visibility_of_element_located(locator))
+            return True
+        except TimeoutException:
+            return False
+
+    def is_present(self, locator, timeout=None):
+        """요소가 DOM에 존재하면 True, 제한 시간 내 없으면 False"""
+        try:
+            self._wait(timeout).until(EC.presence_of_element_located(locator))
+            return True
+        except TimeoutException:
+            return False
+
+    def is_url_contains(self, text, timeout=None):
+        """URL에 특정 텍스트가 포함되면 True, 제한 시간 내 아니면 False"""
+        try:
+            self._wait(timeout).until(EC.url_contains(text))
+            return True
+        except TimeoutException:
+            return False
 
     def wait_backdrop_gone(self, timeout=5):
         """MUI Backdrop(딤 레이어)이 사라질 때까지 대기"""

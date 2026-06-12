@@ -3,7 +3,7 @@
 BasePage를 상속받아 공통 동작을 재사용합니다.
 """
 
-from config.selenium_imports import By, EC, TimeoutException
+from config.selenium_imports import By, EC
 
 from pages.base_page import BasePage
 
@@ -41,11 +41,7 @@ class LogoutPage(BasePage):
         [Expected Result]
         URL에 'signin/history'가 포함되면 로그아웃 완료 페이지로 간주하여 True를 반환한다.
         """
-        try:
-            self.wait_for_url_contains("signin/history")
-            return True
-        except TimeoutException:
-            return False
+        return self.is_url_contains("signin/history")
 
     def enter_password(self, pwd):
         """비밀번호 입력 필드에 텍스트를 입력한다."""
@@ -75,11 +71,7 @@ class LogoutPage(BasePage):
         [Expected Result]
         URL에 'ai-helpy-chat'이 포함되면 로그인 성공으로 간주하여 True를 반환한다.
         """
-        try:
-            self.wait_for_url_contains("ai-helpy-chat")
-            return True
-        except TimeoutException:
-            return False
+        return self.is_url_contains("ai-helpy-chat")
 
     def is_login_page(self):
         """
@@ -88,8 +80,4 @@ class LogoutPage(BasePage):
         [Expected Result]
         URL에 'accounts.elice.io'가 포함되면 로그인 페이지로 간주하여 True를 반환한다.
         """
-        try:
-            self.wait_for_url_contains("accounts.elice.io")
-            return True
-        except TimeoutException:
-            return False
+        return self.is_url_contains("accounts.elice.io")
