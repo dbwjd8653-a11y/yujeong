@@ -5,7 +5,7 @@ import os
 import pytest
 import allure
 
-from pages.mypage.mypage_support_page import MyPage09
+from pages.mypage.mypage_support_page import MyPageSupportPage
 
 pytestmark = [
     allure.epic("MyPage"),
@@ -18,13 +18,13 @@ pytestmark = [
 @pytest.fixture(scope="module")
 def mypage(tools_driver_module):
     """
-    MyPage09 fixture (모듈 공유)
+    MyPageSupportPage fixture (모듈 공유)
 
     전제: tools_driver_module fixture로 로그인 완료 상태
     단계:
-      1. tools_driver_module에서 driver 수신 → MyPage09 반환
+      1. tools_driver_module에서 driver 수신 → MyPageSupportPage 반환
     """
-    page = MyPage09(tools_driver_module)
+    page = MyPageSupportPage(tools_driver_module)
     page.login()
     return page
 

@@ -10,7 +10,7 @@ from pages.mypage.mypage_page import MyPage
 _HOST = BASE_UI_URL.replace("https://", "")
 
 
-class MyPage07(MyPage):
+class MyPageOrganizationPage(MyPage):
 
     # ========== Locators ==========
     QAPROJECT_LINK = (By.XPATH,

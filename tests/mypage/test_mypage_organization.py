@@ -4,7 +4,7 @@ import pytest
 import allure
 
 from config.settings import TEST_USER
-from pages.mypage.mypage_organization_page import MyPage07
+from pages.mypage.mypage_organization_page import MyPageOrganizationPage
 
 pytestmark = [
     allure.epic("MyPage"),
@@ -17,14 +17,14 @@ pytestmark = [
 @pytest.fixture(scope="module")
 def mypage(tools_driver_module):
     """
-    MyPage07 fixture (모듈 공유)
+    MyPageOrganizationPage fixture (모듈 공유)
 
     전제: tools_driver_module fixture로 로그인 완료 상태
     단계:
-      1. tools_driver_module에서 driver 수신 → MyPage07 반환
+      1. tools_driver_module에서 driver 수신 → MyPageOrganizationPage 반환
     계정: 관리자 계정 (FHC-094/095 qaproject 기관 링크 접근 필요)
     """
-    page = MyPage07(tools_driver_module)
+    page = MyPageOrganizationPage(tools_driver_module)
     page.login(email=TEST_USER["id"], password=TEST_USER["pw"])
     return page
 

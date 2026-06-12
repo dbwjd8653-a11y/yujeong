@@ -9,7 +9,7 @@ from config.selenium_imports import By, EC, WebDriverWait
 from pages.mypage.mypage_page import MyPage
 
 
-class MyPage09(MyPage):
+class MyPageSupportPage(MyPage):
 
     # ========== Locators ==========
     START_CHAT_BUTTON = (By.CSS_SELECTOR,

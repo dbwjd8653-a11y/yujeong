@@ -7,7 +7,7 @@ from config.selenium_imports import By, EC, WebDriverWait
 from pages.mypage.mypage_page import MyPage
 
 
-class MyPage08(MyPage):
+class MyPageLanguagePage(MyPage):
 
     # ========== FHC-086: 언어 설정 ==========
 

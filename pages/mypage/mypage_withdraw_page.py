@@ -9,7 +9,7 @@ from config.settings import BASE_UI_URL
 from pages.mypage.mypage_page import MyPage
 
 
-class MyPage06(MyPage):
+class MyPageWithdrawPage(MyPage):
 
     # JS 주입용 탈퇴 키워드 (한/영) — execute_script에 f-string으로 주입
     JS_WITHDRAW_KEYWORDS = "['탈퇴하기', '탈퇴', 'Leave', 'Delete Account', 'Delete account', 'Withdraw', 'Deactivate', 'Close Account']"

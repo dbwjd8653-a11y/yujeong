@@ -7,7 +7,7 @@ from config.selenium_imports import By, EC
 from pages.mypage.mypage_page import MyPage
 
 
-class MyPage05(MyPage):
+class MyPageAccountPage(MyPage):
 
     # ========== Locators — FHC-073: 이름 변경 ==========
     NAME_INPUT = (By.CSS_SELECTOR, "input[name='fullname']")

@@ -6,7 +6,7 @@ import time
 import pytest
 import allure
 
-from pages.mypage.mypage_withdraw_page import MyPage06
+from pages.mypage.mypage_withdraw_page import MyPageWithdrawPage
 from config.settings import MYPAGE_USER
 
 logger = logging.getLogger(__name__)
@@ -27,13 +27,13 @@ MAIN_NAME     = MYPAGE_USER["name"]
 @pytest.fixture(scope="module")
 def mypage(tools_driver_module):
     """
-    MyPage06 fixture (모듈 공유)
+    MyPageWithdrawPage fixture (모듈 공유)
 
     전제: tools_driver_module fixture로 로그인 완료 상태
     단계:
-      1. tools_driver_module에서 driver 수신 → MyPage06 반환
+      1. tools_driver_module에서 driver 수신 → MyPageWithdrawPage 반환
     """
-    page = MyPage06(tools_driver_module)
+    page = MyPageWithdrawPage(tools_driver_module)
     page.login()
     return page
 
