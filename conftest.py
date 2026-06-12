@@ -209,9 +209,9 @@ def pytest_runtest_makereport(item, call):
             _record_jira_ticket(item.config, item.name, issue_key, browser_name)
 
 
-# ── mypage 테스트는 chrome 레그에서만 실행 (단일 공유 계정 레이스 방지) ──
-# 파괴적 mypage 테스트(비번 변경/탈퇴)가 edge·chrome 병렬 잡에서 같은 계정을
-# 동시에 건드리면 로그인이 깨진다. 계정을 하나만 쓰므로 edge에선 mypage를 스킵한다.
+# ── mypage 테스트는 chrome 레그에서만 실행 ──
+# mypage 파괴적 테스트(비번 변경/탈퇴)가 단일 공유 계정을 쓰므로, edge·chrome
+# 병렬 실행 시 계정 레이스로 로그인이 깨진다 → edge에선 스킵. (상세: README)
 def _skip_mypage_on_non_chrome(config, items):
     browser = config.getoption("--browser")
     if browser == "chrome":
