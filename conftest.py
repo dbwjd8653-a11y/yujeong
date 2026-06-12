@@ -209,26 +209,9 @@ def pytest_runtest_makereport(item, call):
             _record_jira_ticket(item.config, item.name, issue_key, browser_name)
 
 
-# ── mypage 테스트는 chrome 레그에서만 실행 ──
-# mypage 파괴적 테스트(비번 변경/탈퇴)가 단일 공유 계정을 쓰므로, edge·chrome
-# 병렬 실행 시 계정 레이스로 로그인이 깨진다 → edge에선 스킵. (상세: README)
-def _skip_mypage_on_non_chrome(config, items):
-    browser = config.getoption("--browser")
-    if browser == "chrome":
-        return
-    skip_marker = pytest.mark.skip(
-        reason=f"mypage 테스트는 단일 공유 계정 레이스 방지를 위해 chrome에서만 실행 (현재: {browser})"
-    )
-    for item in items:
-        if "/mypage/" in item.nodeid.replace("\\", "/"):
-            item.add_marker(skip_marker)
-
-
 # ── 테스트 실행 순서 정렬 (FHC 번호 오름차순) ─────────────────────
-def pytest_collection_modifyitems(config, items):
-    """mypage 스킵(비-chrome) 처리 후 FHC_NNN 번호 기준으로 오름차순 정렬"""
-    _skip_mypage_on_non_chrome(config, items)
-
+def pytest_collection_modifyitems(items):
+    """FHC_NNN 번호 기준으로 전체 테스트를 오름차순 정렬"""
     def _fhc_key(item):
         m = re.search(r'FHC[_-](\d+)', item.nodeid)
         if m:
