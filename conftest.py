@@ -2,6 +2,7 @@
 # 통합 conftest — 팀 전체 공통 fixture
 
 import inspect
+import json
 import logging
 import os
 import re
@@ -19,6 +20,7 @@ from config.browser_factory import (
     make_chrome_driver, make_simple_chrome_driver,
 )
 from config.login_helpers import do_login
+from config.jira_config import JIRA_URL
 from utils.jira_helper import create_jira_bug_ticket, attach_image_to_jira
 
 logger = logging.getLogger(__name__)
@@ -72,6 +74,42 @@ def pytest_sessionfinish(session, exitstatus):
     else:
         subprocess.run(["pkill", "-f", "msedge"], capture_output=True)
         subprocess.run(["pkill", "-f", "msedgedriver"], capture_output=True)
+
+
+# ── 생성된 Jira 티켓을 파일로 누적 기록 (Discord 버그 알림 연동용) ──
+def _record_jira_ticket(config, test_name, issue_key, browser):
+    """생성된 Jira 티켓을 allure-results 하위 파일에 누적 기록한다.
+
+    notify 잡(scripts/ci_notify.py)이 이 파일을 읽어 Discord 알림에 버그 목록을 포함한다.
+    매트릭스(edge/chrome) 아티팩트가 merge-multiple로 병합될 때 파일명이 겹치지 않도록
+    --browser 값을 파일명에 넣어 브라우저별로 분리한다.
+    """
+    browser = config.getoption("--browser") or browser or "unknown"
+    results_dir = Path("allure-results")
+    results_dir.mkdir(parents=True, exist_ok=True)
+    path = results_dir / f"jira_tickets_{browser}.json"
+
+    tickets = []
+    if path.exists():
+        try:
+            tickets = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            tickets = []
+
+    tickets.append({
+        "test": test_name,
+        "key": issue_key,
+        "url": f"{JIRA_URL}/browse/{issue_key}",
+        "browser": browser,
+    })
+
+    try:
+        path.write_text(
+            json.dumps(tickets, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+    except Exception as e:
+        logger.warning(f"Jira 티켓 기록 실패: {e}")
 
 
 # ── 테스트 실패 자동 로깅 + Jira 이슈 생성 및 스크린샷 첨부 Hook ──
@@ -164,6 +202,11 @@ def pytest_runtest_makereport(item, call):
                 attach_image_to_jira(issue_key, screenshot)
             except Exception as e:
                 logger.warning(f"스크린샷 첨부 실패: {e}")
+
+        # ⑤ Discord 버그 알림 연동용 티켓 기록
+        # notify 잡(scripts/ci_notify.py)이 이 파일을 읽어 Discord 알림에 버그 목록을 포함한다.
+        if issue_key:
+            _record_jira_ticket(item.config, item.name, issue_key, browser_name)
 
 
 # ── 테스트 실행 순서 정렬 (FHC 번호 오름차순) ─────────────────────

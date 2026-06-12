@@ -92,7 +92,33 @@ def _parse_from_results() -> tuple[dict, list[str]]:
     return stats, failed_names
 
 
-def build_message(stats: dict, failed_names: list[str]) -> str:
+def parse_jira_tickets() -> list[dict]:
+    """conftest가 기록한 jira_tickets_*.json을 모아 key 기준 중복 제거 후 반환.
+
+    --jira 옵션이 꺼져 있으면 파일이 없으므로 빈 리스트를 반환한다(섹션 생략).
+    """
+    results_dir = Path("allure-results")
+    if not results_dir.exists():
+        return []
+
+    seen: set[str] = set()
+    tickets: list[dict] = []
+    for f in sorted(results_dir.glob("jira_tickets*.json")):
+        try:
+            with open(f, encoding="utf-8") as fp:
+                data = json.load(fp)
+        except Exception as e:
+            print(f"[경고] {f.name} 파싱 실패: {e}", file=sys.stderr)
+            continue
+        for t in data:
+            key = t.get("key")
+            if key and key not in seen:
+                seen.add(key)
+                tickets.append(t)
+    return tickets
+
+
+def build_message(stats: dict, failed_names: list[str], tickets: list[dict] | None = None) -> str:
     passed  = stats.get("passed", 0)
     failed  = stats.get("failed", 0)
     broken  = stats.get("broken", 0)
@@ -125,6 +151,15 @@ def build_message(stats: dict, failed_names: list[str]) -> str:
         if rest > 0:
             lines.append(f"  외 {rest}건")
 
+    if tickets:
+        lines.append("")
+        lines.append(f"🐞 등록된 버그 ({len(tickets)}건):")
+        for t in tickets[:5]:
+            lines.append(f"  · [{t.get('key')}] {t.get('test')} → {t.get('url')}")
+        rest = len(tickets) - 5
+        if rest > 0:
+            lines.append(f"  외 {rest}건")
+
     if pages_url:
         lines.append(f"\n📊 Allure 리포트: {pages_url}")
     if pipeline_url:
@@ -141,7 +176,8 @@ def send(message: str) -> None:
 
 if __name__ == "__main__":
     stats, failed_names = parse_allure_summary()
-    message = build_message(stats, failed_names)
+    tickets = parse_jira_tickets()
+    message = build_message(stats, failed_names, tickets)
     try:
         send(message)
     except Exception as e:
