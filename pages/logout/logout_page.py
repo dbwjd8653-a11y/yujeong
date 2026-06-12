@@ -12,7 +12,7 @@ class LogoutPage(BasePage):
 
     # ── Locators ───────────────────────────────────────────────────
     PROFILE_BTN        = (By.XPATH, "//button[.//*[@data-testid='PersonIcon']]")             # 프로필 아이콘
-    LOGOUT_BTN         = (By.CSS_SELECTOR, ".MuiListItemButton-root:has([data-testid='arrow-right-from-bracketIcon'])")  # 로그아웃 메뉴 항목(아이콘이 아닌 클릭 가능한 버튼)
+    LOGOUT_BTN         = (By.XPATH, "//div[@role='button'][.//*[@data-testid='arrow-right-from-bracketIcon']]")  # 로그아웃 메뉴 항목(div[role=button] 전체가 클릭 영역)
     PWD_INPUT          = (By.NAME, "password")                                                # 비밀번호 입력칸
     LOGIN_BTN          = (By.CSS_SELECTOR, "button[type='submit']")                           # 로그인 버튼
     SWITCH_ACCOUNT_BTN = (By.PARTIAL_LINK_TEXT, "Sign in with a different account")           # 다른 아이디로 로그인하기

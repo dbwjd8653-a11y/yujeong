@@ -5,8 +5,8 @@ from pages.base_page import BasePage
 
 class SettingsPage(BasePage):
 
-    _GEAR_BTN = (By.CSS_SELECTOR, 'button:has(svg[data-testid="gearIcon"])')
-    _SETTINGS_MENU_ITEM = (By.CSS_SELECTOR, 'a[role="menuitem"]:has(svg[data-testid="gearIcon"])')
+    _GEAR_BTN = (By.XPATH, "//button[.//*[@data-testid='gearIcon']]")
+    _SETTINGS_MENU_ITEM = (By.XPATH, "//a[@role='menuitem'][.//*[@data-testid='gearIcon']]")
     _ADMIN_URL = "/ai-helpy-chat/admin"
 
     def navigate_to_settings(self):
