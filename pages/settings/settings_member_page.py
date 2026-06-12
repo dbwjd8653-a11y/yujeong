@@ -1,4 +1,4 @@
-from config.selenium_imports import By, EC, WebDriverWait
+from config.selenium_imports import By, EC, TimeoutException
 
 from pages.settings.settings_general_page import SettingsPage
 
@@ -23,12 +23,26 @@ class SettingsMemberPage(SettingsPage):
         return self.driver.execute_script("return arguments[0].checked", toggle)
 
     def set_token_limit_toggle(self, activate: bool):
-        toggle = self.get_toggle()
-        if self.is_toggle_checked(toggle) != activate:
+        """토큰 한도 토글을 원하는 상태로 설정.
+
+        MUI 스위치의 숨은 input에 JS click이 headless Edge에서 간헐적으로 React에
+        전달되지 않아 상태가 안 바뀔 때가 있다 → 반영될 때까지 최대 3회 재클릭한다.
+        """
+        for _ in range(3):
+            toggle = self.get_toggle()
+            if self.is_toggle_checked(toggle) == activate:
+                return
             self.js_click(toggle)
-            WebDriverWait(self.driver, 5).until(
-                lambda d: self.is_toggle_checked(d.find_element(*self._TOKEN_LIMIT_TOGGLE)) == activate
-            )
+            try:
+                self.wait.until(
+                    lambda d: self.is_toggle_checked(d.find_element(*self._TOKEN_LIMIT_TOGGLE)) == activate
+                )
+                return
+            except TimeoutException:
+                continue
+        raise TimeoutException(
+            f"토큰 한도 토글을 {'ON' if activate else 'OFF'}로 변경하지 못했습니다 (3회 재시도)"
+        )
 
     def _wait_visible_save_btn(self):
         """'저장' 제출 버튼이 섹션별 form마다 여러 개 존재할 수 있어,
