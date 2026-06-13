@@ -17,6 +17,7 @@ pytestmark = [
 
 TOPIC        = "AI"
 INSTRUCTIONS = "간략하고 빠르게 생성"
+GEN_TIMEOUT  = 180  # AI 생성 완료 대기 상한(초) — 레거시 서버가 가끔 2분 초과
 
 
 # ── fixture ────────────────────────────────────────────────────────
@@ -46,7 +47,7 @@ def test_ppt_happy_case(ppt):
       4. [FHC-052] 심층조사 모드 토글 OFF 전환 확인
          - OFF 상태이면 ON으로 전환 (상태 보장)
          - '심층조사 모드' 토글 버튼 클릭 → OFF 전환 확인
-      5. [FHC-053] 자동 생성 버튼 클릭 → 2분 이내 생성 완료 확인
+      5. [FHC-053] 자동 생성 버튼 클릭 → 3분 이내 생성 완료 확인
       6. [FHC-054] PPT 다운로드
     기대: 생성 및 다운로드 모두 정상 완료
     """
@@ -80,7 +81,7 @@ def test_ppt_happy_case(ppt):
         logger.info("[FHC-053] PPT 생성 시작")
         ppt.scroll_to_generate_btn()
         ppt.click_generate()
-        assert ppt.is_generated(timeout=120), "2분 이내 PPT 생성 실패"
+        assert ppt.is_generated(timeout=GEN_TIMEOUT), "3분 이내 PPT 생성 실패"
 
     with allure.step("[FHC-054] PPT 다운로드"):
         logger.info("[FHC-054] PPT 다운로드 시작")

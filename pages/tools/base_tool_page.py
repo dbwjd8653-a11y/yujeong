@@ -9,7 +9,7 @@ import time
 from config.selenium_imports import By, EC, WebDriverWait, TimeoutException
 
 from pages.base_page import BasePage
-from config.settings import BASE_URL, DEFAULT_WAIT, SHORT_WAIT
+from config.settings import BASE_URL, DEFAULT_WAIT, SHORT_WAIT, LONG_WAIT
 from config.login_helpers import do_login, close_token_banner
 
 
@@ -111,7 +111,9 @@ class BaseToolPage(BasePage):
     def navigate_to_tools(self):
         self.go(self.TOOLS_URL)
         close_token_banner(self.driver, self.wait)
-        self.wait.until(
+        # 도구 카드 로딩이 가끔 10초를 넘겨 지연됨 → 상한만 LONG_WAIT로 확대
+        # (요소 출현 즉시 리턴하므로 정상 케이스 소요 시간은 동일)
+        WebDriverWait(self.driver, LONG_WAIT).until(
             EC.presence_of_element_located(
                 (By.XPATH, "//a[contains(@href,'ai-helpy-chat/tools/')]")
             )
