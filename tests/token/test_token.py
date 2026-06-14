@@ -47,7 +47,7 @@ def test_lnb_token_displayed(token):
       1. LNB > '토큰 사용량' 메뉴 확인
     기대: 내가 사용한 토큰량이 LNB에 반영된다
     """
-    token.driver.get(token.CHAT_URL)
+    token.go(token.CHAT_URL)
     assert token.is_lnb_token_displayed(), \
         "LNB에 토큰 사용량이 표시되지 않았습니다"
 
@@ -66,7 +66,7 @@ def test_token_increases_after_chat(token):
       3. 이용 내역 페이지 새로고침 후 행 수 비교
     기대: 토큰 이용 내역 행 수가 증가한다
     """
-    token.driver.get(token.ADMIN_URL)
+    token.go(token.ADMIN_URL)
     token.wait.until(EC.presence_of_element_located(token.ALL_HISTORY_BUTTON))
     token.click_all_history_button()
     token.wait_for_token_table()
@@ -76,7 +76,7 @@ def test_token_increases_after_chat(token):
     token.send_chat_message(TEST_MESSAGE)
     assert token.wait_for_ai_response(), "AI 응답 생성 실패"
 
-    token.driver.get(token.ADMIN_URL)
+    token.go(token.ADMIN_URL)
     token.wait.until(EC.presence_of_element_located(token.ALL_HISTORY_BUTTON))
     token.click_all_history_button()
     token.wait_for_token_table(timeout=15)
@@ -99,7 +99,7 @@ def test_lnb_token_click_goes_to_settings(token):
       1. LNB > '토큰 사용량' 메뉴 클릭
     기대: 설정 > 일반 > 토큰 사용 상세 페이지로 이동한다
     """
-    token.driver.get(token.CHAT_URL)
+    token.go(token.CHAT_URL)
     token.click_lnb_token()
     assert token.is_on_settings_general_page(), \
         "토큰 사용량 클릭 후 설정 > 일반 페이지로 이동하지 않았습니다"

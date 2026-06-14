@@ -113,7 +113,7 @@ class TokenPage(BasePage):
 
     def send_chat_message(self, message: str):
         """채팅 페이지로 이동 후 메시지 전송"""
-        self.driver.get(self.CHAT_URL)
+        self.go(self.CHAT_URL)
         chat_input = self.wait.until(EC.visibility_of_element_located(self.CHAT_INPUT))
         self.js_input(chat_input, message)
         time.sleep(0.3)

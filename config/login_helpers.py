@@ -1,11 +1,33 @@
 # config/helpers.py
 # 공통 유틸리티 함수 (로그인, 배너 닫기 등)
 
+import logging
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
 
 from config.settings import LOGIN_URL, TEST_USER, SHORT_WAIT, BASE_UI_URL
+
+logger = logging.getLogger(__name__)
+
+
+def safe_get(driver, url, attempts=2):
+    """페이지를 연다. 첫 시도가 멈춰서(TimeoutException) 실패하면 한 번 더 시도한다.
+
+    브라우저가 막 켜진 직후 첫 페이지 로딩이 가끔 멈추는(edge 콜드 스타트) 문제 완화용.
+    모든 시도가 실패하면 마지막 에러를 그대로 올려 원인을 잃지 않는다.
+    """
+    last_error = None
+    for i in range(attempts):
+        try:
+            driver.get(url)
+            return
+        except TimeoutException as e:
+            last_error = e
+            logger.warning(f"페이지 열기 실패 ({i + 1}/{attempts}) — 다시 시도: {url}")
+    raise last_error
 
 
 def do_login(driver, wait, user: dict = None):
@@ -22,7 +44,7 @@ def do_login(driver, wait, user: dict = None):
             f"pw={'설정됨' if user.get('pw') else '없음'}"
         )
 
-    driver.get(LOGIN_URL)
+    safe_get(driver, LOGIN_URL)
     email_input = wait.until(
         EC.presence_of_element_located((By.NAME, "loginId"))
     )

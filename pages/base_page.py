@@ -4,7 +4,7 @@
 import logging
 
 from config.selenium_imports import By, EC, WebDriverWait, TimeoutException
-from config.login_helpers import close_token_banner
+from config.login_helpers import close_token_banner, safe_get
 
 class BasePage:
 
@@ -19,7 +19,7 @@ class BasePage:
     # ========== 네비게이션 ==========
 
     def go(self, url):
-        self.driver.get(url)
+        safe_get(self.driver, url)
         close_token_banner(self.driver, self.wait)
 
     # ========== 클릭 유틸리티 ==========

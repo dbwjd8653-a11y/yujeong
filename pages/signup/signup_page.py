@@ -3,6 +3,7 @@
 from config.selenium_imports import By, EC
 
 from pages.base_page import BasePage
+from config.login_helpers import safe_get
 from config.settings import SIGNUP_URL
 
 
@@ -26,7 +27,7 @@ class SignupPage(BasePage):
     # ── 페이지 이동 ───────────────────────────────────────────────────
 
     def open(self):
-        self.driver.get(self.SIGNUP_URL)
+        safe_get(self.driver, self.SIGNUP_URL)
         self.wait.until(EC.url_contains("signup"))
 
     # ── 요소 조회 (테스트에서 직접 사용) ─────────────────────────────
