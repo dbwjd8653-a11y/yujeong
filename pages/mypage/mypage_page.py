@@ -17,7 +17,6 @@ class MyPage(BasePage):
     ACCOUNT_URL      = "https://accounts.elice.io/members/account"
     ORG_URL          = "https://accounts.elice.io/members/organization"
     LANGUAGE_URL     = "https://accounts.elice.io/members/language"
-    SUPPORT_URL      = "https://accounts.elice.io/members/support"
     SIGNUP_FORM_URL  = SIGNUP_FORM_URL
 
     # ========== 계정 정보 (마이페이지 전용 더미 계정 — settings.MYPAGE_USER) ==========
@@ -27,16 +26,9 @@ class MyPage(BasePage):
     # ========== Locators — 로그인 ==========
     EMAIL_INPUT    = (By.CSS_SELECTOR, "input[type='email']")
     PASSWORD_INPUT = (By.CSS_SELECTOR, "input[type='password']")
-    SUBMIT_BUTTON  = (By.CSS_SELECTOR, "button[type='submit']")
 
     # ========== Locators — qaproject 헤더 ==========
     PROFILE_BUTTON    = (By.CSS_SELECTOR, "button.MuiAvatar-root")
-    ACCOUNT_MENU_ITEM = (By.XPATH,
-        "//*[@role='menuitem' and ("
-        "contains(text(),'계정') or contains(text(),'마이페이지') or contains(text(),'설정')"
-        " or contains(text(),'Account') or contains(text(),'My Page') or contains(text(),'Settings')"
-        ")]"
-    )
 
     # ========== Locators — 언어 선택 드롭다운 ==========
     LANGUAGE_SELECT = (By.CSS_SELECTOR,

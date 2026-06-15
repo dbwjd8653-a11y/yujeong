@@ -63,12 +63,6 @@ class ChatPage(BasePage):
         "//button[@type='submit' or contains(@aria-label,'전송') or contains(@aria-label,'send')]",
     )
 
-    # '생각 중...' 로딩 텍스트 (AI 응답 생성 중 표시)
-    THINKING_INDICATOR = (
-        By.XPATH,
-        "//*[contains(text(),'생각 중') or contains(text(),'Thinking')]",
-    )
-
     # AI 응답 완료 마커 — 답변 markdown 렌더가 끝나면 data-status='complete'
     # (token_page와 동일 패턴으로 통일 — data-with-artifact는 답변 시작 전에도 붙어 false-positive)
     RESPONSE_CONTENT = (

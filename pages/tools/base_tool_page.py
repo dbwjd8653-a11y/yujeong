@@ -16,7 +16,6 @@ from config.login_helpers import do_login, close_token_banner
 class BaseToolPage(BasePage):
 
     BASE_URL       = BASE_URL
-    TOOLS_URL      = BASE_URL + "/agents"
 
     # ========== Locators ==========
 
@@ -69,22 +68,10 @@ class BaseToolPage(BasePage):
         " or contains(normalize-space(text()),'받기') or contains(normalize-space(text()),'확인')]",
     )
 
-    # LNB 햄버거 메뉴 / 에이전트 마켓플레이스 탭
-    LNB_MENU_BTN   = (By.XPATH, "//button[.//*[@data-testid='barsIcon']]")
-    LNB_TOOLS_BTN  = (By.XPATH, "//span[text()='에이전트 마켓플레이스']")
-
     # LNB '에이전트 마켓플레이스' 탭 링크
     LNB_TOOLS_LINK = (
         By.XPATH,
         "//a[contains(@href,'ai-helpy-chat/agents') and not(contains(@href,'ai-helpy-chat/agents/'))]",
-    )
-
-    # 학생 데이터 행 (헤더·푸터 제외)
-    STUDENT_DATA_ROWS = (
-        By.XPATH,
-        "//tr[contains(@class,'MuiTableRow-root')"
-        " and not(contains(@class,'MuiTableRow-head'))"
-        " and not(contains(@class,'MuiTableRow-footer'))]",
     )
 
     STOP_BTN          = (By.XPATH, "//button[.//*[@data-testid='stopIcon']]")  # 생성 중단 버튼

@@ -71,7 +71,6 @@ def test_token_increases_after_chat(token):
     token.click_all_history_button()
     token.wait_for_token_table()
     before_rows = token.get_token_row_count()
-    before_text = token.get_lnb_token_text()
 
     token.send_chat_message(TEST_MESSAGE)
     assert token.wait_for_ai_response(), "AI 응답 생성 실패"
@@ -81,7 +80,6 @@ def test_token_increases_after_chat(token):
     token.click_all_history_button()
     token.wait_for_token_table(timeout=15)
     after_rows = token.wait_for_token_rows_increase(before_rows, timeout=10)
-    after_text = token.get_lnb_token_text()
 
     assert after_rows > before_rows, \
         f"대화 후 토큰 이용 내역이 증가하지 않았습니다 (전: {before_rows}행 → 후: {after_rows}행)"

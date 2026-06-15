@@ -13,7 +13,6 @@ class MyPageProfilePage(BasePage):
 
     PROFILE_BUTTON             = (By.CSS_SELECTOR, "button.MuiAvatar-root")
     ACCOUNT_MANAGEMENT_MENU    = (By.XPATH, "//span[contains(text(), '계정 관리')]")
-    ACCOUNT_MANAGEMENT_TITLE   = (By.XPATH, "//*[contains(text(), '계정 관리')]")
     PAYMENT_HISTORY_MENU       = (By.XPATH, "//*[contains(text(), '결제 내역')]")
     LANGUAGE_SETTING_MENU      = (By.XPATH, "//*[contains(text(), '언어 설정')]")
     CUSTOMER_CENTER_MENU       = (By.XPATH, "//*[contains(text(), '고객 센터')]")
@@ -64,17 +63,6 @@ class MyPageProfilePage(BasePage):
         return self.wait.until(EC.element_to_be_clickable(self.PROFILE_IMAGE_EDIT_BUTTON))
 
     # ── 액션 ──────────────────────────────────────────────────────────
-
-    def is_save_success_message_displayed(self):
-        msg = self.get_save_success_message()
-
-        return (
-            msg.is_displayed()
-            and (
-                "저장되었습니다" in msg.text
-                or "Saved successfully" in msg.text
-            )
-        )
 
     # 프로필 버튼 클릭
     def click_profile_button(self):

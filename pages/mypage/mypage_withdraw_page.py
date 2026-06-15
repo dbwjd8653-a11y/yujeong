@@ -15,28 +15,8 @@ class MyPageWithdrawPage(MyPage):
     JS_WITHDRAW_KEYWORDS = "['탈퇴하기', '탈퇴', 'Leave', 'Delete Account', 'Delete account', 'Withdraw', 'Deactivate', 'Close Account']"
 
     # ========== Locators — FHC-077~079: 계정 탈퇴 (한/영 모두) ==========
-    WITHDRAW_AREA = (By.XPATH,
-        "//*[contains(text(),'계정 탈퇴') or contains(text(),'탈퇴')"
-        " or contains(text(),'Leave') or contains(text(),'Delete Account')"
-        " or contains(text(),'Close Account') or contains(text(),'Withdraw')]"
-        "[not(@role='menuitem')]"
-    )
-    WITHDRAW_BUTTON = (By.XPATH,
-        "//button[contains(@class,'MuiButton') and ("
-        " contains(normalize-space(),'탈퇴하기')"
-        " or contains(normalize-space(),'탈퇴')"
-        " or normalize-space()='Leave'"
-        " or contains(normalize-space(),'Delete Account')"
-        " or contains(normalize-space(),'Withdraw')"
-        " or contains(normalize-space(),'Close Account')"
-        ")]"
-    )
     WITHDRAW_CONFIRM_INPUT = (By.CSS_SELECTOR,
         "input[name='email'], input[placeholder*='Delete'], input[placeholder*='delete']"
-    )
-    WITHDRAW_CONFIRM_MSG = (By.XPATH,
-        "//*[contains(text(),'Delete') and (contains(text(),'이메일') or contains(text(),'email'))]"
-        " | //*[contains(text(),'탈퇴하려면') or contains(text(),'withdraw')]"
     )
     WITHDRAW_FINAL_BUTTON = (By.CSS_SELECTOR,
         "button[type='submit'].MuiLoadingButton-root"
