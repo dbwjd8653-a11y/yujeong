@@ -48,7 +48,7 @@ def test_behavior_happy_case(behavior):
     전제: 로그인 완료 상태
     단계:
       1. [FHC-037] LNB > '도구' 탭 클릭 → '행동특성 및 종합의견' 도구 확인 및 클릭
-      2. [FHC-038] 수업 정보 필수 항목 입력 (교과급) → '다음으로' 버튼 활성화
+      2. [FHC-038] 수업 정보 필수 항목 입력 (학교급) → '다음으로' 버튼 활성화
       3. [FHC-039] '다음으로' 버튼 클릭 → '학생 정보 입력 및 생성' 페이지 이동
       4. [FHC-040] 이전 입력 데이터(수업 정보) 반영 확인
       5. [FHC-041~042] 학생 이름 입력 및 인성·태도 키워드 선택 · 저장
@@ -74,8 +74,8 @@ def test_behavior_happy_case(behavior):
         assert behavior.is_class_info_tab_visible(), \
             "초기화 완료 후 수업 정보 입력 탭이 표시되지 않았습니다"
 
-    with allure.step("[FHC-038] 수업 정보 입력 탭 이동 및 교과급 선택"):
-        logger.info("[FHC-038] 수업 정보 입력 탭 이동 및 교과급 선택 시작")
+    with allure.step("[FHC-038] 수업 정보 입력 탭 이동 및 학교급 선택"):
+        logger.info("[FHC-038] 수업 정보 입력 탭 이동 및 학교급 선택 시작")
         behavior.click_class_info_tab()
         assert behavior.is_school_level_combobox_visible(), \
             "수업 정보 입력 화면(학교급 콤보박스)이 표시되지 않았습니다"

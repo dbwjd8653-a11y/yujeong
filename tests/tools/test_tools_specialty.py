@@ -52,7 +52,7 @@ def test_specialty_happy_case(specialty):
     단계:
       1. [FHC-028] LNB > '도구' 탭 클릭 → 도구 목록 표시
       2. [FHC-029] '세부 특기사항' 도구 클릭
-      3. [FHC-030] 수업 정보 필수 항목 입력 (교과급, 학년, 과목, 단원) → '다음으로' 버튼 활성화
+      3. [FHC-030] 수업 정보 필수 항목 입력 (학교급, 학년, 과목, 단원) → '다음으로' 버튼 활성화
       4. [FHC-031] '다음으로' 버튼 클릭 → '학생 정보 입력 및 생성' 페이지 이동
       5. [FHC-032] 이전 입력 데이터(수업 정보) 반영 확인
       6. [FHC-033] 학생 이름 입력 및 학습 태도 키워드 선택 · 저장
@@ -84,7 +84,7 @@ def test_specialty_happy_case(specialty):
         assert specialty.is_school_level_combobox_visible(), \
             "수업 정보 입력 화면(학교급 콤보박스)이 표시되지 않았습니다"
 
-    with allure.step("[FHC-030] 수업 정보 필수 항목 입력 (교과급, 학년, 과목, 단원)"):
+    with allure.step("[FHC-030] 수업 정보 필수 항목 입력 (학교급, 학년, 과목, 단원)"):
         logger.info("[FHC-030] 수업 정보 필수 항목 입력 시작")
         specialty.select_school_level(SCHOOL_LEVEL)
         specialty.select_grade(GRADE)
