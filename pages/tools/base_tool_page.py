@@ -16,7 +16,7 @@ from config.login_helpers import do_login, close_token_banner
 class BaseToolPage(BasePage):
 
     BASE_URL       = BASE_URL
-    TOOLS_URL      = BASE_URL + "/tools"
+    TOOLS_URL      = BASE_URL + "/agents"
 
     # ========== Locators ==========
 
@@ -69,14 +69,14 @@ class BaseToolPage(BasePage):
         " or contains(normalize-space(text()),'받기') or contains(normalize-space(text()),'확인')]",
     )
 
-    # LNB 햄버거 메뉴 / 도구 탭
+    # LNB 햄버거 메뉴 / 에이전트 마켓플레이스 탭
     LNB_MENU_BTN   = (By.XPATH, "//button[.//*[@data-testid='barsIcon']]")
-    LNB_TOOLS_BTN  = (By.XPATH, "//span[text()='도구']")
+    LNB_TOOLS_BTN  = (By.XPATH, "//span[text()='에이전트 마켓플레이스']")
 
-    # LNB '도구' 탭 링크
+    # LNB '에이전트 마켓플레이스' 탭 링크
     LNB_TOOLS_LINK = (
         By.XPATH,
-        "//a[contains(@href,'ai-helpy-chat/tools') and not(contains(@href,'ai-helpy-chat/tools/'))]",
+        "//a[contains(@href,'ai-helpy-chat/agents') and not(contains(@href,'ai-helpy-chat/agents/'))]",
     )
 
     # 학생 데이터 행 (헤더·푸터 제외)
@@ -109,13 +109,15 @@ class BaseToolPage(BasePage):
     # ========== 페이지 이동 ==========
 
     def navigate_to_tools(self):
-        self.go(self.TOOLS_URL)
+        # '에이전트 마켓플레이스' 탭 클릭으로 진입
+        tab = self.wait.until(EC.element_to_be_clickable(self.LNB_TOOLS_LINK))
+        self.js_click(tab)
         close_token_banner(self.driver, self.wait)
         # 도구 카드 로딩이 가끔 10초를 넘겨 지연됨 → 상한만 LONG_WAIT로 확대
         # (요소 출현 즉시 리턴하므로 정상 케이스 소요 시간은 동일)
         WebDriverWait(self.driver, LONG_WAIT).until(
             EC.presence_of_element_located(
-                (By.XPATH, "//a[contains(@href,'ai-helpy-chat/tools/')]")
+                (By.XPATH, "//a[contains(@href,'ai-helpy-chat/agents/')]")
             )
         )
 
@@ -127,7 +129,7 @@ class BaseToolPage(BasePage):
             )
         )
         self.js_click(tool_btn)
-        self.wait.until(EC.url_contains("ai-helpy-chat/tools/"))
+        self.wait.until(EC.url_contains("ai-helpy-chat/agents/"))
         self.logger.info(f"'{tool_name}' 클릭 완료")
         close_token_banner(self.driver, self.wait)
 
@@ -362,7 +364,7 @@ class BaseToolPage(BasePage):
         try:
             cards = self.wait.until(
                 EC.presence_of_all_elements_located(
-                    (By.XPATH, "//a[contains(@href,'ai-helpy-chat/tools/')]")
+                    (By.XPATH, "//a[contains(@href,'ai-helpy-chat/agents/')]")
                 )
             )
             self.logger.info(f"도구 목록 표시 확인 ({len(cards)}개)")
@@ -372,7 +374,7 @@ class BaseToolPage(BasePage):
 
     def is_on_tool_page(self) -> bool:
         """현재 URL이 특정 도구 상세 페이지인지 확인"""
-        return self.is_url_contains("ai-helpy-chat/tools/")
+        return self.is_url_contains("ai-helpy-chat/agents/")
 
     # ========== AI 생성 공통 (PPT·퀴즈·심층조사·수업지도안) ==========
 

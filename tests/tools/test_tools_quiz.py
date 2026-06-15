@@ -9,6 +9,7 @@ import pytest
 logger = logging.getLogger(__name__)
 
 pytestmark = [
+    pytest.mark.skip(reason="서버 업데이트로 퀴즈 생성 기능 제거됨 — 서비스 미제공"),
     allure.epic("Tools"),
     allure.feature("퀴즈 생성"),
     allure.story("퀴즈 생성 해피패스"),

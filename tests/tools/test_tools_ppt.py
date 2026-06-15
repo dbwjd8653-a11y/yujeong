@@ -10,6 +10,7 @@ from config.settings import DOWNLOAD_DIR
 logger = logging.getLogger(__name__)
 
 pytestmark = [
+    pytest.mark.skip(reason="서버 업데이트로 PPT 생성 기능 제거됨 — 서비스 미제공"),
     allure.epic("Tools"),
     allure.feature("PPT 생성"),
     allure.story("PPT 생성 해피 케이스"),
