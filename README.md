@@ -65,7 +65,16 @@
 
 > 지표 출처: 테스트 수는 `pytest` 수집 × 브라우저 매트릭스, 매트릭스/파이프라인은 `.github/workflows/test.yml`, 통과율·실행 시간은 GitHub Actions 실행 기록 기준.
 >
-> ⏭ **스킵**은 ① 서버 업데이트(도구 → '에이전트 마켓플레이스' 개편)로 **제거된 기능**(PPT·퀴즈 생성), ② 테스트 계정 **토큰 한도 소진으로 AI 생성이 완료되지 않는** 생성형 도구(행동특성·수업지도안·세부특기·심층조사 생성), ③ 서비스에서 **제거된 기능**(기관 페이지 링크), ④ **headless CI 한정** 위젯 미초기화(고객센터) 등 **환경·서비스 변경에 따른 의도적 스킵**으로, 테스트 자체 결함이 아닙니다. *(②는 토큰 한도 회복 시 스킵 해제만으로 통과 — 폼·네비게이션은 정상 검증됨)*
+> ⏭ **스킵 16건은 모두 환경·서비스 변경에 따른 의도적 스킵이며, 테스트 자체 결함이 아닙니다.**
+
+| 스킵 사유 | 대상 |
+|----------|------|
+| **제거된 기능** (도구 → '에이전트 마켓플레이스' 개편) | PPT·퀴즈 생성 |
+| **제거된 기능** | 기관 페이지 링크 |
+| **토큰 한도 소진**으로 AI 생성 미완료 | 행동특성·수업지도안·세부특기·심층조사 |
+| **headless CI 한정** 위젯 미초기화 | 고객센터 |
+
+*※ 토큰 한도 회복 시 스킵 해제만으로 통과 — 폼·네비게이션은 정상 검증됨*
 
 ---
 
@@ -110,55 +119,17 @@ Stage 3: Notify   → Discord 채널에 결과 알림 발송
 
 ## 🐛 주요 문제 해결 경험
 
-**1. 계정 탈퇴 후 재가입 경로 불일치**
-탈퇴 후 서버가 `signup/method`로 강제 리다이렉트하여 기존 경로 탐색 실패
-→ `signup/method` 직접 접근 방식으로 변경
-
-**2. 테스트 실패 시 파이프라인 후속 job 스킵 문제**
+**1. 테스트 실패 시 파이프라인 후속 job 스킵 문제**
 CI 기본 동작으로 이전 stage 실패 시 이후 job 전체 스킵
 → `when: always` 설정으로 리포트·알림 job 항상 실행
 
-**3. Chrome 크로스 브라우저 호환성**
-Chrome에서 입력값 누적 및 브라우저 상태 공유 문제 발생
-→ JavaScript 직접 입력 처리 + 테스트마다 브라우저 새로 초기화
+**2. headless Edge — 토큰 한도 테스트 타임아웃**
+광범위한 저장 버튼 locator가 숨겨진 첫 매치를 잡아 타임아웃 + MUI 토글 JS click이 React onChange로 간헐 미전달
+→ 버튼을 `type="submit"`·노출+활성 요소로 좁히고 토글은 반영될 때까지 최대 3회 재클릭 (**약 20분 → 22초 단축**, Chrome·Edge 통과)
 
-### 🌐 Edge·Chrome 크로스 브라우저 안정화 *(개인 프로젝트)*
-
-> 팀 시절 Chrome 단일 실행 → 개인 프로젝트에서 **Edge·Chrome 병렬 매트릭스**를 도입하자 headless·동시성 이슈가 드러남. *Chrome은 통과하는데 Edge만 실패*하는 케이스를 재현·수정.
-
-**4. headless Edge — 토큰 한도 테스트 타임아웃**
-- **문제원인**: 두 원인이 겹침 — ① 저장 버튼 locator `//button[="저장"]`가 너무 광범위해 `element_to_be_clickable`이 DOM **첫 매치(숨겨진 버튼)**를 잡아 타임아웃, ② MUI 스위치의 숨은 `<input>`에 JS click이 headless Edge에서 **간헐적으로 React onChange로 전달 안 됨**
-- **해결**: 저장 버튼을 `type="submit"`로 좁히고 **보이고+활성화된 버튼만 선택**, 토글은 **반영될 때까지 최대 3회 재클릭**
-
-  ```python
-  # Before — 첫 매치(숨김) 선택 → timeout / 토글 1회 클릭 + 5초 대기
-  save_btn = self.wait.until(EC.element_to_be_clickable(self._SAVE_BTN))
-  self.js_click(toggle); WebDriverWait(self.driver, 5).until(...)
-
-  # After — 화면에 보이고 활성화된 버튼만 선택 / 토글은 반영될 때까지 재클릭
-  for btn in driver.find_elements(*self._SAVE_BTN):
-      if btn.is_displayed() and btn.is_enabled():
-          return btn
-  for _ in range(3):
-      if self.is_toggle_checked(self.get_toggle()) == activate:
-          return
-      self.js_click(self.get_toggle())   # 안 바뀌면 재클릭
-  ```
-- **결과**: 로컬 headless 재현 기준 **약 20분(1184초, 타임아웃 누적) → 22초**로 단축, Chrome·Edge 양쪽 통과
-
-**5. 회원가입 테스트 — 드라이버 행(hang)으로 인한 ReadTimeout**
-- **문제원인**: `driver.get()`이 기본 전략(`normal`)에서 `load` 이벤트 종료까지 블록 → 회원가입 페이지의 끝나지 않는 리소스(트래커/소켓)로 **드라이버가 120초간 응답 불능** → 세션 오염(cascade)
-- **해결**: `page_load_strategy="eager"`(DOMContentLoaded에서 반환) + `set_page_load_timeout(60)`(120초 ReadTimeout → 60초 TimeoutException으로 빠른 실패)
-- **결과**: 120초 ReadTimeout으로 **다수 테스트가 cascade 실패**하던 것을 **signup 단독 60초 TimeoutException으로 격리**(cascade 제거 — 이후 테스트 정상 실행). 로컬 headless 재현 시 회원가입 5건 42초 통과 *(단, headless CI에서 signup 자체는 드물게 렌더러 타임아웃이 남는 잔존 플레이크)*
-
-**6. 크로스 브라우저 매트릭스 — 공유 계정 레이스**
-- **문제원인**: Edge·Chrome 병렬 잡이 마이페이지 파괴적 테스트(비밀번호 변경·탈퇴)에서 **동일 더미 계정 1개를 동시에 변경** → 한쪽 로그인이 거부되어 setup 단계 `TimeoutException`
-- **해결**: 워크플로우에서 `matrix.browser` 분기로 **브라우저별 전용 더미 계정 주입** (테스트 코드·로컬 `.env` 무변경)
-
-  ```yaml
-  MYPAGE_USER_ID: ${{ matrix.browser == 'edge' && secrets.MYPAGE_USER_ID_EDGE || secrets.MYPAGE_USER_ID_CHROME }}
-  ```
-- **결과**: 마이페이지 간헐 setup ERROR **7~14건 → 0건**, Edge에서 마이페이지 **13개 케이스 스킵 → 정상 실행·통과**
+**3. 생성형 도구 재생성 완료 오판 — 직전 성공 메시지 잔존**
+재생성 시 이전 회차의 '생성했습니다' 메시지가 DOM에 남아, 스피너가 돌기도 전에 완료로 오판
+→ 기존 메시지 소멸(최대 2초) → 스피너 소멸 → 새 성공 메시지 출현 순으로 검증, 단계마다 남은 시간을 차감 공유해 도구별 전체 예산(3분~10분) 초과 방지
 
 ---
 
