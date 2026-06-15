@@ -69,10 +69,11 @@ class ChatPage(BasePage):
         "//*[contains(text(),'생각 중') or contains(text(),'Thinking')]",
     )
 
-    # AI 응답 완료 컨테이너 (data-with-artifact 속성)
+    # AI 응답 완료 마커 — 답변 markdown 렌더가 끝나면 data-status='complete'
+    # (token_page와 동일 패턴으로 통일 — data-with-artifact는 답변 시작 전에도 붙어 false-positive)
     RESPONSE_CONTENT = (
-        By.XPATH,
-        "//div[@data-with-artifact]",
+        By.CSS_SELECTOR,
+        "div.elice-aichat__markdown[data-status='complete']",
     )
 
     # ========== Search Modal Locators ==========
@@ -165,7 +166,7 @@ class ChatPage(BasePage):
     def wait_for_ai_response(self, timeout: int = 60) -> bool:
         """AI 응답이 완료될 때까지 대기
         1) URL에 /chats/ 포함 확인 (대화방 생성)
-        2) 응답 컨테이너(data-with-artifact) 나타날 때까지 대기
+        2) 응답 markdown이 data-status='complete' 가 될 때까지 대기 (스트리밍 종료)
         """
         try:
             WebDriverWait(self.driver, timeout).until(
@@ -176,7 +177,7 @@ class ChatPage(BasePage):
             WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_element_located(self.RESPONSE_CONTENT)
             )
-            self.logger.info("AI 응답 생성 확인")
+            self.logger.info("AI 응답 완료 확인 (data-status='complete')")
 
             return True
         except Exception:

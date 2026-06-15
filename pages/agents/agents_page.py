@@ -16,12 +16,13 @@ class AgentsPage(BasePage):
 
     # ========== Locators ==========
 
-    # LNB의 '에이전트 탐색' 메뉴 링크
+    # LNB의 '에이전트 마켓플레이스' 메뉴 링크
+    # (2026-06-15 서버 개편으로 '에이전트 탐색' → '에이전트 마켓플레이스'로 통합·개명.
+    #  탭 이름 변경에 영향받지 않도록 href 기반으로 매칭 — tools의 LNB_TOOLS_LINK와 동일 방식)
     LNB_AGENTS_LINK = (
         By.XPATH,
-        "//span[normalize-space(text())='에이전트 탐색'"
-        " or normalize-space(text())='Explore Agents'"
-        " or normalize-space(text())='Agents']/ancestor::a",
+        "//a[contains(@href,'ai-helpy-chat/agents')"
+        " and not(contains(@href,'ai-helpy-chat/agents/'))]",
     )
 
     # 에이전트 목록 컨테이너 (virtuoso 스크롤러)
@@ -34,6 +35,12 @@ class AgentsPage(BasePage):
     AGENT_CARDS = (
         By.XPATH,
         "//div[contains(@class,'virtuoso-grid-item')]//a",
+    )
+
+    # 에이전트 검색창 (virtuoso 가상 그리드를 스크롤하지 않고 특정 에이전트로 필터)
+    AGENT_SEARCH_INPUT = (
+        By.CSS_SELECTOR,
+        "input[placeholder='AI 에이전트 검색']",
     )
 
     # ========== 페이지 이동 ==========
@@ -58,7 +65,7 @@ class AgentsPage(BasePage):
         link = WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable(self.LNB_AGENTS_LINK))
         self.js_click(link)
         WebDriverWait(self.driver, 20).until(EC.url_contains("/agents"))
-        self.logger.info("LNB '에이전트 탐색' 탭 클릭 완료")
+        self.logger.info("LNB '에이전트 마켓플레이스' 탭 클릭 완료")
 
     # ========== 목록 확인 ==========
 
@@ -112,4 +119,25 @@ class AgentsPage(BasePage):
         self.js_click(card)
         self.wait.until(EC.url_contains("/agents/"))
         self.logger.info(f"첫 번째 에이전트 '{name}' 클릭 완료")
+        return name
+
+    def click_agent_by_name(self, name: str) -> str:
+        """검색창에 이름을 입력해 필터링한 뒤 해당 에이전트 카드를 클릭.
+        virtuoso 가상 그리드는 스크롤해야 항목이 렌더되므로, 검색으로 대상만 남겨 안정적으로 클릭한다.
+        """
+        search = self.wait.until(EC.element_to_be_clickable(self.AGENT_SEARCH_INPUT))
+        search.clear()
+        search.send_keys(name)
+        self.logger.info(f"에이전트 검색어 입력: '{name}'")
+
+        card = WebDriverWait(self.driver, 15).until(
+            EC.element_to_be_clickable((
+                By.XPATH,
+                "//div[contains(@class,'virtuoso-grid-item')]"
+                f"//a[.//p[normalize-space(text())='{name}']]",
+            ))
+        )
+        self.js_click(card)
+        self.wait.until(EC.url_contains("/agents/"))
+        self.logger.info(f"에이전트 '{name}' 클릭 완료")
         return name

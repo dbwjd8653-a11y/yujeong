@@ -33,10 +33,11 @@ class AgentDetailPage(BasePage):
         "//button[@type='submit' or contains(@aria-label,'전송') or contains(@aria-label,'send')]",
     )
 
-    # AI 응답 컨테이너 (data-with-artifact 속성이 붙으면 응답 완료)
-    RESPONSE_CONTENT = (
-        By.XPATH,
-        "//div[@data-with-artifact]",
+    # AI 응답 완료 마커 — 답변 markdown 렌더가 끝나면 data-status='complete'
+    # (data-with-artifact 컨테이너는 답변 시작 전에도 붙어 false-positive가 나므로 완료 상태로 검증)
+    RESPONSE_COMPLETE = (
+        By.CSS_SELECTOR,
+        ".elice-aichat__markdown[data-status='complete']",
     )
 
     # LNB 내 대화 목록 항목 (chatrooms 경로를 가진 링크)
@@ -82,9 +83,9 @@ class AgentDetailPage(BasePage):
     # ========== AI 응답 대기 (FHC-060) ==========
 
     def wait_for_ai_response(self, timeout: int = 60) -> bool:
-        """AI 응답이 생성될 때까지 대기
-        1) URL에 chatrooms 포함 확인
-        2) 응답 컨테이너(data-with-artifact) 나타날 때까지 대기
+        """AI 응답이 '완료'될 때까지 대기
+        1) 대화방 URL(chatrooms) 전환 확인
+        2) 응답 markdown이 data-status='complete' 가 될 때까지 대기 (스트리밍 종료)
         """
         try:
             # 대화방 URL로 전환 대기
@@ -93,14 +94,14 @@ class AgentDetailPage(BasePage):
             )
             self.logger.info("대화방 URL 전환 확인")
 
-            # 응답 컨텐츠 등장 대기
+            # 응답 완료(스트리밍 종료) 대기
             WebDriverWait(self.driver, timeout).until(
-                EC.presence_of_element_located(self.RESPONSE_CONTENT)
+                EC.presence_of_element_located(self.RESPONSE_COMPLETE)
             )
-            self.logger.info("AI 응답 생성 확인")
+            self.logger.info("AI 응답 완료 확인 (data-status='complete')")
             return True
         except Exception:
-            self.logger.warning("AI 응답 대기 타임아웃")
+            self.logger.warning("AI 응답 완료 대기 타임아웃")
             return False
 
     # ========== LNB 대화 목록 확인 (FHC-060) ==========

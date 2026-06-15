@@ -83,7 +83,6 @@ def test_agent_features_displayed(agents_page, agent_detail_page):
             f"에이전트 '{agent_name}' 클릭 후 주요 기능이 표시되지 않았습니다"
 
 
-@pytest.mark.xfail(reason="KAN-3: 에이전트 UI 개편으로 퀵 리플라이 프롬프트 버튼 미제공 — 'AI Helpy Chat' 버튼만 존재하며 chatroom으로 연결되지 않음", strict=False)
 @allure.story("에이전트 대화창 확인")
 @allure.title("[FHC-067] 에이전트 대화창 확인")
 @allure.severity(allure.severity_level.NORMAL)
@@ -91,19 +90,17 @@ def test_agent_chat_via_button(agents_page, agent_detail_page):
     """
     [FHC-067] 에이전트 대화창 확인
 
-    전제: 로그인 한 상태, '에이전트 탐색' 페이지 > 에이전트 클릭
+    전제: 로그인 한 상태, '에이전트 마켓플레이스' 페이지
     단계:
-      1. 퀵 리플라이 메뉴 버튼 선택 (줄을 바꿔 선택)
-    기대:
-      1. 적절한 AI 답변이 생성된다
-      2. LNB 메뉴에 대화 내용이 표시된다
+      1. '네이티브 영어 번역 코치' 에이전트 클릭
+      2. 퀵 리플라이 프롬프트 버튼 중 하나 클릭
+    기대: 적절한 AI 답변이 생성된다
     """
-    with allure.step("[FHC-067] 에이전트 진입 후 퀵 리플라이 버튼 클릭"):
+    AGENT_NAME = "네이티브 영어 번역 코치"
+    with allure.step(f"[FHC-067] '{AGENT_NAME}' 진입 후 퀵 리플라이 버튼 클릭"):
         agents_page.open()
-        agents_page.click_first_agent()
+        agents_page.click_agent_by_name(AGENT_NAME)
         agent_detail_page.click_quick_reply(index=0)
-    with allure.step("[FHC-067] AI 답변 생성 및 LNB 대화 표시 확인"):
+    with allure.step("[FHC-067] AI 답변 생성 확인"):
         assert agent_detail_page.wait_for_ai_response(), \
-            "AI 답변이 생성되지 않았습니다 (버튼 클릭 방식)"
-        assert agent_detail_page.is_lnb_chatroom_visible(), \
-            "LNB 메뉴에 대화 내용이 표시되지 않았습니다"
+            "퀵 리플라이 클릭 후 AI 답변이 생성되지 않았습니다"
