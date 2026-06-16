@@ -10,6 +10,10 @@ class SettingsMemberPage(SettingsPage):
     _SAVE_BTN = (By.XPATH, '//button[@type="submit"][normalize-space()="저장"]')
     _TOAST = (By.ID, 'notistack-snackbar')
 
+    # 저장 버튼/토스트 대기는 기본(10초)보다 넉넉히 — CI(headless·느린 환경)에서
+    # 저장 후 토스트가 10초를 넘겨 뜨며 TimeoutException으로 flaky
+    _SAVE_WAIT = 20
+
     def navigate_to_member_tab(self):
         self.js_click(self.wait.until(EC.element_to_be_clickable(self._MEMBER_TAB)))
         self.wait.until(EC.url_contains("/ai-helpy-chat/admin/users"))
@@ -44,7 +48,7 @@ class SettingsMemberPage(SettingsPage):
             f"토큰 한도 토글을 {'ON' if activate else 'OFF'}로 변경하지 못했습니다 (3회 재시도)"
         )
 
-    def _wait_visible_save_btn(self):
+    def _wait_visible_save_btn(self, timeout=None):
         """'저장' 제출 버튼이 섹션별 form마다 여러 개 존재할 수 있어,
         DOM 첫 매치(숨겨진 버튼)를 잡으면 element_to_be_clickable이 타임아웃난다.
         화면에 보이고 활성화된 버튼만 골라 반환한다."""
@@ -53,15 +57,15 @@ class SettingsMemberPage(SettingsPage):
                 if btn.is_displayed() and btn.is_enabled():
                     return btn
             return False
-        return self.wait.until(_find)
+        return self._wait(timeout).until(_find)
 
     def save_and_verify_toast(self):
         try:
             self.wait_until_invisible(self._TOAST, 5)
         except Exception:
             pass
-        save_btn = self._wait_visible_save_btn()
+        save_btn = self._wait_visible_save_btn(self._SAVE_WAIT)
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", save_btn)
         self.js_click(save_btn)
-        toast = self.wait_for_visible(self._TOAST)
+        toast = self._wait(self._SAVE_WAIT).until(EC.visibility_of_element_located(self._TOAST))
         assert "저장되었습니다" in toast.text, f"저장 알림창 메시지 불일치: '{toast.text}'"
