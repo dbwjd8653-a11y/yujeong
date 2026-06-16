@@ -26,7 +26,7 @@
 | 구조 설계 | Page Object Model (POM) |
 | CI/CD | GitLab CI/CD *(팀 프로젝트)* → GitHub Actions *(개인 포트폴리오 전환)* |
 | 리포팅 | Allure Report |
-| 이슈 관리 | Jira (테스트 실패 시 자동 등록) |
+| 이슈 관리 | Jira (테스트 실패 시 자동 버그 등록 — 옵션 기능, 토큰 보안상 CI 기본 비활성) |
 | 알림 | Discord Webhook |
 | 협업 | Notion, GitLab MR, Daily Scrum |
 
@@ -81,13 +81,25 @@
 ## 🏗️ 시스템 구조
 
 ### CI/CD 파이프라인
-`main` · `develop` 브랜치 push 시 자동 트리거
+`main` 브랜치 push 또는 수동 실행(workflow_dispatch) 시 자동 트리거
 
 ```
-Stage 1: Test     → 테스트 케이스 자동 실행 + Jira 버그 자동 등록
-Stage 2: Deploy   → Allure 리포트 생성 → GitHub Pages 배포
+Stage 1: Test     → 테스트 케이스 자동 실행 (실패 시 Jira 버그 등록 — 옵션, CI 기본 비활성)
+Stage 2: Deploy   → Allure 리포트 생성 → GitHub Pages 배포 (main만)
 Stage 3: Notify   → Discord 채널에 결과 알림 발송
 ```
+
+### 실패 자동 버그 등록 (Jira) — 옵션 기능
+
+테스트가 실패하면 conftest 훅이 **Jira REST API v3**로 버그 티켓을 자동 생성하고, 실패 시점
+**스크린샷을 첨부**한다 (`utils/jira_helper.py`, `conftest.py` 실패 훅, `--jira` 옵션).
+
+- **CI에서는 기본 비활성** — `--jira` 플래그를 주지 않으며, API 토큰을 레포에 두지 않기 위해
+  연동 시크릿도 등록하지 않는다. (코드는 그대로 유지)
+- **활성화 방법**: 로컬 `.env`에 `JIRA_*` 값을 채운 뒤 `pytest --jira` 로 실행.
+
+<!-- 스크린샷 추가 예정: images/jira_ticket_example.png (자동 생성된 버그 티켓 + 첨부 스크린샷) -->
+> 💡 실제 자동 생성된 티켓 예시 스크린샷을 `images/`에 추가하면 기능을 더 직관적으로 보여줄 수 있습니다.
 
 ### POM 3계층 구조
 
@@ -233,10 +245,10 @@ allure open allure-report
 | `MYPAGE_USER_ID` / `MYPAGE_USER_PW` / `MYPAGE_USER_NAME` | 마이페이지 전용 더미 계정 (탈퇴/재가입·비밀번호 변경 테스트용, 메인 계정과 분리 필수) |
 | `MYPAGE_NEW_PASSWORD` | 비밀번호 변경 테스트에서 사용 후 원복하는 임시 비밀번호 |
 | `NON_ADMIN_USER_ID` / `NON_ADMIN_USER_PW` | 비관리자 계정 (조직 설정 권한 테스트용) |
-| `JIRA_URL` | Jira 인스턴스 URL |
-| `JIRA_EMAIL` | Jira 계정 이메일 |
-| `JIRA_API_TOKEN` | Jira API 토큰 |
-| `JIRA_PROJECT_KEY` | Jira 프로젝트 키 |
+| `JIRA_URL` | Jira 인스턴스 URL *(옵션 — `--jira` 실행 시에만 필요, CI 비활성)* |
+| `JIRA_EMAIL` | Jira 계정 이메일 *(옵션)* |
+| `JIRA_API_TOKEN` | Jira API 토큰 *(옵션)* |
+| `JIRA_PROJECT_KEY` | Jira 프로젝트 키 *(옵션)* |
 | `DISCORD_WEBHOOK_URL` | Discord 웹훅 URL |
 
 ---
