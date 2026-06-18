@@ -51,11 +51,9 @@ def test_token_limit_disable(settings_member):
     기대: '토큰 한도가 저장되었습니다.' 알림창 활성화됨
     """
     logger.info("[FHC-073] 토큰 한도 토글 비활성화 시작")
-    settings_member.set_token_limit_toggle(activate=True)
-    settings_member.set_token_limit_toggle(activate=False)
+    settings_member.toggle_token_limit_and_save(activate=False)
     toggle = settings_member.get_toggle()
     assert not settings_member.is_toggle_checked(toggle), "토큰 한도 토글 비활성화 실패"
-    settings_member.save_and_verify_toast()
     logger.info("[FHC-073] 토큰 한도 토글 비활성화 완료")
 
 
@@ -74,9 +72,7 @@ def test_token_limit_enable(settings_member):
     기대: '토큰 한도가 저장되었습니다.' 알림창 활성화됨
     """
     logger.info("[FHC-074] 토큰 한도 토글 활성화 시작")
-    settings_member.set_token_limit_toggle(activate=False)
-    settings_member.set_token_limit_toggle(activate=True)
+    settings_member.toggle_token_limit_and_save(activate=True)
     toggle = settings_member.get_toggle()
     assert settings_member.is_toggle_checked(toggle), "토큰 한도 토글 활성화 실패"
-    settings_member.save_and_verify_toast()
     logger.info("[FHC-074] 토큰 한도 토글 활성화 완료")
