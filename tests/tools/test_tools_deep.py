@@ -36,17 +36,19 @@ def deep(login_module):
 
 
 @pytest.fixture
-def deep_sad(login):
+def deep_sad(login_module):
     """
-    심층 조사 도구 fixture - 새드패스용 (독립 브라우저, FHC-062 전용)
+    심층 조사 도구 fixture - 새드패스용 (FHC-062 전용)
 
-    전제: login fixture로 로그인 완료 상태 (함수 스코프, 해피패스와 독립)
+    전제: login_module fixture로 로그인 완료 상태 (모듈 공유 로그인)
     단계:
-      1. login에서 (driver, wait) 수신 → DeepPage 생성
+      1. login_module에서 (driver, wait) 수신 → DeepPage 생성
       2. 도구 목록 URL 직접 이동
       3. 심층 조사 도구 초기 세팅
+    참고: 함수 스코프로 매번 navigate/setup을 새로 해 폼 상태를 격리하되,
+          브라우저·로그인은 모듈 세션을 공유한다(별도 로그인/창을 띄우지 않음).
     """
-    driver, wait = login
+    driver, wait = login_module
     tool = DeepPage(driver, wait)
     tool.navigate_to_tools()
     tool.setup_tool()
