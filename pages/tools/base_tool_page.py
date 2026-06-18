@@ -245,12 +245,13 @@ class BaseToolPage(BasePage):
             "//button[text()='저장']"
         )
 
+        # headless에서 키워드 저장 후 요청사항 행 렌더가 10초를 넘겨 지연되는 경우가 있어 상한을 LONG_WAIT로 확대
         self.js_click(
-            self.wait.until(
+            WebDriverWait(self.driver, LONG_WAIT).until(
                 EC.presence_of_element_located((By.XPATH, request_placeholder_xpath))
             )
         )
-        request_input = self.wait.until(
+        request_input = WebDriverWait(self.driver, LONG_WAIT).until(
             EC.visibility_of_element_located((By.XPATH, request_input_xpath))
         )
         self.js_input(request_input, request_text)

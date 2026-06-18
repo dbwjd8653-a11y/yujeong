@@ -6,6 +6,7 @@
 from selenium.webdriver.common.keys import Keys
 
 from config.selenium_imports import By, EC, WebDriverWait
+from config.settings import LONG_WAIT
 
 from pages.tools.base_tool_page import BaseToolPage
 
@@ -42,7 +43,8 @@ class SpecialtyPage(BaseToolPage):
 
     def select_grade(self, grade: str):
         self.wait.until(EC.element_to_be_clickable(self.GRADE_COMBOBOX)).click()
-        self.wait.until(
+        # headless에서 드롭다운 옵션 렌더가 10초를 넘겨 지연되는 경우가 있어 상한을 LONG_WAIT로 확대
+        WebDriverWait(self.driver, LONG_WAIT).until(
             EC.element_to_be_clickable(
                 (By.XPATH, f"//li[@role='option' and @data-value='{grade}']")
             )
