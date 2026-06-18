@@ -41,12 +41,11 @@ def specialty(tools_driver_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
-@pytest.mark.skip(reason="토큰 한도 소진으로 AI 생성 미완료 — 폼/네비게이션은 정상")
-@allure.title("[FHC-028~036] 세부 특기사항 생성 해피 케이스")
+@allure.title("[FHC-028~033] 세부 특기사항 폼·네비게이션 검증 (생성 전, 토큰 무관)")
 @allure.severity(allure.severity_level.NORMAL)
-def test_specialty_happy_case(specialty):
+def test_specialty_form_flow(specialty):
     """
-    [FHC-028~036] 세부 특기사항 생성 해피 케이스
+    [FHC-028~033] 세부 특기사항 — 진입·입력·검증 (AI 생성 제외)
 
     전제: 로그인 완료 상태
     단계:
@@ -55,10 +54,8 @@ def test_specialty_happy_case(specialty):
       3. [FHC-030] 수업 정보 필수 항목 입력 (학교급, 학년, 과목, 단원) → '다음으로' 버튼 활성화
       4. [FHC-031] '다음으로' 버튼 클릭 → '학생 정보 입력 및 생성' 페이지 이동
       5. [FHC-032] 이전 입력 데이터(수업 정보) 반영 확인
-      6. [FHC-033] 학생 이름 입력 및 학습 태도 키워드 선택 · 저장
-      7. [FHC-035] [학생 추가] 버튼 클릭 → 새 학생 목록 생성
-      8. [FHC-036] [생성 결과 받기] 버튼 클릭 → xlsx 파일 다운로드
-    기대: 전체 시나리오 정상 완료
+      6. [FHC-033] 학생 이름 입력 및 학습 태도 키워드 선택 · 저장 → '생성 결과 받기' 버튼 노출
+    기대: 생성 직전까지 폼·네비게이션 정상 (토큰 불필요)
     """
     with allure.step("[FHC-028] 도구 목록 표시 확인"):
         logger.info("[FHC-028] 도구 목록 표시 확인 시작")
@@ -117,6 +114,22 @@ def test_specialty_happy_case(specialty):
         assert specialty.is_result_button_visible(), \
             "키워드 저장 후 '생성 결과 받기' 버튼이 표시되지 않았습니다"
 
+    logger.info("[FHC-028~033] 세부 특기사항 폼·네비게이션 검증 완료")
+
+
+@pytest.mark.skip(reason="토큰 한도 소진으로 AI 생성 미완료 — 폼·네비게이션은 test_specialty_form_flow에서 검증")
+@allure.title("[FHC-035~036] 세부 특기사항 생성 결과 다운로드")
+@allure.severity(allure.severity_level.NORMAL)
+def test_specialty_generate_and_download(specialty):
+    """
+    [FHC-035~036] 세부 특기사항 — AI 생성 및 xlsx 다운로드
+
+    전제: test_specialty_form_flow 이후 실행 (module fixture로 폼 상태 공유)
+    단계:
+      1. [FHC-035] [학생 추가] 버튼 클릭 → 새 학생 목록 생성(생성 트리거)
+      2. [FHC-036] [생성 결과 받기] 버튼 클릭 → xlsx 파일 다운로드
+    기대: 생성 완료 후 결과 파일 정상 다운로드
+    """
     with allure.step("[FHC-035] '학생 추가' 버튼 클릭 → 새 학생 목록 생성"):
         logger.info("[FHC-035] 학생 추가 버튼 클릭 시작")
         specialty.trigger_generation()
@@ -126,4 +139,4 @@ def test_specialty_happy_case(specialty):
         result = specialty.download_result(DOWNLOAD_DIR)
         assert result, "xlsx 결과 파일 다운로드에 실패했습니다"
 
-    logger.info("[FHC-028~036] 세부 특기사항 생성 해피 케이스 완료")
+    logger.info("[FHC-035~036] 세부 특기사항 생성 결과 다운로드 완료")

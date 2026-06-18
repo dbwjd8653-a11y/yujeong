@@ -32,20 +32,18 @@ def page(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
-@pytest.mark.skip(reason="토큰 한도 소진으로 AI 생성 미완료 — 폼/네비게이션은 정상")
-@allure.title("[FHC-045~048] 수업지도안 생성 해피 케이스")
+@allure.title("[FHC-045~047] 수업지도안 폼·네비게이션 검증 (생성 전, 토큰 무관)")
 @allure.severity(allure.severity_level.NORMAL)
-def test_lesson_plan_happy_case(page):
+def test_lesson_plan_form_flow(page):
     """
-    [FHC-045~048] 수업지도안 생성 해피 케이스
+    [FHC-045~047] 수업지도안 — 진입·입력·검증 (AI 생성 제외)
 
     전제: 로그인 완료 상태
     단계:
       1. [FHC-045] '수업지도안' 메뉴 진입 확인
       2. [FHC-046] 필수 항목(학교급, 학년, 과목, 교육 내용, 수업 차시, 생성 방식) 선택 → [수업지도안 생성] 버튼 활성화 확인
       3. [FHC-047] 선택 항목(참고 자료, 기타 요청 사항) 입력 → [수업지도안 생성] 버튼 활성화 유지 확인
-      4. [FHC-048] '다시 생성' 버튼 클릭 → 3분 이내 생성 완료 확인
-    기대: 수업지도안 생성 정상 완료
+    기대: 생성 직전까지 폼·네비게이션 정상 (토큰 불필요)
     """
     with allure.step("[FHC-045] '수업지도안' 페이지 진입 확인"):
         logger.info("[FHC-045] 수업지도안 페이지 진입 확인")
@@ -63,9 +61,24 @@ def test_lesson_plan_happy_case(page):
         page.enter_comment(COMMENT)
         assert page.is_generate_btn_enabled(), "선택 항목 입력 후 [수업지도안 생성] 버튼 비활성화"
 
+    logger.info("[FHC-045~047] 수업지도안 폼·네비게이션 검증 완료")
+
+
+@pytest.mark.skip(reason="토큰 한도 소진으로 AI 생성 미완료 — 폼·네비게이션은 test_lesson_plan_form_flow에서 검증")
+@allure.title("[FHC-048] 수업지도안 생성 완료 확인")
+@allure.severity(allure.severity_level.NORMAL)
+def test_lesson_plan_is_generated(page):
+    """
+    [FHC-048] 수업지도안 — 생성 클릭 후 완료 확인 (최대 3분)
+
+    전제: test_lesson_plan_form_flow 이후 실행 (module fixture로 폼 상태 공유)
+    단계:
+      1. [FHC-048] '다시 생성' 버튼 클릭 → 3분 이내 생성 완료 확인
+    기대: 수업지도안 생성 정상 완료
+    """
     with allure.step("[FHC-048] '다시 생성' 버튼 클릭 및 생성 완료 확인"):
         logger.info("[FHC-048] 수업지도안 생성 시작")
         page.click_generate()
         assert page.is_generated(timeout=180), "3분 이내 수업지도안 생성 실패"
 
-    logger.info("[FHC-045~048] 수업지도안 생성 해피 케이스 완료")
+    logger.info("[FHC-048] 수업지도안 생성 완료 확인 완료")
