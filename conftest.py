@@ -26,6 +26,70 @@ from utils.jira_helper import create_jira_bug_ticket, attach_image_to_jira
 logger = logging.getLogger(__name__)
 
 
+# ── Jira 제목용 한 줄 요약 추출 ────────────────────────────────────
+def _docstring_summary(doc):
+    """docstring 첫 의미 줄을 Jira 제목용 한 줄 요약으로 반환.
+
+    선두의 [FHC-NNN] 태그는 제거한다(제목 중복 방지).
+    docstring이 없거나 요약을 못 뽑으면 빈 문자열을 반환한다.
+    """
+    for line in (doc or "").splitlines():
+        line = re.sub(r"^\s*\[FHC[_-]\d+\]\s*", "", line).strip()
+        if line:
+            return line
+    return ""
+
+
+# ── Jira 제목용 도메인(기능 영역) 라벨 ─────────────────────────────
+# 테스트 디렉터리 = 기능 영역. tools/는 한 폴더에 여러 도구가 섞여 있어
+# 모듈(파일) 단위로 더 잘게 라벨링한다.
+_DOMAIN_BY_DIR = {
+    "agent": "에이전트",
+    "chat": "대화",
+    "login": "로그인",
+    "logout": "로그아웃",
+    "mypage": "마이페이지",
+    "settings": "설정",
+    "signup": "회원가입",
+    "token": "토큰",
+    "performance": "성능",
+}
+_DOMAIN_BY_MODULE = {
+    # tools/ — 도구별
+    "test_tools_behavior": "행동특성",
+    "test_tools_deep": "딥리서치",
+    "test_tools_lesson": "수업지도안",
+    "test_tools_ppt": "PPT",
+    "test_tools_quiz": "퀴즈",
+    "test_tools_specialty": "세부특기사항",
+    # mypage/ — 마이페이지 하위 기능별
+    "test_mypage_account": "계정",
+    "test_mypage_language": "언어",
+    "test_mypage_organization": "내 기관",
+    "test_mypage_profile": "프로필",
+    "test_mypage_support": "고객센터",
+    "test_mypage_withdraw": "회원탈퇴",
+    # settings/ — 설정 하위 탭별
+    "test_settings_general": "일반",
+    "test_settings_member": "구성원",
+    "test_settings_model": "모델",
+    "test_settings_organization": "조직",
+    "test_settings_subscription": "구독",
+    "test_settings_useage": "이용내역",
+}
+
+
+def _domain_label(location_path):
+    """테스트 파일 경로 → 기능 영역 라벨. 못 찾으면 '자동화 테스트 실패'."""
+    p = Path(location_path)
+    if p.stem in _DOMAIN_BY_MODULE:
+        return _DOMAIN_BY_MODULE[p.stem]
+    for part in p.parts:
+        if part in _DOMAIN_BY_DIR:
+            return _DOMAIN_BY_DIR[part]
+    return "자동화 테스트 실패"
+
+
 # ── 로깅 설정 ──────────────────────────────────────────────────────
 def pytest_configure(config):
     os.makedirs("logs", exist_ok=True)
@@ -181,8 +245,12 @@ def pytest_runtest_makereport(item, call):
         test_file = item.location[0]
         error_message = str(call.excinfo.value)
         # 테스트 docstring(전제/단계/기대)을 재현 정보로 사용
-        doc = inspect.getdoc(item.function) or "(docstring 없음)"
-        summary = f"[자동화 테스트 실패] {item.name}"
+        raw_doc = inspect.getdoc(item.function)
+        doc = raw_doc or "(docstring 없음)"
+        # 제목 = [기능 영역] 한글 시나리오명 (수기 버그 티켓과 동일한 컨벤션)
+        domain = _domain_label(item.location[0])
+        title = _docstring_summary(raw_doc) or item.name
+        summary = f"[{domain}] {title}"
         description = (
             "자동화 테스트 실패\n\n"
             f"[Test Case]\n{item.name}\n\n"
