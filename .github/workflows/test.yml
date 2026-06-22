@@ -126,12 +126,13 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
+      # 브라우저별 하위 폴더로 분리 다운로드(merge 안 함) — ci_notify가 폴더별로
+      # historyId 재시도를 최종 1건으로 병합해 집계하기 위함(교차 합산 붕괴 방지).
       - name: Download allure-results (all browsers)
         uses: actions/download-artifact@v4
         with:
           pattern: allure-results-*
           path: allure-results/
-          merge-multiple: true
         continue-on-error: true
 
       - name: Send Discord notification

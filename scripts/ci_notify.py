@@ -73,19 +73,32 @@ def _parse_from_results() -> tuple[dict, list[str]]:
 
     stats = {"passed": 0, "failed": 0, "broken": 0, "skipped": 0, "total": 0}
     failed_names: list[str] = []
-    for result_file in results_dir.glob("*-result.json"):
+
+    # 브라우저별(=결과 파일이 든 디렉터리별) 버킷으로 그룹화한 뒤, 버킷 내 historyId
+    # 재시도를 최종 1건(가장 늦게 시작한 시도)으로 병합한다. 재시도 끝에 통과한
+    # 테스트는 통과로 집계되어 디스코드 실패 수가 부풀려지지 않는다.
+    # (historyId는 브라우저 간 공유되므로 디렉터리로 버킷을 나눠 교차 합산 붕괴를 막는다.)
+    buckets: dict[Path, dict[str, dict]] = {}
+    for result_file in results_dir.rglob("*-result.json"):
         try:
             with open(result_file, encoding="utf-8") as f:
                 data = json.load(f)
+        except Exception:
+            continue
+        bucket = buckets.setdefault(result_file.parent, {})
+        hid = data.get("historyId") or data.get("uuid") or result_file.stem
+        prev = bucket.get(hid)
+        if prev is None or data.get("start", 0) >= prev.get("start", 0):
+            bucket[hid] = data
+
+    for bucket in buckets.values():
+        for data in bucket.values():
             status = data.get("status", "")
             if status in stats:
                 stats[status] += 1
             stats["total"] += 1
             if status in ("failed", "broken"):
-                name = data.get("name") or data.get("fullName", result_file.stem)
-                failed_names.append(name)
-        except Exception:
-            pass
+                failed_names.append(data.get("name") or data.get("fullName", ""))
 
     return stats, failed_names
 

@@ -176,33 +176,8 @@ class BaseToolPage(BasePage):
                 return
             except TimeoutException as exc:
                 last_exc = exc
-                self._dump_combobox_state(attempt, data_value)
                 self._close_open_dropdown()
         raise last_exc
-
-    def _dump_combobox_state(self, attempt, data_value):
-        try:
-            lbs = self.driver.find_elements(By.XPATH, "//ul[@role='listbox']")
-            opts = self.driver.find_elements(By.XPATH, "//ul[@role='listbox']//li[@role='option']")
-            info = []
-            for o in opts:
-                try:
-                    info.append((o.get_attribute("data-value"), o.is_displayed(), o.size, o.text))
-                except Exception:
-                    info.append(("?", "?", "?", "?"))
-            target = self.driver.find_elements(By.XPATH, f"//li[@role='option' and @data-value='{data_value}']")
-            tinfo = []
-            for t in target:
-                try:
-                    tinfo.append((t.is_displayed(), t.is_enabled(), t.size, t.location))
-                except Exception:
-                    tinfo.append("err")
-            self.logger.error(
-                f"[DUMP attempt={attempt}] listbox수={len(lbs)} 옵션수={len(opts)} "
-                f"옵션들={info} 타깃('{data_value}')존재={len(target)} 타깃상태={tinfo}"
-            )
-        except Exception as e:
-            self.logger.error(f"[DUMP attempt={attempt}] 덤프 실패: {e}")
 
     def _close_open_dropdown(self):
         try:
