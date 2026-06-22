@@ -12,13 +12,15 @@ class AgentDetailPage(BasePage):
     # ========== Locators ==========
 
     # 에이전트 상세 페이지 — 주요 기능 버튼 (퀵 리플라이)
-    # main 영역 안의 텍스트가 있는 버튼들 (헤더·전송 버튼 제외)
+    # 추천 프롬프트 버튼만 정확히 잡는다: 텍스트(MuiTypography-body2 span)를 담은
+    # type=button 중 로고(img)·아이콘/전송(svg) 버튼은 제외.
+    # (브랜드 로고 'AI Helpy Chat' 버튼을 잘못 클릭하던 문제 방지)
     QUICK_REPLY_BUTTONS = (
         By.XPATH,
         "//button[@type='button'"
-        " and string-length(normalize-space(.)) > 0"
         " and not(ancestor::header)"
-        " and not(contains(@aria-label,'전송') or contains(@aria-label,'send') or contains(@aria-label,'Submit'))]",
+        " and not(.//img) and not(.//svg)"
+        " and .//span[contains(@class,'MuiTypography-body2')]]",
     )
 
     # 채팅 입력창
@@ -64,17 +66,40 @@ class AgentDetailPage(BasePage):
         except Exception:
             return False
 
+    def is_chat_input_displayed(self, timeout: int = 15) -> bool:
+        """에이전트 상세 페이지가 로드되어 채팅 입력창이 표시되는지 확인
+        (모든 에이전트 상세 페이지 공통 요소로, 진입 동작을 안정적으로 검증)
+        """
+        try:
+            WebDriverWait(self.driver, timeout).until(
+                EC.presence_of_element_located(self.CHAT_INPUT)
+            )
+            self.logger.info("에이전트 상세 채팅 입력창 표시 확인")
+            return True
+        except Exception:
+            self.logger.warning("에이전트 상세 채팅 입력창 미표시")
+            return False
+
     # ========== 대화 — 버튼 클릭 방식 (FHC-060) ==========
 
     def click_quick_reply(self, index: int = 0):
-        """퀵 리플라이 버튼 클릭으로 대화 시작
+        """퀵 리플라이 프롬프트 버튼 클릭으로 대화 시작
         index: 0 = 첫 번째 버튼 (기본값)
+
+        추천 프롬프트(한글 텍스트) 버튼이 렌더될 때까지 대기한 뒤 클릭한다.
+        렌더 전 브랜드/로고 버튼을 잘못 클릭하던 레이스를 막고,
+        프롬프트가 끝내 없으면(미제공) 명확한 메시지로 실패시킨다.
         """
-        buttons = self.get_quick_reply_buttons()
-        # 한국어 텍스트가 포함된 버튼만 실제 퀵 리플라이로 간주
-        korean_buttons = [b for b in buttons if any('가' <= c <= '힣' for c in b.text)]
-        target_buttons = korean_buttons if korean_buttons else buttons
-        btn = target_buttons[index]
+        def _korean_prompt_buttons(driver):
+            btns = driver.find_elements(*self.QUICK_REPLY_BUTTONS)
+            korean = [b for b in btns if any('가' <= c <= '힣' for c in b.text)]
+            return korean or False
+
+        korean_buttons = self.wait.until(
+            _korean_prompt_buttons,
+            message="퀵 리플라이 프롬프트 버튼(한글)이 렌더되지 않음",
+        )
+        btn = korean_buttons[index]
         btn_text = btn.text.strip()
         self.js_click(btn)
         self.logger.info(f"퀵 리플라이 버튼 클릭: '{btn_text}'")
