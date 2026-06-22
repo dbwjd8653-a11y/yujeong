@@ -5,4 +5,5 @@ requests
 python-dotenv
 allure-pytest
 pytest-xdist
+pytest-rerunfailures
 jira

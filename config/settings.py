@@ -27,9 +27,12 @@ SIGNUP_FORM_URL = (
 )
 
 # ── 대기 시간 (초) ──────────────────────────────────────────────────
+# CI는 headless라 렌더가 느려 기존 한도(10/20초)를 종종 초과한다.
+# (요소 출현 즉시 리턴하므로 정상 케이스 속도엔 영향 없고 상한만 키우는 보정)
+_WAIT_SCALE  = 1.5 if os.environ.get("CI") else 1
 SHORT_WAIT   = 2
-DEFAULT_WAIT = 10
-LONG_WAIT    = 20
+DEFAULT_WAIT = int(10 * _WAIT_SCALE)   # CI: 15
+LONG_WAIT    = int(20 * _WAIT_SCALE)   # CI: 30
 
 # ── 테스트 계정 ────────────────────────────────────────────────────
 TEST_USER = {

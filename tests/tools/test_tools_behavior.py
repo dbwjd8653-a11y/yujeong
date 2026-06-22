@@ -38,6 +38,9 @@ def behavior(tools_driver_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+# headless CI에서 긴 폼 체인 렌더가 느려 간헐 TimeoutException 발생 → 자동 재시도로 보강
+# (로컬 headful에선 1회차에 통과하므로 사실상 no-op)
+@pytest.mark.flaky(reruns=2, reruns_delay=3)
 @allure.title("[FHC-037~042] 행동특성 및 종합의견 폼·네비게이션 검증 (생성 전, 토큰 무관)")
 @allure.severity(allure.severity_level.NORMAL)
 def test_behavior_form_flow(behavior):

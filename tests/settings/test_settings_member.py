@@ -36,6 +36,8 @@ def settings_member(login_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+# headless CI에서 토글/모달 렌더 지연으로 간헐 TimeoutException 발생 → 자동 재시도로 보강
+@pytest.mark.flaky(reruns=2, reruns_delay=3)
 @allure.story("토큰 한도 토글 비활성화")
 @allure.title("[FHC-073] 토큰 한도 토글 비활성화 테스트")
 @allure.severity(allure.severity_level.NORMAL)
