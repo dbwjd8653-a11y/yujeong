@@ -73,14 +73,14 @@ def test_agent_features_displayed(agents_page, agent_detail_page):
     전제: 로그인 한 상태, '에이전트 탐색' 페이지
     단계:
       1. 에이전트 클릭 (랜덤)
-    기대: 선택한 에이전트의 상세 페이지(채팅 입력창)가 표시된다
+    기대: 선택한 에이전트의 상세 페이지로 진입한다
     """
     with allure.step("[FHC-066] 에이전트 탐색 페이지에서 에이전트 클릭 (랜덤)"):
         agents_page.open()
         agent_name = agents_page.click_random_agent()
-    with allure.step("[FHC-066] 에이전트 상세 페이지(채팅 입력창) 표시 확인"):
-        assert agent_detail_page.is_chat_input_displayed(), \
-            f"에이전트 '{agent_name}' 클릭 후 상세 페이지(채팅 입력창)가 표시되지 않았습니다"
+    with allure.step("[FHC-066] 에이전트 상세 페이지 진입 확인"):
+        assert agent_detail_page.is_on_agent_detail(), \
+            f"에이전트 '{agent_name}' 클릭 후 상세 페이지로 진입하지 못했습니다"
 
 
 @allure.story("에이전트 대화창 확인")

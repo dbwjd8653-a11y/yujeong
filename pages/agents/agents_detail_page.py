@@ -50,18 +50,21 @@ class AgentDetailPage(BasePage):
 
     # ========== 주요 기능 확인 (FHC-059) ==========
 
-    def is_chat_input_displayed(self, timeout: int = 15) -> bool:
-        """에이전트 상세 페이지가 로드되어 채팅 입력창이 표시되는지 확인
-        (모든 에이전트 상세 페이지 공통 요소로, 진입 동작을 안정적으로 검증)
+    def is_on_agent_detail(self, timeout: int = 15) -> bool:
+        """에이전트 상세 페이지로 진입했는지 확인.
+        상세 URL은 '.../agents/<id>' 형태(목록은 '.../agents' 로 끝남)이며,
+        '심층 조사' 같은 특수 에이전트는 일반 채팅 UI(입력창)가 없으므로
+        UI 요소 대신 URL 진입 여부로 안정적으로 검증한다.
         """
         try:
             WebDriverWait(self.driver, timeout).until(
-                EC.presence_of_element_located(self.CHAT_INPUT)
+                lambda d: "/agents/" in d.current_url
+                and d.current_url.rstrip("/").split("/agents/")[-1] != ""
             )
-            self.logger.info("에이전트 상세 채팅 입력창 표시 확인")
+            self.logger.info(f"에이전트 상세 페이지 진입 확인: {self.driver.current_url}")
             return True
         except Exception:
-            self.logger.warning("에이전트 상세 채팅 입력창 미표시")
+            self.logger.warning("에이전트 상세 페이지 진입 실패")
             return False
 
     # ========== 대화 — 버튼 클릭 방식 (FHC-060) ==========
