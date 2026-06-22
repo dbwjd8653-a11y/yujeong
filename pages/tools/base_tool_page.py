@@ -145,13 +145,15 @@ class BaseToolPage(BasePage):
         self.logger.info("수업 정보 입력 탭 클릭 완료")
         self.wait.until(EC.presence_of_element_located(self.SCHOOL_COMBOBOX))
 
+    LISTBOX = (By.XPATH, "//ul[@role='listbox']")
+
     def select_combobox_option(self, combobox_locator, data_value, option_timeout=LONG_WAIT):
         """MUI Select 콤보박스를 열고 data-value 옵션을 선택.
 
-        직전 콤보박스 선택 직후 옵션이 아직 재렌더되지 않은 채 드롭다운이 열리면
-        해당 옵션을 끝까지 못 찾아 타임아웃난다(특히 headless·Edge). 옵션이 안 뜨면
-        ESC로 닫고 재오픈하는 식으로 최대 3회 재시도한다. 첫 시도는 느린 렌더를
-        감안해 LONG_WAIT, 이후 재시도는 DEFAULT_WAIT로 대기한다.
+        CI(Linux·Edge·느린 러너)에서 네이티브 click이 직전 백드롭 트랜지션과 겹쳐
+        메뉴를 못 여는 경우가 있어, 클릭 후 listbox가 안 열리면 키보드(ArrowDown)로
+        연다(포인터/트랜지션 이슈에 면역). 옵션은 메뉴가 열리면 동기 렌더되므로,
+        그래도 안 뜨면 ESC로 닫고 최대 3회 재오픈한다. 첫 시도 LONG_WAIT, 이후 DEFAULT_WAIT.
         """
         option_locator = (By.XPATH, f"//li[@role='option' and @data-value='{data_value}']")
 
@@ -159,7 +161,13 @@ class BaseToolPage(BasePage):
         for attempt in range(3):
             self.wait_dropdown_closed()
             self.wait_backdrop_gone()
-            self.wait.until(EC.element_to_be_clickable(combobox_locator)).click()
+            combobox = self.wait.until(EC.element_to_be_clickable(combobox_locator))
+            combobox.click()
+            if not self.is_present(self.LISTBOX, timeout=SHORT_WAIT):
+                try:
+                    combobox.send_keys(Keys.ARROW_DOWN)
+                except Exception:
+                    pass
             try:
                 WebDriverWait(self.driver, option_timeout if attempt == 0 else DEFAULT_WAIT).until(
                     EC.element_to_be_clickable(option_locator)
@@ -168,8 +176,33 @@ class BaseToolPage(BasePage):
                 return
             except TimeoutException as exc:
                 last_exc = exc
+                self._dump_combobox_state(attempt, data_value)
                 self._close_open_dropdown()
         raise last_exc
+
+    def _dump_combobox_state(self, attempt, data_value):
+        try:
+            lbs = self.driver.find_elements(By.XPATH, "//ul[@role='listbox']")
+            opts = self.driver.find_elements(By.XPATH, "//ul[@role='listbox']//li[@role='option']")
+            info = []
+            for o in opts:
+                try:
+                    info.append((o.get_attribute("data-value"), o.is_displayed(), o.size, o.text))
+                except Exception:
+                    info.append(("?", "?", "?", "?"))
+            target = self.driver.find_elements(By.XPATH, f"//li[@role='option' and @data-value='{data_value}']")
+            tinfo = []
+            for t in target:
+                try:
+                    tinfo.append((t.is_displayed(), t.is_enabled(), t.size, t.location))
+                except Exception:
+                    tinfo.append("err")
+            self.logger.error(
+                f"[DUMP attempt={attempt}] listbox수={len(lbs)} 옵션수={len(opts)} "
+                f"옵션들={info} 타깃('{data_value}')존재={len(target)} 타깃상태={tinfo}"
+            )
+        except Exception as e:
+            self.logger.error(f"[DUMP attempt={attempt}] 덤프 실패: {e}")
 
     def _close_open_dropdown(self):
         try:

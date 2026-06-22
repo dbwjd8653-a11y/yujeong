@@ -41,6 +41,7 @@ def specialty(tools_driver_module):
 
 # ── 테스트 케이스 ──────────────────────────────────────────────────
 
+@pytest.mark.flaky(reruns=2, reruns_delay=3)
 @allure.title("[FHC-028~033] 세부 특기사항 폼·네비게이션 검증 (생성 전, 토큰 무관)")
 @allure.severity(allure.severity_level.NORMAL)
 def test_specialty_form_flow(specialty):
