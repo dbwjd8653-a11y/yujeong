@@ -6,7 +6,6 @@
 from selenium.webdriver.common.keys import Keys
 
 from config.selenium_imports import By, EC, WebDriverWait
-from config.settings import LONG_WAIT
 
 from pages.tools.base_tool_page import BaseToolPage
 
@@ -42,14 +41,10 @@ class SpecialtyPage(BaseToolPage):
     # ========== 수업 정보 입력 — 학년/과목/단원 ==========
 
     def select_grade(self, grade: str):
-        self.wait.until(EC.element_to_be_clickable(self.GRADE_COMBOBOX)).click()
-        # headless에서 드롭다운 옵션 렌더가 10초를 넘겨 지연되는 경우가 있어 상한을 LONG_WAIT로 확대
-        WebDriverWait(self.driver, LONG_WAIT).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, f"//li[@role='option' and @data-value='{grade}']")
-            )
-        ).click()
-        self.wait_backdrop_gone()
+        # 직전 학교급 선택의 드롭다운/백드롭 잔상으로 클릭이 먹히지 않아 옵션을
+        # 끝까지 못 찾는 headless flaky가 있어, 잔상 정리·열림 확인·재클릭을
+        # 묶은 공통 헬퍼에 위임한다.
+        self.select_combobox_option(self.GRADE_COMBOBOX, grade)
         self.logger.info(f"학년 '{grade}' 선택 완료")
 
     def enter_subject(self, subject: str):

@@ -146,14 +146,37 @@ class BaseToolPage(BasePage):
         self.logger.info("수업 정보 입력 탭 클릭 완료")
         self.wait.until(EC.presence_of_element_located(self.SCHOOL_COMBOBOX))
 
-    def select_school_level(self, school_level: str):
-        self.wait.until(EC.element_to_be_clickable(self.SCHOOL_COMBOBOX)).click()
-        self.wait.until(
-            EC.element_to_be_clickable(
-                (By.XPATH, f"//li[@role='option' and @data-value='{school_level}']")
-            )
+    LISTBOX = (By.XPATH, "//ul[@role='listbox']")
+
+    def select_combobox_option(self, combobox_locator, data_value, option_timeout=LONG_WAIT):
+        """MUI Select 콤보박스를 열고 data-value 옵션을 선택.
+
+        headless에서 직전 콤보박스의 드롭다운/백드롭 페이드아웃이 덜 끝난 채로
+        다음 콤보박스를 클릭하면 클릭이 백드롭에 먹혀 드롭다운이 안 열리고
+        옵션을 끝까지 못 찾아 타임아웃난다. 잔상을 먼저 정리하고, 드롭다운이
+        실제로 열렸는지 확인 후 안 열렸으면 재클릭한다. 옵션 렌더는 느릴 수
+        있으므로 LONG_WAIT까지 대기한다.
+        """
+        option_locator = (By.XPATH, f"//li[@role='option' and @data-value='{data_value}']")
+        # 직전 드롭다운/백드롭 잔상 제거 — 클릭이 백드롭에 먹히는 것 방지
+        self.wait_dropdown_closed()
+        self.wait_backdrop_gone()
+
+        # MUI Select는 실제 포인터 이벤트로만 열려 js_click으로는 안 열린다 → 네이티브 click.
+        # 잔상으로 클릭이 백드롭에 먹혀 드롭다운이 안 열리면 잔상 정리 후 재클릭한다.
+        for _ in range(3):
+            self.wait.until(EC.element_to_be_clickable(combobox_locator)).click()
+            if self.is_present(self.LISTBOX, timeout=SHORT_WAIT):
+                break
+            self.wait_backdrop_gone()
+
+        WebDriverWait(self.driver, option_timeout).until(
+            EC.element_to_be_clickable(option_locator)
         ).click()
         self.wait_backdrop_gone()
+
+    def select_school_level(self, school_level: str):
+        self.select_combobox_option(self.SCHOOL_COMBOBOX, school_level)
         self.logger.info(f"학교급 '{school_level}' 선택 완료")
 
     def click_next(self):
