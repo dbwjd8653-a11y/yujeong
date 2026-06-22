@@ -6,6 +6,8 @@ import glob
 import os
 import time
 
+from selenium.webdriver.common.keys import Keys
+
 from config.selenium_imports import By, EC, WebDriverWait, TimeoutException
 
 from pages.base_page import BasePage
@@ -143,30 +145,38 @@ class BaseToolPage(BasePage):
         self.logger.info("수업 정보 입력 탭 클릭 완료")
         self.wait.until(EC.presence_of_element_located(self.SCHOOL_COMBOBOX))
 
-    LISTBOX = (By.XPATH, "//ul[@role='listbox']")
-
     def select_combobox_option(self, combobox_locator, data_value, option_timeout=LONG_WAIT):
         """MUI Select 콤보박스를 열고 data-value 옵션을 선택.
 
-        headless에서 직전 콤보박스의 드롭다운/백드롭 페이드아웃이 덜 끝난 채로
-        다음 콤보박스를 클릭하면 클릭이 백드롭에 먹혀 드롭다운이 안 열리고
-        옵션을 끝까지 못 찾아 타임아웃난다. 잔상을 먼저 정리하고, 드롭다운이
-        실제로 열렸는지 확인 후 안 열렸으면 재클릭한다. 옵션 렌더는 느릴 수
-        있으므로 LONG_WAIT까지 대기한다.
+        직전 콤보박스 선택 직후 옵션이 아직 재렌더되지 않은 채 드롭다운이 열리면
+        해당 옵션을 끝까지 못 찾아 타임아웃난다(특히 headless·Edge). 옵션이 안 뜨면
+        ESC로 닫고 재오픈하는 식으로 최대 3회 재시도한다. 첫 시도는 느린 렌더를
+        감안해 LONG_WAIT, 이후 재시도는 DEFAULT_WAIT로 대기한다.
         """
         option_locator = (By.XPATH, f"//li[@role='option' and @data-value='{data_value}']")
-        self.wait_dropdown_closed()
-        self.wait_backdrop_gone()
 
-        for _ in range(3):
-            self.wait.until(EC.element_to_be_clickable(combobox_locator)).click()
-            if self.is_present(self.LISTBOX, timeout=SHORT_WAIT):
-                break
+        last_exc = None
+        for attempt in range(3):
+            self.wait_dropdown_closed()
             self.wait_backdrop_gone()
+            self.wait.until(EC.element_to_be_clickable(combobox_locator)).click()
+            try:
+                WebDriverWait(self.driver, option_timeout if attempt == 0 else DEFAULT_WAIT).until(
+                    EC.element_to_be_clickable(option_locator)
+                ).click()
+                self.wait_backdrop_gone()
+                return
+            except TimeoutException as exc:
+                last_exc = exc
+                self._close_open_dropdown()
+        raise last_exc
 
-        WebDriverWait(self.driver, option_timeout).until(
-            EC.element_to_be_clickable(option_locator)
-        ).click()
+    def _close_open_dropdown(self):
+        try:
+            self.driver.switch_to.active_element.send_keys(Keys.ESCAPE)
+        except Exception:
+            pass
+        self.wait_dropdown_closed()
         self.wait_backdrop_gone()
 
     def select_school_level(self, school_level: str):
