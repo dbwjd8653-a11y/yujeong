@@ -203,7 +203,6 @@ class ChatPage(BasePage):
             title = items[idx].find_element(*self.LNB_CHAT_ITEM_TITLE).text.strip()
         except Exception:
             title = "(제목 파악 불가)"
-        # stale element 방지: 클릭 직전 재탐색 (크기가 달라질 수 있으므로 modulo 처리)
         items = self.driver.find_elements(*self.LNB_CHAT_ITEMS)
         if not items:
             raise Exception("LNB 채팅 목록을 찾을 수 없습니다")
@@ -230,7 +229,6 @@ class ChatPage(BasePage):
             )
             self.js_input(search_input, keyword)
         except Exception:
-            # 입력 필드가 없으면 모달 자체에 포커스 후 타이핑
             modal = self.driver.find_element(*self.SEARCH_MODAL)
             modal.click()
             modal.send_keys(keyword)

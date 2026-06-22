@@ -78,7 +78,6 @@ class TokenPage(BasePage):
             return el.text.strip()
         except Exception:
             pass
-        # JS 폴백: admin 링크 내 텍스트 또는 토큰 관련 텍스트 탐색
         return self.driver.execute_script("""
             var kws = ['token', 'Token', '토큰'];
             var links = Array.from(document.querySelectorAll('a[href*="admin"]'));
@@ -146,7 +145,6 @@ class TokenPage(BasePage):
             return
         except Exception:
             pass
-        # JS 폴백
         result = self.driver.execute_script("""
             var links = Array.from(document.querySelectorAll('a[href*="admin"]'));
             var kws = ['token', 'Token', '토큰', 'general'];

@@ -148,7 +148,6 @@ class PPTPage(BaseToolPage):
             self.logger.warning("다운로드 응답이 비어 있습니다")
             return False
 
-        # pptx는 zip 컨테이너 — PK 시그니처로 산출물 무결성 검증 (HTML 에러 페이지 등 false pass 방지)
         if resp.content[:4] != b"PK\x03\x04":
             self.logger.warning("받은 파일이 유효한 pptx(zip)가 아닙니다")
             return False

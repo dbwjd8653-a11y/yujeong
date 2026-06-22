@@ -96,12 +96,9 @@ class BaseToolPage(BasePage):
     # ========== 페이지 이동 ==========
 
     def navigate_to_tools(self):
-        # '에이전트 마켓플레이스' 탭 클릭으로 진입
         tab = self.wait.until(EC.element_to_be_clickable(self.LNB_TOOLS_LINK))
         self.js_click(tab)
         close_token_banner(self.driver, self.wait)
-        # 도구 카드 로딩이 가끔 10초를 넘겨 지연됨 → 상한만 LONG_WAIT로 확대
-        # (요소 출현 즉시 리턴하므로 정상 케이스 소요 시간은 동일)
         WebDriverWait(self.driver, LONG_WAIT).until(
             EC.presence_of_element_located(
                 (By.XPATH, "//a[contains(@href,'ai-helpy-chat/agents/')]")
@@ -158,12 +155,9 @@ class BaseToolPage(BasePage):
         있으므로 LONG_WAIT까지 대기한다.
         """
         option_locator = (By.XPATH, f"//li[@role='option' and @data-value='{data_value}']")
-        # 직전 드롭다운/백드롭 잔상 제거 — 클릭이 백드롭에 먹히는 것 방지
         self.wait_dropdown_closed()
         self.wait_backdrop_gone()
 
-        # MUI Select는 실제 포인터 이벤트로만 열려 js_click으로는 안 열린다 → 네이티브 click.
-        # 잔상으로 클릭이 백드롭에 먹혀 드롭다운이 안 열리면 잔상 정리 후 재클릭한다.
         for _ in range(3):
             self.wait.until(EC.element_to_be_clickable(combobox_locator)).click()
             if self.is_present(self.LISTBOX, timeout=SHORT_WAIT):
@@ -268,7 +262,6 @@ class BaseToolPage(BasePage):
             "//button[text()='저장']"
         )
 
-        # headless에서 키워드 저장 후 요청사항 행 렌더가 10초를 넘겨 지연되는 경우가 있어 상한을 LONG_WAIT로 확대
         self.js_click(
             WebDriverWait(self.driver, LONG_WAIT).until(
                 EC.presence_of_element_located((By.XPATH, request_placeholder_xpath))
@@ -323,7 +316,6 @@ class BaseToolPage(BasePage):
             self.logger.warning("생성 결과 받기 버튼 활성화 타임아웃 (120초 초과)")
             return False
 
-        # 클릭 전 xlsx 파일별 수정 시간 스냅샷 (신규 파일 + 덮어쓰기 모두 감지)
         before_mtime = {}
         for f in glob.glob(os.path.join(download_dir, "*.xlsx")):
             try:
@@ -335,7 +327,6 @@ class BaseToolPage(BasePage):
         self.logger.info("생성 결과 받기 버튼 클릭 완료")
         click_time = time.time()
 
-        # 확인 모달 → '다운받기' 버튼 클릭 (모달 없을 경우 1초 후 바로 다운로드 진행)
         try:
             confirm_btn = WebDriverWait(self.driver, 1).until(
                 EC.element_to_be_clickable(self.DOWNLOAD_CONFIRM_BUTTON)
@@ -345,8 +336,6 @@ class BaseToolPage(BasePage):
         except Exception:
             self.logger.info("확인 모달 없음 → 바로 다운로드 진행")
 
-        # 다운로드 완료 대기 (최대 90초)
-        # 신규 파일 OR 기존 파일 덮어쓰기(mtime 변경) 모두 감지
         self.logger.info("파일 다운로드 대기 중...")
         deadline = time.time() + 90
         while time.time() < deadline:

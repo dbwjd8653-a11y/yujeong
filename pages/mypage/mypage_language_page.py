@@ -22,11 +22,9 @@ class MyPageLanguagePage(MyPage):
 
     def logout_via_profile_menu(self):
         """accounts.elice.io 우상단 아바타 클릭 → 로그아웃 메뉴 클릭"""
-        # accounts.elice.io로 이동 (헤더에 아바타 버튼 있음)
         self.driver.get(self.ACCOUNT_URL)
         self.wait.until(EC.url_contains("members"))
 
-        # header 안의 MuiAvatar 버튼 클릭 (Selenium 네이티브 click)
         avatar_btn = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, "header button.MuiAvatar-root")
@@ -35,7 +33,6 @@ class MyPageLanguagePage(MyPage):
         avatar_btn.click()
         self.logger.info("accounts.elice.io 아바타 버튼 클릭 완료")
 
-        # 로그아웃 menuitem 클릭 (normalize-space로 중첩 텍스트 포함)
         logout_item = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.XPATH,
                 "//li[@role='menuitem' and ("
@@ -50,7 +47,6 @@ class MyPageLanguagePage(MyPage):
         logout_item.click()
         self.logger.info("로그아웃 메뉴 클릭 완료")
 
-        # URL이 members 페이지를 벗어나거나 signin/login 포함 시 완료
         WebDriverWait(self.driver, 10).until(
             lambda d: (
                 d.current_url != before_url

@@ -41,9 +41,6 @@ class SpecialtyPage(BaseToolPage):
     # ========== 수업 정보 입력 — 학년/과목/단원 ==========
 
     def select_grade(self, grade: str):
-        # 직전 학교급 선택의 드롭다운/백드롭 잔상으로 클릭이 먹히지 않아 옵션을
-        # 끝까지 못 찾는 headless flaky가 있어, 잔상 정리·열림 확인·재클릭을
-        # 묶은 공통 헬퍼에 위임한다.
         self.select_combobox_option(self.GRADE_COMBOBOX, grade)
         self.logger.info(f"학년 '{grade}' 선택 완료")
 

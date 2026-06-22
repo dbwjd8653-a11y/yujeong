@@ -35,8 +35,6 @@ def do_login(driver, wait, user: dict = None):
     user = user or TEST_USER
 
     # ── 계정 정보 가드 ──────────────────────────────────────────────
-    # id/pw 가 None이면 send_keys(None)에서 'NoneType is not iterable'로
-    # 죽어 원인 파악이 어려움 → 환경변수(.env / CI secret) 누락을 명확히 알림
     if not user.get("id") or not user.get("pw"):
         raise ValueError(
             "로그인 계정 정보가 비어 있습니다. 환경변수(.env / CI secret)를 확인하세요. "
@@ -59,8 +57,6 @@ def do_login(driver, wait, user: dict = None):
         EC.element_to_be_clickable((By.XPATH, "//button[text()='로그인']"))
     ).click()
     wait.until(lambda d: d.current_url.startswith(BASE_UI_URL))
-    # LNB 링크가 렌더링될 때까지 대기 — 세션 쿠키가 완전히 설정된 후에만 나타남
-    # (URL만 보고 반환하면 세션 확립 전에 다음 navigate가 실행돼 레이스로 실패함)
     wait.until(
         EC.presence_of_element_located(
             (By.XPATH, "//a[contains(@href,'ai-helpy-chat')]")

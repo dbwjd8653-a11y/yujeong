@@ -100,13 +100,11 @@ class AgentDetailPage(BasePage):
         2) 응답 markdown이 data-status='complete' 가 될 때까지 대기 (스트리밍 종료)
         """
         try:
-            # 대화방 URL로 전환 대기
             WebDriverWait(self.driver, timeout).until(
                 EC.url_contains("chatrooms")
             )
             self.logger.info("대화방 URL 전환 확인")
 
-            # 응답 완료(스트리밍 종료) 대기
             WebDriverWait(self.driver, timeout).until(
                 EC.presence_of_element_located(self.RESPONSE_COMPLETE)
             )

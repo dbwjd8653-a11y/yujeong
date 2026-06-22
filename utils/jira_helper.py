@@ -34,7 +34,6 @@ def _text_to_adf(text):
                 ]
             })
         else:
-            # 빈 줄은 빈 문단으로 (text 노드는 빈 문자열 불가)
             content.append({"type": "paragraph"})
 
     if not content:

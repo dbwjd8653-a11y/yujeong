@@ -100,12 +100,10 @@ def pytest_configure(config):
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    # 파일: 에러만 기록 (실패 분석/보관용)
     file_handler = logging.FileHandler(log_file, encoding="utf-8")
     file_handler.setLevel(logging.ERROR)
     file_handler.setFormatter(formatter)
 
-    # 콘솔: INFO 그대로 (실행 중 실시간 진행 확인용)
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(formatter)
@@ -187,11 +185,9 @@ def pytest_runtest_makereport(item, call):
         _logger = logging.getLogger(item.module.__name__)
 
         if report.failed:
-            # ① 로그 기록
             if call.excinfo is not None:
                 exc_type = call.excinfo.typename
                 raw = str(call.excinfo.value).strip()
-                # 첫 줄만 사용하고 셀레늄 예외의 "Message:" 접두어 제거
                 first_line = raw.splitlines()[0].strip() if raw else ""
                 detail = re.sub(r'^Message:\s*', '', first_line).strip()
                 if exc_type == "AssertionError":
@@ -215,12 +211,10 @@ def pytest_runtest_makereport(item, call):
 
         if not jira_enabled:
             return
-        
-        # xfail 제외
+
         if hasattr(report, "wasxfail"):
             return
 
-        # ② driver 탐색
         driver = (
             item.funcargs.get("driver")
             or item.funcargs.get("driver_module")
@@ -241,13 +235,10 @@ def pytest_runtest_makereport(item, call):
             except Exception:
                 pass
 
-        # ③ Jira 이슈 생성
         test_file = item.location[0]
         error_message = str(call.excinfo.value)
-        # 테스트 docstring(전제/단계/기대)을 재현 정보로 사용
         raw_doc = inspect.getdoc(item.function)
         doc = raw_doc or "(docstring 없음)"
-        # 제목 = [기능 영역] 한글 시나리오명 (수기 버그 티켓과 동일한 컨벤션)
         domain = _domain_label(item.location[0])
         title = _docstring_summary(raw_doc) or item.name
         summary = f"[{domain}] {title}"
@@ -263,7 +254,6 @@ def pytest_runtest_makereport(item, call):
 
         issue_key = create_jira_bug_ticket(summary=summary, description=description)
 
-        # ④ 스크린샷 첨부
         if issue_key and driver:
             try:
                 screenshot = driver.get_screenshot_as_png()
@@ -271,8 +261,6 @@ def pytest_runtest_makereport(item, call):
             except Exception as e:
                 logger.warning(f"스크린샷 첨부 실패: {e}")
 
-        # ⑤ Discord 버그 알림 연동용 티켓 기록
-        # notify 잡(scripts/ci_notify.py)이 이 파일을 읽어 Discord 알림에 버그 목록을 포함한다.
         if issue_key:
             _record_jira_ticket(item.config, item.name, issue_key, browser_name)
 

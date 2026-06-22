@@ -90,7 +90,6 @@ class AgentsPage(BasePage):
         )
         card = random.choice(cards)
 
-        # 에이전트 이름 추출 (있으면)
         try:
             name = card.find_element(
                 By.XPATH, ".//p[contains(@class,'MuiTypography-body1')]"

@@ -38,8 +38,6 @@ def _enable_headless_downloads(driver, download_dir: str) -> None:
 
 def _base_opts() -> EdgeOptions:
     opts = EdgeOptions()
-    # DOMContentLoaded 시점에 get()이 반환됨 — 끝나지 않는 서브리소스(트래커/소켓)에
-    # load 이벤트가 막혀 driver.get()이 행(hang)되는 것을 방지한다.
     opts.page_load_strategy = "eager"
     opts.add_argument(f"--window-size={WINDOW_WIDTH},{WINDOW_HEIGHT}")
     if os.environ.get("CI"):

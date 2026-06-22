@@ -20,7 +20,6 @@ class MyPageSupportPage(MyPage):
 
     def click_start_chat(self):
         """ChannelTalk 위젯 내 'Start a chat' 버튼 클릭 (iframe 전환 포함)"""
-        # 1) 메인 페이지에서 data-ch-testid 버튼 시도
         try:
             btn = WebDriverWait(self.driver, 5).until(
                 EC.element_to_be_clickable(self.START_CHAT_BUTTON)
@@ -31,7 +30,6 @@ class MyPageSupportPage(MyPage):
         except Exception:
             pass
 
-        # 2) ChannelTalk iframe 전환 후 버튼 찾기
         iframes = self.driver.find_elements(By.TAG_NAME, "iframe")
         for iframe in iframes:
             try:
@@ -55,7 +53,6 @@ class MyPageSupportPage(MyPage):
             except Exception:
                 self.driver.switch_to.default_content()
 
-        # 3) JS ChannelIO API fallback
         result = self.driver.execute_script("""
             if (window.ChannelIO) {
                 window.ChannelIO('openChat');
@@ -73,7 +70,6 @@ class MyPageSupportPage(MyPage):
         """AI 답변 또는 채팅창이 표시되는지 확인 (메인 페이지 + iframe 모두 검색)"""
         kws = ["안녕하세요", "Hello", "무엇을 도와", "How can I help",
                "Hi there", "chat", "Chat", "메시지"]
-        # 1) 메인 페이지 (AI 답변 생성까지 시간이 걸리므로 충분히 대기 — 충족 시 즉시 반환)
         try:
             WebDriverWait(self.driver, 25).until(
                 lambda d: any(kw in d.find_element(By.TAG_NAME, "body").text for kw in kws)
@@ -81,7 +77,6 @@ class MyPageSupportPage(MyPage):
             return True
         except Exception:
             pass
-        # 2) iframe 내부
         iframes = self.driver.find_elements(By.TAG_NAME, "iframe")
         for iframe in iframes:
             try:

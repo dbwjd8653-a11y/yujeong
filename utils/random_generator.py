@@ -13,12 +13,10 @@ def generate_test_email(prefix="autotest"):
         autotest_20260520201530123@test.com
     """
 
-    # 현재 시간을 문자열로 변환
     timestamp = datetime.now().strftime(
         "%Y%m%d%H%M%S%f"
     )[:-3]
 
-    # 이메일 조합 후 반환
     return (
         f"{prefix}_{timestamp}"
         "@test.com"
