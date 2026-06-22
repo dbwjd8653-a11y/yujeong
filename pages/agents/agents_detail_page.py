@@ -50,22 +50,6 @@ class AgentDetailPage(BasePage):
 
     # ========== 주요 기능 확인 (FHC-059) ==========
 
-    def get_quick_reply_buttons(self):
-        """주요 기능 퀵 리플라이 버튼 목록 반환"""
-        return self.wait.until(
-            EC.presence_of_all_elements_located(self.QUICK_REPLY_BUTTONS)
-        )
-
-    def is_main_features_displayed(self) -> bool:
-        """에이전트 주요 기능 버튼이 1개 이상 표시되는지 확인"""
-        try:
-            buttons = self.get_quick_reply_buttons()
-            names = [b.text.strip() for b in buttons if b.text.strip()]
-            self.logger.info(f"주요 기능 버튼 확인: {names}")
-            return len(names) > 0
-        except Exception:
-            return False
-
     def is_chat_input_displayed(self, timeout: int = 15) -> bool:
         """에이전트 상세 페이지가 로드되어 채팅 입력창이 표시되는지 확인
         (모든 에이전트 상세 페이지 공통 요소로, 진입 동작을 안정적으로 검증)
