@@ -238,7 +238,7 @@ class BaseToolPage(BasePage):
         name_input = self.wait.until(EC.visibility_of_element_located(self.FOOTER_NAME_INPUT))
         self.js_input(name_input, name)
         self.logger.info(f"학생 이름 '{name}' 입력 완료")
-        time.sleep(0.3)  # React 키 입력 상태 반영 최소 대기
+        time.sleep(0.3)
 
     def open_keyword_modal(self):
         self.js_click(

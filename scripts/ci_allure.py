@@ -64,7 +64,6 @@ def deploy_to_pages() -> None:
         shutil.copytree(str(REPORT_DIR), str(PUBLIC_DIR), dirs_exist_ok=True)
         print(f"Allure 리포트 → {PUBLIC_DIR} 배포 완료")
     else:
-        # allure 미설치 등 예외 상황 — 빈 페이지로 대체
         (PUBLIC_DIR / "index.html").write_text(
             "<h1>Allure report unavailable</h1>", encoding="utf-8"
         )

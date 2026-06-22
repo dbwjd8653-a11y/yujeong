@@ -76,7 +76,7 @@ def test_withdraw_happy_case(mypage):
 
     with allure.step("[인프라] 탈퇴 후 계정 재가입"):
         logger.info("[인프라] 탈퇴 후 계정 재가입 시작")
-        time.sleep(3)  # 서버 측 탈퇴 처리 완료 대기
+        time.sleep(3)
         mypage.signup(MAIN_EMAIL, MAIN_PASSWORD, MAIN_NAME)
         assert mypage.is_signup_success(), \
             f"탈퇴 후 재가입 시 helpy-chat 메인 페이지로 이동하지 못했습니다 (이메일: {MAIN_EMAIL})"

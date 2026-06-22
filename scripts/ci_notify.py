@@ -25,7 +25,6 @@ if not WEBHOOK_URL:
 
 
 def parse_allure_summary() -> tuple[dict, list[str]]:
-    # 1차: pages 잡이 생성한 summary.json
     summary_path = Path("public/widgets/summary.json")
     if summary_path.exists():
         try:
@@ -37,7 +36,6 @@ def parse_allure_summary() -> tuple[dict, list[str]]:
         except Exception as e:
             print(f"[경고] summary.json 파싱 실패: {e}", file=sys.stderr)
 
-    # 2차: allure-results/*.json 직접 파싱 (fallback)
     print("[정보] allure-results 직접 파싱으로 전환")
     return _parse_from_results()
 

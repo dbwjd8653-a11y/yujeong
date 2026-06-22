@@ -116,9 +116,9 @@ def test_password_validation_and_masking(login_page):
     logger.info("[FHC-008-009] 비밀번호 유효성 + 마스킹 확인 시작")
 
     with allure.step("[FHC-008] 비밀번호 유효성 오류 확인"):
-        login_page.enter_email("test@example.com")   # 이메일 유효성은 통과, 비밀번호 에러만 발생
+        login_page.enter_email("test@example.com")
         login_page.enter_password(INPUT_PWD_INVALID)
-        login_page.click(login_page.LOGIN_BUTTON)  # submit 시도로 유효성 검사 트리거
+        login_page.click(login_page.LOGIN_BUTTON)
         assert login_page.is_pwd_error_displayed(), "비밀번호 유효성 오류 메시지 미표시"
 
     with allure.step("[FHC-009] 비밀번호 마스킹 및 해제 확인"):

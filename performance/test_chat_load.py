@@ -53,11 +53,11 @@ def test_chat_load(chat_load):
 
     for i in range(1, REPEAT + 1):
         chat_load.click_new_chat_from_lnb()
-        time.sleep(0.5)  # 새 대화 DOM 안정화 대기
+        time.sleep(0.5)
         start = time.time()
         chat_load.send_message(TEST_MESSAGE)
         success = chat_load.wait_for_ai_response()
-        time.sleep(1)  # 응답 후 DOM 갱신 완료 대기
+        time.sleep(1)
         elapsed = round(time.time() - start, 2)
 
         if success:
