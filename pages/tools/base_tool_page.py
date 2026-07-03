@@ -91,7 +91,6 @@ class BaseToolPage(BasePage):
         super().__init__(driver, wait_or_timeout)
 
     def login(self):
-        """TEST_USER로 로그인 (공통 do_login 사용 — URL/LNB 대기·배너 닫기 포함)"""
         do_login(self.driver, self.wait)
         self.logger.info("로그인 성공")
 
@@ -148,13 +147,6 @@ class BaseToolPage(BasePage):
     LISTBOX = (By.XPATH, "//ul[@role='listbox']")
 
     def select_combobox_option(self, combobox_locator, data_value, option_timeout=LONG_WAIT):
-        """MUI Select 콤보박스를 열고 data-value 옵션을 선택.
-
-        CI(Linux·Edge·느린 러너)에서 네이티브 click이 직전 백드롭 트랜지션과 겹쳐
-        메뉴를 못 여는 경우가 있어, 클릭 후 listbox가 안 열리면 키보드(ArrowDown)로
-        연다(포인터/트랜지션 이슈에 면역). 옵션은 메뉴가 열리면 동기 렌더되므로,
-        그래도 안 뜨면 ESC로 닫고 최대 3회 재오픈한다. 첫 시도 LONG_WAIT, 이후 DEFAULT_WAIT.
-        """
         option_locator = (By.XPATH, f"//li[@role='option' and @data-value='{data_value}']")
 
         last_exc = None
@@ -197,7 +189,6 @@ class BaseToolPage(BasePage):
         self.logger.info("다음으로 버튼 클릭 완료")
 
     def handle_modify_modal(self):
-        """'수정하기' 모달이 뜰 경우에만 처리 (없으면 조용히 넘어감)"""
         try:
             modify_btn = WebDriverWait(self.driver, 1).until(
                 EC.element_to_be_clickable(self.MODIFY_BUTTON)
@@ -209,15 +200,12 @@ class BaseToolPage(BasePage):
             self.logger.info("수정 확인 모달 없음 → 바로 진행")
 
     def is_class_info_tab_visible(self) -> bool:
-        """수업 정보 입력 탭이 화면에 표시되는지 확인"""
         return self.is_present(self.CLASS_INFO_TAB)
 
     def is_school_level_combobox_visible(self) -> bool:
-        """학교급 콤보박스가 화면에 표시되는지 확인"""
         return self.is_present(self.SCHOOL_COMBOBOX)
 
     def is_next_button_enabled(self) -> bool:
-        """'다음으로' 버튼이 활성화 상태인지 확인"""
         try:
             btn = self.wait.until(EC.presence_of_element_located(self.NEXT_BUTTON))
             return btn.is_enabled()
@@ -227,7 +215,6 @@ class BaseToolPage(BasePage):
     # ========== 학생 정보 입력 (세부특기·행동특성) ==========
 
     def ensure_student_row_exists(self):
-        """이름 입력 행이 없으면 '+ 학생 추가' 버튼 클릭"""
         self.wait.until(EC.presence_of_element_located(self.ADD_STUDENT_BUTTON))
         if not self.driver.find_elements(*self.STUDENT_NAME_PLACEHOLDER):
             self.js_click(
@@ -262,7 +249,6 @@ class BaseToolPage(BasePage):
         self.logger.info("키워드 저장 완료")
 
     def enter_request_text(self, request_text: str):
-        """요청사항이 있을 경우에만 입력 및 저장"""
         if not request_text:
             self.logger.info("요청사항 없음 → 입력 건너뜀")
             return
@@ -302,11 +288,9 @@ class BaseToolPage(BasePage):
             self.logger.info("요청사항 저장 버튼 확인 중 오류 → 건너뜀")
 
     def is_student_tab_visible(self) -> bool:
-        """학생 정보 입력 탭이 화면에 표시되는지 확인"""
         return self.is_present(self.STUDENT_TAB)
 
     def is_student_name_entered(self, name: str) -> bool:
-        """입력한 학생 이름이 footer 행에 반영되었는지 확인"""
         try:
             input_el = self.driver.find_element(*self.FOOTER_NAME_INPUT)
             value = input_el.get_attribute("value") or ""
@@ -317,14 +301,12 @@ class BaseToolPage(BasePage):
     # ========== 생성 트리거 / 결과 다운로드 (세부특기·행동특성) ==========
 
     def trigger_generation(self):
-        """'+ 학생 추가' 버튼 재클릭으로 AI 생성 트리거"""
         self.js_click(
             self.wait.until(EC.element_to_be_clickable(self.ADD_STUDENT_BUTTON))
         )
         self.logger.info("학생 추가 버튼 클릭 완료 (생성 트리거)")
 
     def download_result(self, download_dir: str, browser: str = "edge"):
-        """생성 결과 받기 버튼 클릭 후 xlsx 다운로드 완료 대기"""
         self.logger.info("생성 결과 받기 버튼 활성화 대기 중 (최대 120초)...")
         try:
             result_btn = WebDriverWait(self.driver, 120).until(
@@ -397,16 +379,6 @@ class BaseToolPage(BasePage):
     # ========== AI 생성 공통 (PPT·퀴즈·심층조사·수업지도안) ==========
 
     def stop_if_generating(self):
-        """
-        AI 생성 중단
-
-        단계:
-          1. stopIcon 버튼 존재 시 클릭 → 생성 중단
-          2. GENERATE_BTN 클릭 가능까지 대기 (disabled 해제 확인)
-
-        Note:
-          생성 중이 아닌 경우 TimeoutException 무시
-        """
         try:
             stop_btn = WebDriverWait(self.driver, SHORT_WAIT).until(
                 EC.presence_of_element_located(self.STOP_BTN)
@@ -420,18 +392,15 @@ class BaseToolPage(BasePage):
             pass
 
     def get_generate_btn(self):
-        """생성 버튼 요소 반환 (활성화 여부 확인용)"""
         if self.GENERATE_BTN is None:
             raise NotImplementedError(f"{self.__class__.__name__}에 GENERATE_BTN이 정의되지 않았습니다")
         return self.wait.until(EC.presence_of_element_located(self.GENERATE_BTN))
 
     def assert_generate_btn_enabled(self):
-        """생성 버튼 활성화 검증"""
         btn = self.get_generate_btn()
         assert btn.is_enabled(), "모두 입력했는데 버튼이 비활성화 상태입니다"
 
     def assert_generate_btn_disabled(self):
-        """생성 버튼 비활성화 검증"""
         btn = self.get_generate_btn()
         assert not btn.is_enabled(), "버튼이 활성화 상태입니다 (비활성화 예상)"
 
@@ -458,15 +427,6 @@ class BaseToolPage(BasePage):
             return False
 
     def is_generated(self, timeout=DEFAULT_WAIT) -> bool:
-        """
-        AI 생성 완료 확인 (최초 생성 및 재생성 모두 대응)
-
-        단계:
-          1. 기존 SUCCESS_MESSAGE가 있으면 SHORT_WAIT 내 소멸 대기 (재생성 감지)
-             - 소멸되지 않아도 스피너 단계로 계속 진행 (timeout 예산 보호)
-          2. 스피너 소멸 대기 — 생성 완료의 핵심 신호
-          3. SUCCESS_MESSAGE 출현 확인
-        """
         deadline = time.time() + timeout
 
         def secs_left():
