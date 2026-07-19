@@ -32,6 +32,44 @@
 
 ---
 
+## 📁 프로젝트 구조
+
+```
+focus/
+├── config/                   # 브라우저·설정·로그인 헬퍼
+│   ├── browser_factory.py    # Edge/Chrome 드라이버 생성
+│   ├── settings.py           # URL·타임아웃·테스트 계정 설정
+│   ├── login_helpers.py      # 공통 로그인/배너 처리
+│   ├── selenium_imports.py   # Selenium 공통 import 모음
+│   ├── jira_config.py        # Jira 연동 설정
+│   └── requirements.txt      # 의존성 패키지
+├── pages/                    # Page Object Model (3계층)
+│   ├── base_page.py          # 1계층: 공통 동작
+│   ├── tools/                # ✅ 담당: Tools lesson·ppt
+│   ├── settings/             # ✅ 담당: Settings 세부 Page
+│   ├── agents/  mypage/  token/
+│   └── login/  logout/  signup/  chat/  performance/
+├── tests/                    # 테스트 코드
+│   ├── tools/                # ✅ 담당: Tools lesson·ppt
+│   ├── settings/             # ✅ 담당
+│   ├── agent/  mypage/  token/
+│   └── login/  logout/  signup/  chat/
+├── performance/              # 성능 부하 테스트 (top-level, testpaths 등록)
+├── utils/
+│   ├── jira_helper.py        # Jira 이슈 생성·스크린샷 첨부 (REST API v3)
+│   └── random_generator.py   # 테스트 데이터 생성
+├── scripts/
+│   ├── ci_allure.py          # ✅ 담당: Allure 리포트 생성 스크립트
+│   ├── ci_notify.py          # ✅ 담당: Discord 알림 스크립트
+│   └── recreate_test_account.py  # 테스트 계정 재생성 CLI
+├── .github/workflows/
+│   └── test.yml              # ✅ 담당: GitHub Actions CI/CD (Test→Deploy→Notify)
+├── conftest.py               # 공통 fixture + 실패 시 Jira 자동 등록 훅
+└── pytest.ini
+```
+
+---
+
 ## 👩‍💻 나의 역할
 
 - **Settings / Tools (lesson, ppt 등) 자동화 테스트 구현**
@@ -146,44 +184,6 @@ MUI '저장' 버튼이 토글 값과 서버 저장값이 다를 때만 활성화
 **3. 생성형 도구 재생성 완료 오판 - 직전 성공 메시지 잔존**
 재생성 시 이전 회차의 '생성했습니다' 메시지가 DOM에 남아, 스피너가 돌기도 전에 완료로 오판
 → 기존 메시지 소멸(최대 2초) → 스피너 소멸 → 새 성공 메시지 출현 순으로 검증, 단계마다 남은 시간을 차감 공유해 도구별 전체 예산(3분~10분) 초과 방지
-
----
-
-## 📁 프로젝트 구조
-
-```
-focus/
-├── config/                   # 브라우저·설정·로그인 헬퍼
-│   ├── browser_factory.py    # Edge/Chrome 드라이버 생성
-│   ├── settings.py           # URL·타임아웃·테스트 계정 설정
-│   ├── login_helpers.py      # 공통 로그인/배너 처리
-│   ├── selenium_imports.py   # Selenium 공통 import 모음
-│   ├── jira_config.py        # Jira 연동 설정
-│   └── requirements.txt      # 의존성 패키지
-├── pages/                    # Page Object Model (3계층)
-│   ├── base_page.py          # 1계층: 공통 동작
-│   ├── tools/                # ✅ 담당: Tools lesson·ppt
-│   ├── settings/             # ✅ 담당: Settings 세부 Page
-│   ├── agents/  mypage/  token/
-│   └── login/  logout/  signup/  chat/  performance/
-├── tests/                    # 테스트 코드
-│   ├── tools/                # ✅ 담당: Tools lesson·ppt
-│   ├── settings/             # ✅ 담당
-│   ├── agent/  mypage/  token/
-│   └── login/  logout/  signup/  chat/
-├── performance/              # 성능 부하 테스트 (top-level, testpaths 등록)
-├── utils/
-│   ├── jira_helper.py        # Jira 이슈 생성·스크린샷 첨부 (REST API v3)
-│   └── random_generator.py   # 테스트 데이터 생성
-├── scripts/
-│   ├── ci_allure.py          # ✅ 담당: Allure 리포트 생성 스크립트
-│   ├── ci_notify.py          # ✅ 담당: Discord 알림 스크립트
-│   └── recreate_test_account.py  # 테스트 계정 재생성 CLI
-├── .github/workflows/
-│   └── test.yml              # ✅ 담당: GitHub Actions CI/CD (Test→Deploy→Notify)
-├── conftest.py               # 공통 fixture + 실패 시 Jira 자동 등록 훅
-└── pytest.ini
-```
 
 ---
 
